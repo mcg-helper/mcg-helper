@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd  
+                        http://www.springframework.org/schema/context  
+                        http://www.springframework.org/schema/context/spring-context-4.2.xsd  
+                        http://www.springframework.org/schema/mvc  
+                        http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+                        http://www.springframework.org/schema/aop
+                        http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+                        http://www.springframework.org/schema/cache
+        				http://www.springframework.org/schema/cache/spring-cache-3.2.xsd">
+	<aop:aspectj-autoproxy/> 
+	<context:annotation-config />
+	<!-- 启动组件扫描，排除@Controller组件，该组件由SpringMVC配置文件扫描 -->
+	<context:component-scan base-package="com.mcg">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>	
+	
+	<!-- 自动扫描该包，使SpringMVC认为包下用了@controller注解的类是控制器 -->
+    <context:component-scan base-package="com.mcg.controller"/>
+    <bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor">
+        <property name="validator" ref="validator"/>
+    </bean>
+
+    <!-- 以下 validator  ConversionService 在使用 mvc:annotation-driven 会 自动注册-->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>
+        <!-- 如果不加默认到 使用classpath下的 ValidationMessages.properties -->
+        <property name="validationMessageSource" ref="messageSource"/>
+    </bean>
+    <!-- 指定自己定义的validator-->
+    <mvc:annotation-driven validator="validator">
+		<mvc:message-converters register-defaults="true">
+			<ref bean="fastJsonHttpMessageConverter"/>
+        </mvc:message-converters>  
+    </mvc:annotation-driven>  
+     
+    <!-- 国际化的消息资源文件（本系统中主要用于显示/错误消息定制） -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <!-- 在web环境中一定要定位到classpath 否则默认到当前web应用下找  -->
+                <value>classpath:messages</value>
+                <value>classpath:org/hibernate/validator/ValidationMessages</value>
+            </list>
+        </property>
+        <property name="useCodeAsDefaultMessage" value="false"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="cacheSeconds" value="60"/>
+    </bean>
+
+    
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="cookieName" value="language"/>
+        <property name="cookieMaxAge" value="3600"/>
+        <property name="defaultLocale" value="zh_CN"/>
+    </bean>
+
+	<bean id="fastJsonHttpMessageConverter" class="com.mcg.common.FastJsonHttpMessageConverter">
+		<property name="supportedMediaTypes">
+            <list>
+           		<value>application/json</value>
+            </list>
+        </property>
+        <property name="dateFormat" value="yyyy-MM-dd HH:mm:ss"/>
+        <property name="features">
+            <list>
+                <value>DisableCircularReferenceDetect</value>
+            </list>
+        </property>       
+	</bean>	
+	
+ 	<!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="fastJsonHttpMessageConverter" /><!-- json转换器 -->
+            </list>
+        </property>
+    </bean>
+   
+    <!-- 定义跳转的文件的前后缀 ，视图模式配置-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 这里的配置我的理解是自动给后面action的方法return的字符串加上前缀和后缀，变成一个 可用的url地址 -->
+        <property name="prefix" value="/template/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    <mvc:default-servlet-handler />
+    <mvc:resources mapping="/js/**" location="/library/js/"/>  
+	<mvc:resources mapping="/css/**" location="/library/css/"/>  
+	<!-- <mvc:resources mapping="images/**" location="/library/images/"/> --> 
+    
+    <!-- 访问拦截  -->
+    <mvc:interceptors>
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <property name="paramName" value="language"/>
+        </bean>
+        <mvc:interceptor>
+            <mvc:mapping path="/**/**"/>
+            <mvc:exclude-mapping path="/login"/>
+            <mvc:exclude-mapping path="/*/*/*.js"/>
+            <mvc:exclude-mapping path="/*/*/*/*/*.js"/>
+            <mvc:exclude-mapping path="/*/*/*/*/*.css"/>
+            <bean class="com.mcg.interceptor.LoginHandlerInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+    
+	<bean class="com.mcg.common.SpringContextHelper"/>    
+    
+    <bean id="cacheManager"
+        class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation" value="classpath:ehcache.xml" />
+    </bean>
+    
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" p:defaultEncoding="utf-8">
+		<property name="maxUploadSize" value="5242880" />
+		<property name="maxInMemorySize" value="1024" />
+	</bean>    
+</beans>

@@ -1,0 +1,86 @@
+/*
+ * @Copyright (c) 2018 缪聪(mcg-helper@qq.com)
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");  
+ * you may not use this file except in compliance with the License.  
+ * You may obtain a copy of the License at  
+ *     
+ *     http://www.apache.org/licenses/LICENSE-2.0  
+ *     
+ * Unless required by applicable law or agreed to in writing, software  
+ * distributed under the License is distributed on an "AS IS" BASIS,  
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
+ * See the License for the specific language governing permissions and  
+ * limitations under the License.
+ */
+
+.mcg_toolbar  {
+	margin-top : 0px;
+	margin-left : 0px;
+    background-color: white;
+    height: 400px;
+    width: 100%;
+    border-right: 1px solid #e5e5e5;
+}
+.eletype {
+	width:85px;
+	/* height:50px; */
+	cursor:pointer;
+}
+.toolbar_eletype {
+	float: left;
+/* 	margin-left: 10px; */	
+	margin-top:10px;
+	width:70px;
+	height: 45px;
+	z-index:10000;
+	text-align: center;
+	line-height: 45px;
+	cursor:pointer;
+	color:black;
+    border: 1px solid #2e6f9a;
+    box-shadow: 2px 2px 19px #e0e0e0;
+    -o-box-shadow: 2px 2px 19px #e0e0e0;
+    -webkit-box-shadow: 2px 2px 19px #e0e0e0;
+    -moz-box-shadow: 2px 2px 19px #e0e0e0;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    font-size: 12px;
+    -webkit-transition: background-color 0.25s ease-in;
+    -moz-transition: background-color 0.25s ease-in;
+    transition: background-color 0.25s ease-in;	
+}
+
+.demo {
+  width: 100%;
+  position: relative;
+  background-color:white;    
+/*   height: 470px; */
+}
+
+.no_width_center {
+	display: table;
+	margin: 0 auto;
+}
+
+.highlight { 
+	background: yellow; 
+	color: red; 
+}
+
+.margin_top {
+	margin-top: 20px;
+}
+
+a:focus,a:hover,a:active{
+	outline:none;
+	noOutline:expression_r(this.onFocus=this.blur());
+}
+
+/** Z-INDEX **/
+._jsPlumb_connector { z-index:18; }
+._jsPlumb_endpoint { z-index:19; }
+._jsPlumb_overlay { z-index:20; }
+
