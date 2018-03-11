@@ -31,7 +31,7 @@ public class Constants {
     /*   字符编码        */
     public static final Charset CHARSET = Charset.forName("utf-8");
     /*   版本号        */
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "mcg-helper_V1.3.0-Release";
     /*   全局变量key   */
     public static final String GLOBAL_KEY = "mcgGlobal";
     /*   流程文件扩展名        */

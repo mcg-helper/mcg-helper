@@ -71,7 +71,7 @@
 			如有问题或建议请发送邮件到mcg-helper@qq.com进行反馈与交流，感谢您的支持！
 		</div>
 		<div class="row">
-		   	Copyright © 2017, mcg-helper, All Rights Reserved
+		   	Copyright © 2018, mcg-helper@qq.com, All Rights Reserved
 		</div>
 	</div>
 	<!-- footer结束 -->
