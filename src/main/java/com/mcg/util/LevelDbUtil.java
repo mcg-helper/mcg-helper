@@ -51,8 +51,8 @@ public class LevelDbUtil {
     
     public static void init() throws IOException {
         File dir = new File(Constants.DATA_PATH);
-        
         Options options = new Options().createIfMissing(true);
+        options.maxOpenFiles(100);
         db = factory.open(dir, options);
     }
     
