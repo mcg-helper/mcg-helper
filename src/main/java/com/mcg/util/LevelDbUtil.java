@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBFactory;
 import org.iq80.leveldb.DBIterator;
@@ -49,7 +50,30 @@ public class LevelDbUtil {
     static DBFactory factory = Iq80DBFactory.factory;
     static DB db;
     
+    /**
+     * leveldb 写CURRENT文件（内容为当前使用的文件名）时以\n结尾，从github下载zip没有问题，
+     * 但通过git拉取代码时CURRENT结尾变为\r\n，leveldb读取CURRENT文件全部数据再截掉\n，
+     * 导致文件名多出\r，本方法纠错，若存在\r就删除掉。
+     */
+    public static void errorRecovery(String path) {
+        File file = new File(path);  
+        String fileContent = null;  
+        try {  
+        	if(file.exists()) {
+        		fileContent = FileUtils.readFileToString(file, "UTF-8");
+        	}
+        	if(fileContent.contains("\r")) {
+        		fileContent = fileContent.replaceAll("\r", "");
+        		FileUtils.write(file, fileContent);
+        	}
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }     	
+    }
+    
     public static void init() throws IOException {
+    	errorRecovery(Constants.DATA_PATH + File.separator + "CURRENT");
+    	
         File dir = new File(Constants.DATA_PATH);
         Options options = new Options().createIfMissing(true);
         options.maxOpenFiles(100);
