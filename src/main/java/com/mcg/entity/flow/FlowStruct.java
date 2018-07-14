@@ -30,6 +30,7 @@ import com.mcg.entity.flow.gmybatis.FlowGmybatises;
 import com.mcg.entity.flow.java.FlowJavas;
 import com.mcg.entity.flow.json.FlowJsons;
 import com.mcg.entity.flow.model.FlowModels;
+import com.mcg.entity.flow.python.FlowPythons;
 import com.mcg.entity.flow.script.FlowScripts;
 import com.mcg.entity.flow.sequence.FlowSequences;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecutes;
@@ -66,7 +67,7 @@ public class FlowStruct implements Serializable {
     @XmlElement
     private FlowScripts flowScripts;
     @XmlElement
-    private FlowJavas flowJavas;    
+    private FlowJavas flowJavas;
     @XmlElement
     private FlowEnd flowEnd;
     @XmlElement
@@ -156,5 +157,12 @@ public class FlowStruct implements Serializable {
     public void setFlowSqlExecutes(FlowSqlExecutes flowSqlExecutes) {
         FlowSqlExecutes = flowSqlExecutes;
     }
-    
+	public FlowPythons getFlowPythons() {
+		return flowPythons;
+	}
+	public void setFlowPythons(FlowPythons flowPythons) {
+		this.flowPythons = flowPythons;
+	}
+    @XmlElement
+    private FlowPythons flowPythons;
 }

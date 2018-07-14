@@ -36,43 +36,47 @@ function createHtmlModal(id, param) {
 		} else if($("#"+id).attr("eletype") == "json") {
 			url = "/html/flowJsonModal";
 			option["title"] = "json控件";
-			option["width"] = 1000;			
+			option["width"] = 1000;
 		} else if($("#"+id).attr("eletype") == "sqlQuery") {
 			url = "/html/flowSqlQueryModal";
 			option["title"] = "sql查询";
-			option["width"] = 1000;			
+			option["width"] = 1000;
 		} else if($("#"+id).attr("eletype") == "sqlExecute") {
 			url = "/html/flowSqlExecuteModal";
 			option["title"] = "sql执行";
-			option["width"] = 1000;			
+			option["width"] = 1000;
 		} else if($("#"+id).attr("eletype") == "data") {
 			url = "/html/flowDataModal";
 			option["title"] = "data控件";
-			option["width"] = 1100;				
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "start") {
 			url = "/html/flowStartModal";
 			option["title"] = "开始控件";
-			option["width"] = 800;				
+			option["width"] = 800;
 		} else if($("#"+id).attr("eletype") == "text"){
 			url = "/html/flowTextModal";
 			option["title"] = "文本控件";
-			option["width"] = 1100;				
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "gmybatis") {
 			url = "/html/flowGmybatisModal";
 			option["title"] = "mybatis控件";
-			option["width"] = 1100;				
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "script") {
 			url = "/html/flowScriptModal";
 			option["title"] = "js控件";
-			option["width"] = 1100;				
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "java") {
 			url = "/html/flowJavaModal";
 			option["title"] = "java控件";
-			option["width"] = 1100;				
-		} else if($("#"+id).attr("eletype") == "end") {
+			option["width"] = 1100;
+		} else if($("#"+id).attr("eletype") == "python") {
+			url = "/html/flowPythonModal";
+			option["title"] = "python控件";
+			option["width"] = 1100;
+		}  else if($("#"+id).attr("eletype") == "end") {
 			url = "/html/flowEndModal";
 			option["title"] = "结束控件";
-			option["width"] = 800;				
+			option["width"] = 800;
 		}
 
 		param["modalId"] = modalId.replace(/_Modal/g, "");
@@ -627,7 +631,42 @@ function setDialogBtns(param) {
 				}
 			}
 		];			
-	} else if(param.eletype == "text") {
+	} else if(param.eletype == "python") {
+		buttons = [
+					{
+						class: "btn btn-primary",			
+						text: "保存",
+						click: function() {
+							var _this = this;
+							var data = $("#" + param.modalId + "_pythonForm").serializeJSON();
+							var result = JSON.parse(data);
+							var pythonCore = {};
+							pythonCore["source"] = param.editor.getValue();
+							result["pythonCore"] = pythonCore; 
+							common.ajax({
+								url : "/flow/savePython",
+								type : "POST",
+								data : JSON.stringify(result),
+								contentType : "application/json"
+							}, function(data) {
+								if(data.statusCode == 1) {
+									changeElementSign(param.modalId, result.pythonProperty.name);
+									$( _this ).dialog( "destroy" );
+								}
+							});
+							
+						}
+					},
+					{
+						class: "btn btn-default",			
+						text: "关闭",
+						click: function() {
+							$( this ).dialog( "destroy" );
+						}
+					}
+				];			
+			}
+	else if(param.eletype == "text") {
 		buttons = [
 			{
 				class: "btn btn-primary",			
@@ -881,7 +920,24 @@ function createModalCallBack(param) {
 		param["editor"] = editor;
 		
 		initJavaModal(param.modalId, editor);
-	}  else if(param.eletype == "data") {
+	} else if(param.eletype == "python") {
+		var editor = ace.edit(param.modalId + "_editor");
+		editor.setTheme("ace/theme/eclipse");
+		editor.session.setMode("ace/mode/python");		 
+		editor.setFontSize(18);
+		editor.setReadOnly(false); 
+		editor.setOption("wrap", "off");
+		ace.require("ace/ext/language_tools");
+		editor.setOptions({
+			enableBasicAutocompletion: true,
+			enableSnippets: true,
+		    enableLiveAutocompletion: true
+		});		
+		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
+		param["editor"] = editor;
+		
+		initPythonModal(param.modalId, editor);
+	} else if(param.eletype == "data") {
 		$(".selectpicker").selectpicker({
 			noneSelectedText: "请选择",
 			liveSearch: true,

@@ -24,6 +24,7 @@ import com.mcg.entity.flow.gmybatis.FlowGmybatis;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.model.FlowModel;
+import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
@@ -85,7 +86,12 @@ public class McgDirector {
     public FlowJava getFlowJavaProduct(FlowJava flowJava) {
         this.sequence.clear();
         return (FlowJava) new McgConcreteBuilder(flowJava, this.sequence).getMcgProduct();     
-   }    
+    }
+    
+    public FlowPython getFlowPythonProduct(FlowPython flowPython) {
+        this.sequence.clear();
+        return (FlowPython) new McgConcreteBuilder(flowPython, this.sequence).getMcgProduct();     
+    }    
       
     public FlowEnd getFlowEndProduct(FlowEnd flowEnd) {
         this.sequence.clear();

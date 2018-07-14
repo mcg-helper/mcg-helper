@@ -100,8 +100,11 @@
 										</div>
 										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarText" class="toolbar_eletype" eletype="text">文本</div>
+												<div id="toolbarPython" class="toolbar_eletype" eletype="python">Python</div>
 											</div>
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarText" class="toolbar_eletype" eletype="text">文本</div>
+											</div>												
 										</div>
 										
 									</div>

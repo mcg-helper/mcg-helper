@@ -27,8 +27,13 @@ function checkboxFormatter(value, row, index) {
 }
 
 function checkboxChange(obj, index) {
+	
+	
+	$("#" + _tableName_).bootstrapTable("updateCell", {"index":index, "field":_fieldName_, "value":obj.checked, "reinit":false });
+/*	
 	var updateData =  '{"'+ _fieldName_ + '":' + $(obj).is(':checked') + '}';
-	$("#" + _tableName_).bootstrapTable('updateRow', {"index":index, "row":JSON.parse(updateData)  });	
+	$("#" + _tableName_).bootstrapTable('updateRow', {"index":index, "row":JSON.parse(updateData) });
+	*/
 }
 
 function inputFormatter(value, row, index) {
@@ -338,6 +343,21 @@ function initJavaModal(id, editor) {
 			editor.setValue(data.javaCore.source);
 		} else {
 			editor.setValue("import com.alibaba.fastjson.JSON;\r\nimport com.alibaba.fastjson.JSONArray;\r\nimport com.alibaba.fastjson.JSONObject;\r\nimport com.mcg.plugin.assist.Console;\r\n\r\npublic class Controller {\r\n    private Console console = new Console();\r\n\r\n    public JSON execute(JSON param) {\r\n        console.info(\"-----欢迎使用---------\");\r\n\r\n\r\n\r\n        return param;\r\n    }\r\n}\r\n");
+		}
+	});
+}
+
+function initPythonModal(id, editor) {
+	getElementDataById(id, function(data) {
+		if(data != null && data != "" && data != undefined && data.pythonProperty != undefined) {
+			$("#" + id + "_key").val(data.pythonProperty.key);
+			$("#" + id + "_name").val(data.pythonProperty.name);
+			$("#" + id + "_pythonDesc").val(data.pythonProperty.pythonDesc);
+		} 
+		if(data != "" && data != undefined && data.pythonCore != null) {
+			editor.setValue(data.pythonCore.source);
+		} else {
+			editor.setValue("#param为Dictionary类型\r\ndef main(param):\r\n\r\n    return param");
 		}
 	});
 }

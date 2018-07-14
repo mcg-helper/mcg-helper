@@ -43,6 +43,7 @@ import com.mcg.entity.flow.gmybatis.FlowGmybatis;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.model.FlowModel;
+import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
@@ -244,6 +245,26 @@ public class FlowController extends BaseController {
         MessagePlugin.push(session.getId(), message);        
 		return mcgResult;
 	}  	
+	
+	@RequestMapping(value="savePython", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public McgResult saveJava(@Valid @RequestBody FlowPython flowPython, BindingResult result, HttpSession session) {
+        Message message = MessagePlugin.getMessage();
+        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
+        NotifyBody notifyBody = new NotifyBody();       
+        McgResult mcgResult = new McgResult();
+        
+        if(Tools.validator(result, mcgResult, notifyBody)) {
+            flowPython.setName(flowPython.getPythonProperty().getName());
+            CachePlugin.put(flowPython.getId(), flowPython);
+            notifyBody.setContent("Python控件保存成功！");
+            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());            
+        }
+
+        message.setBody(notifyBody);
+        MessagePlugin.push(session.getId(), message);        
+		return mcgResult;
+	} 	
 	
 	@RequestMapping(value="saveData", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody

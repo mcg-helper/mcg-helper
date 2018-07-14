@@ -140,6 +140,16 @@ public class HtmlController extends BaseController {
 		return mv;
 	}	
 	
+	/* 流程节点 Python_Modal */
+	@RequestMapping(value="/flowPythonModal")
+	public ModelAndView getFlowPythonModal() throws Exception{
+		ModelAndView mv = this.getModelAndView();
+		PageData pd = this.getPageData();
+		mv.addObject("modalId", pd.get("modalId"));
+		mv.setViewName("html/flowPythonModal");
+		return mv;
+	}	
+	
     /* 流程节点 Java_Modal */
     @RequestMapping(value="/flowSqlQueryModal")
     public ModelAndView getFlowSqlQueryModal() throws Exception{
