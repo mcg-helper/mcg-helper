@@ -19,11 +19,17 @@ package com.mcg.entity.message;
 public class FlowBody extends Body {
 
 	private static final long serialVersionUID = -8342298153553459856L;
+	/* 日志类型  */
 	private String logType;
+	/* 日志类型说明  */
 	private String logTypeDesc;
+	/* 控件类型  */
 	private String eleType;
+	/* 控件类型说明  */
 	private String eleTypeDesc;
+	/* 信息  */
 	private String content;
+	/* 控件的id  */
 	private String eleId;
 	private String comment;
 	

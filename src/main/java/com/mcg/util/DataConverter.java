@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +48,8 @@ import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.java.FlowJavas;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.json.FlowJsons;
+import com.mcg.entity.flow.linux.FlowLinux;
+import com.mcg.entity.flow.linux.FlowLinuxs;
 import com.mcg.entity.flow.model.FlowModel;
 import com.mcg.entity.flow.model.FlowModels;
 import com.mcg.entity.flow.python.FlowPython;
@@ -230,6 +231,18 @@ public class DataConverter {
                     CachePlugin.put(flowPython.getId(), flowPython);
                 }
             }
+            if(flowStruct.getFlowLinuxs() != null && flowStruct.getFlowLinuxs().getFlowLinux() != null && flowStruct.getFlowLinuxs().getFlowLinux().size() > 0) {
+                List<FlowLinux> flowLinuxList = flowStruct.getFlowLinuxs().getFlowLinux();
+                for(FlowLinux flowLinux : flowLinuxList) {
+                    WebElement webElement = new WebElement();
+                    FlowBase flowBase = flowLinux;
+                    flowBase.setName(flowLinux.getLinuxProperty().getName());
+                    webElement = setValue(flowBase, webElement);
+                    webElement.setId(flowLinux.getId());
+                    webElementList.add(webElement); 
+                    CachePlugin.put(flowLinux.getId(), flowLinux);
+                }
+            }
             if(flowStruct.getFlowTexts() != null && flowStruct.getFlowTexts().getFlowText() != null && flowStruct.getFlowTexts().getFlowText().size() > 0) {
                 List<FlowText> flowTextList = flowStruct.getFlowTexts().getFlowText();
                 for(FlowText flowText : flowTextList) {
@@ -307,7 +320,9 @@ public class DataConverter {
             FlowJavas flowJavas = new FlowJavas();
             List<FlowJava> flowJavaList = new ArrayList<FlowJava>();            
             FlowPythons flowPythons = new FlowPythons();
-            List<FlowPython> flowPythonList = new ArrayList<FlowPython>();            
+            List<FlowPython> flowPythonList = new ArrayList<FlowPython>();   
+            FlowLinuxs flowLinuxs = new FlowLinuxs();
+            List<FlowLinux> flowLinuxList = new ArrayList<FlowLinux>();            
             
             List<WebElement> webElementList = webStruct.getWebElement();
             for(WebElement webElement : webElementList) {
@@ -444,6 +459,18 @@ public class DataConverter {
                 	flowPython.setTop(webElement.getTop());
                 	flowPython.setSign(webElement.getSign());
                 	flowPythonList.add(flowPython);
+                } else if(webElement.getEletype().equals(EletypeEnum.LINUX.getValue())) {
+                	FlowLinux flowLinux = (FlowLinux)obj;
+                	flowLinux.setLabel(webElement.getLabel());
+                	flowLinux.setWidth(webElement.getWidth());
+                	flowLinux.setHeight(webElement.getHeight());
+                	flowLinux.setClassname(webElement.getClassname());
+                	flowLinux.setEletype(webElement.getEletype());
+                	flowLinux.setClone(webElement.getClone());
+                	flowLinux.setLeft(webElement.getLeft());
+                	flowLinux.setTop(webElement.getTop());
+                	flowLinux.setSign(webElement.getSign());
+                	flowLinuxList.add(flowLinux);
                 } else if(webElement.getEletype().equals(EletypeEnum.END.getValue())) {
                     FlowEnd flowEnd = (FlowEnd)obj;
                     flowEnd.setLabel(webElement.getLabel());
@@ -478,7 +505,9 @@ public class DataConverter {
             flowJavas.setFlowJava(flowJavaList);
             flowStruct.setFlowJavas(flowJavas);
             flowPythons.setFlowPython(flowPythonList);
-            flowStruct.setFlowPythons(flowPythons);            
+            flowStruct.setFlowPythons(flowPythons);  
+            flowLinuxs.setFlowLinux(flowLinuxList);
+            flowStruct.setFlowLinuxs(flowLinuxs);             
             
             flowStruct.setTotalSize(webElementList.size());
             

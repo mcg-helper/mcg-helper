@@ -27,6 +27,7 @@ import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.gmybatis.FlowGmybatis;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
+import com.mcg.entity.flow.linux.FlowLinux;
 import com.mcg.entity.flow.model.FlowModel;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
@@ -238,6 +239,13 @@ public class TopoSort {
                 topoSort.addVertex(flowPython.getId());
                 dataMap.put(flowPython.getId(), flowPython);
                 sortMap.put(flowPython.getId(), num++);
+            }
+	    }	  
+	    if(flowStruct.getFlowLinuxs() != null && flowStruct.getFlowLinuxs().getFlowLinux() != null && flowStruct.getFlowLinuxs().getFlowLinux().size() > 0) {
+            for(FlowLinux flowLinux : flowStruct.getFlowLinuxs().getFlowLinux()) {
+                topoSort.addVertex(flowLinux.getId());
+                dataMap.put(flowLinux.getId(), flowLinux);
+                sortMap.put(flowLinux.getId(), num++);
             }
 	    }	    
 	    if(flowStruct.getFlowTexts() != null && flowStruct.getFlowTexts().getFlowText() != null && flowStruct.getFlowTexts().getFlowText().size() > 0) {

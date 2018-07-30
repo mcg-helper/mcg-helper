@@ -20,8 +20,9 @@
 <div class="container-fluid" >
 	<div class="row">
 		<div class="col-md-12">
-			<ul class="nav nav-tabs" role="tablist">
-				<li role="presentation" class="active"><a href="#${modalId }_property" data-toggle="tab">属性</a></li>
+			<ul class="nav nav-tabs" role="tablist" id="${modalId }_tab">
+				<li id="dbType" role="presentation" class="active"><a href="#${modalId }_property" data-toggle="tab">数据库</a></li>
+				<li id="serverType" role="presentation"><a href="#${modalId }_serverProperty" data-toggle="tab">服务器</a></li>
 			  	<li role="presentation"><a href="#${modalId }_explain" data-toggle="tab">说明</a></li>
 			</ul>
 		</div>
@@ -35,9 +36,9 @@
 				<div class="form-body">
 					<div id="myTabContent" class="tab-content">
 						<div class="tab-pane fade in active" id="${modalId }_property">
+						<!-- data-height="390" -->
 					        <table id="${modalId }_flowDataSourceTable"
 					               data-toggle="table"
-					               data-height="390"
 					               data-show-refresh="true"
 					               data-show-toggle="true"
 					               data-show-columns="true"
@@ -62,6 +63,37 @@
 					                <th data-field="dbPwd" data-formatter="inputFormatter">密码</th>
 					                <th data-field="note" data-formatter="inputFormatter">说明</th>
 					                <th data-field="commands" data-formatter="dsCommandsFormatter">操作</th>
+					            </tr>
+					            </thead>
+					        </table>
+						</div>
+						<div class="tab-pane fade" id="${modalId }_serverProperty">
+						<!-- data-height="390" -->
+					        <table id="${modalId }_flowServerSourceTable"
+					               data-toggle="table"
+					               data-show-refresh="true"
+					               data-show-toggle="true"
+					               data-show-columns="true"
+					               data-search="true" 
+					               data-show-pagination-switch="true" 
+						           data-pagination="true"
+						           data-page-size="5"
+						           data-page-list="[5,10,20,30]"
+						           data-pagination-first-text="上一页"
+						           data-pagination-pre-text="上一页"
+						           data-pagination-next-text="下一页"
+						           data-pagination-last-text="尾页">
+					            <thead>
+					            <tr>
+					            	<th data-field="state" data-checkbox="true"></th>
+					                <th data-field="name" data-formatter="inputFormatter" >服务器名称</th>
+					                <th data-field="type" data-formatter="serverTypeSelectFormatter">服务器类型</th>
+					                <th data-field="ip" data-formatter="inputFormatter">服务器IP</th>
+					                <th data-field="port" data-formatter="inputFormatter">端口</th>
+					                <th data-field="userName" data-formatter="inputFormatter">用户名</th>
+					                <th data-field="pwd" data-formatter="inputFormatter">密码</th>
+					                <th data-field="note" data-formatter="inputFormatter">说明</th>
+					                <th data-field="commands" data-formatter="ssCommandsFormatter">操作</th>
 					            </tr>
 					            </thead>
 					        </table>

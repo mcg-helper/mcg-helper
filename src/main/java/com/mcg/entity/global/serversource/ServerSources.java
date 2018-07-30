@@ -14,51 +14,29 @@
  * limitations under the License.
  */
 
-package com.mcg.entity.global.topology;
+package com.mcg.entity.global.serversource;
 
 import java.io.Serializable;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * 
- * @ClassName:   Topology   
- * @Description: TODO(流程下拉树状态数据) 
- * @author:      缪聪(mcg-helper@qq.com)
- * @date:        2018年7月28日 下午22:49:39  
- *
- */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement
-public class Topology implements Serializable {
+public class ServerSources implements Serializable {
 
-    private static final long serialVersionUID = -4836024504602850105L;
-    @XmlElement
-    private String id;
-    @XmlElement
-    private String pId;
-    @XmlElement
-    private String name;
-
-    public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-    public String getpId() {
-        return pId;
-    }
-    public void setpId(String pId) {
-        this.pId = pId;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-
+	private static final long serialVersionUID = -7416980731775213841L;
+	@XmlElement
+	private List<ServerSource> serverSource;
+	
+	public List<ServerSource> getServerSource() {
+		return serverSource;
+	}
+	public void setServerSource(List<ServerSource> serverSource) {
+		this.serverSource = serverSource;
+	}
+    
 }

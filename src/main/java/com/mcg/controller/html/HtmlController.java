@@ -27,6 +27,7 @@ import com.alibaba.fastjson.JSON;
 import com.mcg.controller.base.BaseController;
 import com.mcg.entity.common.SelectEntity;
 import com.mcg.service.FlowService;
+import com.mcg.service.GlobalService;
 import com.mcg.util.PageData;
 
 /**
@@ -42,7 +43,9 @@ import com.mcg.util.PageData;
 public class HtmlController extends BaseController {
 
     @Autowired
-    private FlowService flowService;    
+    private FlowService flowService;
+    @Autowired
+    private GlobalService globalService;    
     
 	/* 流程节点悬浮工具层Modal */
 	@RequestMapping(value="/flowSuspension")
@@ -147,6 +150,19 @@ public class HtmlController extends BaseController {
 		PageData pd = this.getPageData();
 		mv.addObject("modalId", pd.get("modalId"));
 		mv.setViewName("html/flowPythonModal");
+		return mv;
+	}
+	
+	/* 流程节点 Linux_Modal */
+	@RequestMapping(value="/flowLinuxModal")
+	public ModelAndView getFlowLinuxModal() throws Exception{
+		ModelAndView mv = this.getModelAndView();
+		PageData pd = this.getPageData();
+		mv.addObject("modalId", pd.get("modalId"));
+
+		mv.addObject("serverSources", globalService.getServerSources());		
+		
+		mv.setViewName("html/flowLinuxModal");
 		return mv;
 	}	
 	

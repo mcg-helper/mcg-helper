@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 var _fieldName_ = "", _tableName_="";
 
 function checkboxFormatter(value, row, index) {
@@ -27,7 +26,6 @@ function checkboxFormatter(value, row, index) {
 }
 
 function checkboxChange(obj, index) {
-	
 	
 	$("#" + _tableName_).bootstrapTable("updateCell", {"index":index, "field":_fieldName_, "value":obj.checked, "reinit":false });
 /*	
@@ -42,6 +40,10 @@ function inputFormatter(value, row, index) {
 
 function dsCommandsFormatter(value, row, index) {
 	return '<button type="button" onClick="dbTest(' + index + ');" class="btn btn-default">测试</button>';
+}
+
+function ssCommandsFormatter(value, row, index) {
+	return '<button type="button" onClick="serverTest(' + index + ');" class="btn btn-default">测试</button>';
 }
 
 function dbTest(index) {
@@ -63,6 +65,34 @@ function dbTest(index) {
 		} else {
 			Messenger().post({
 				message: "【" + row.name + "】连接数据库失败！",
+				type: "error",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});	
+		}
+		
+	});
+}
+
+function serverTest(index) {
+	var tableData = $("#" + baseMap.get("flowDataSourceModalId") + "_flowServerSourceTable").bootstrapTable('getData');
+	var row = tableData[index];
+	common.ajax({
+		url : "/global/testServerConnect",
+		type : "POST",
+		data : JSON.stringify(row),
+		contentType : "application/json"
+	}, function(data) {
+		if(data.statusCode == 1) {
+			Messenger().post({
+				message: row.name +"【" + row.ip + ":" + row.port + "】连接成功！",
+				type: "success",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});	
+		} else {
+			Messenger().post({
+				message: row.name +"【" + row.ip + ":" + row.port + "】连接失败！",
 				type: "error",
 				hideAfter: 5,
 			 	showCloseButton: true
@@ -108,6 +138,11 @@ function dbTypeSelectFormatter(value, row, index) {
 	return selectStr;	
 }
 
+function serverTypeSelectFormatter(value, row, index) {
+	var selectStr = getSelectData(value, index, "/common/getServerTypes", null);
+	return selectStr;	
+}
+
 function selectChange(obj, index) {
 	var rowData =  '{"'+ _fieldName_ + '":"' + $(obj).val() + '"}';
 	$("#" + _tableName_).bootstrapTable('updateRow', {"index":index, "row":JSON.parse(rowData)  });
@@ -123,17 +158,18 @@ function getElementDataById(id, func) {
 
 function initFlowDataSourceModal(modalId) {
 	common.ajax({
-		url : "/common/getMcgDataSources",
+		url : "/global/getMcgGlobal",
 		type : "POST",
 		data : null
 	}, function(data){
-		if(data != null && data != "" && data != undefined && data.length > 0) {
+		if(data != null && data != undefined && data.flowDataSources != null && data.flowDataSources.length > 0) {
 			var rows = [];
-			for(var i=0; i<data.length; i++){
+			for(var i=0; i<data.flowDataSources.length; i++){
+				var dataSource = data.flowDataSources[i];
 				rows.push({
-						"id":data[i].dataSourceId, "_bTableName_":modalId + "_flowDataSourceTable", "name":data[i].name, "dbType":data[i].dbType,  
-						"dbServer":data[i].dbServer, "dbPort":data[i].dbPort, "dbName":data[i].dbName, "dbUserName":data[i].dbUserName, 
-						"dbPwd":data[i].dbPwd, "note":data[i].note 
+						"id":dataSource.dataSourceId, "_bTableName_":modalId + "_flowDataSourceTable", "name":dataSource.name, "dbType":dataSource.dbType,  
+						"dbServer":dataSource.dbServer, "dbPort":dataSource.dbPort, "dbName":dataSource.dbName, "dbUserName":dataSource.dbUserName, 
+						"dbPwd":dataSource.dbPwd, "note":dataSource.note 
 					});
 			}
 			$("#" + modalId + "_flowDataSourceTable").bootstrapTable({"data":rows});
@@ -143,14 +179,41 @@ function initFlowDataSourceModal(modalId) {
 					"id":Math.uuid(), "_bTableName_":modalId + "_flowDataSourceTable", "name":"", "dbType":"MYSQL",  
 					"dbServer":"", "dbPort":"", "dbName":"", "dbUserName":"", 
 					"dbPwd":"", "note":""
-				}			                                                 
+				}    
 			]});
 		}
 		
 		$("#" + modalId + "_flowDataSourceTable").on('click-cell.bs.table', function ($element, field, value, row) {
 			_fieldName_ = field;
 			_tableName_ = modalId + "_flowDataSourceTable";
+		});		
+		
+		if(data != null && data != undefined && data.serverSources != null && data.serverSources.length > 0) {
+			var rows = [];
+			for(var i=0; i<data.serverSources.length; i++){
+				var serverSource = data.serverSources[i];
+				rows.push({
+						"id":serverSource.id, "_bTableName_":modalId + "_flowServerSourceTable", "name":serverSource.name, "type":serverSource.type,  
+						"ip":serverSource.ip, "port":serverSource.port, "userName":serverSource.userName, 
+						"pwd":serverSource.pwd, "note":serverSource.note 
+					});
+			}
+			$("#" + modalId + "_flowServerSourceTable").bootstrapTable({"data":rows});
+		} else {
+
+			$("#" + modalId + "_flowServerSourceTable").bootstrapTable({data: [
+       			{
+       				"id":Math.uuid(), "_bTableName_":modalId + "_flowServerSourceTable", "name":"", "type":"LINUX",  
+       				"ip":"", "port":"", "userName":"", "pwd":"", "note":""
+       			}
+       		]});			
+		}		
+		
+		$("#" + modalId + "_flowServerSourceTable").on('click-cell.bs.table', function ($element, field, value, row) {
+			_fieldName_ = field;
+			_tableName_ = modalId + "_flowServerSourceTable";
 		});
+		return ;
 	});		
 }
 
@@ -358,6 +421,24 @@ function initPythonModal(id, editor) {
 			editor.setValue(data.pythonCore.source);
 		} else {
 			editor.setValue("#param为Dictionary类型\r\ndef main(param):\r\n\r\n    return param");
+		}
+	});
+}
+
+function initLinuxModal(id, editor) {
+	
+	getElementDataById(id, function(data) {
+		if(data != null && data != "" && data != undefined && data.linuxProperty != undefined) {
+			$("#" + id + "_key").val(data.linuxProperty.key);
+			$("#" + id + "_name").val(data.linuxProperty.name);
+			$("#" + id + "_desc").val(data.linuxProperty.desc);
+		} 
+		if(data != "" && data != undefined && data.linuxCore != null) {
+			editor.setValue(data.linuxCore.source);
+			$("#" + id + "_serverSourceId").selectpicker('refresh');
+			$("#" + id + "_serverSourceId").selectpicker('val', data.linuxCore.serverSourceId);
+		} else {
+			editor.setValue("");
 		}
 	});
 }

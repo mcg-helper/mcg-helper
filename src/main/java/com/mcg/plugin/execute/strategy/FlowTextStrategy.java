@@ -70,7 +70,7 @@ public class FlowTextStrategy implements ProcessStrategy {
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
         FlowTask flowTask = FlowTask.executeLocal.get();
-        MessagePlugin.push(flowTask.getHttpSessionId(), message);        
+        MessagePlugin.push(flowTask.getHttpSessionId(), message);
 		
 		TplEngine tplEngine = new TplEngine(new FreeMakerTpLan());
 		String outPath = flowText.getTextProperty().getOutPutPath();

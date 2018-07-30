@@ -18,28 +18,37 @@ package com.mcg.common.sysenum;
 
 /**
  * 
- * @ClassName:   EletypeEnum   
- * @Description: TODO(所有流程控件) 
+ * @ClassName:   SeverTypeEnum   
+ * @Description: TODO(支持的服务器操作系统) 
  * @author:      缪聪(mcg-helper@qq.com)
- * @date:        2018年3月9日 下午3:35:56  
+ * @date:        2018年7月29日 下午12:52:20  
  *
  */
-public enum EletypeEnum {
+public enum SeverTypeEnum {
 
-    START("开始控件", "start"), MODEL("model控件", "model"), GMYBATIS("gmybatis控件", "gmybatis"), 
-    DATA("data控件", "data"), JSON("json控件", "json"), TEXT("文本控件", "text"), SCRIPT("js脚本控件", "script"), JAVA("java控件", "java"), 
-    PYTHON("python控件", "python"), LINUX("linux控件", "linux"), SQLQUERY("sql查询控件", "sqlQuery"), SQLEXECUTE("sql执行控件", "sqlExecute"), END("结束控件", "end");
+    LINUX("LINUX", "LINUX", "linux系统"), UNIX("UNIX", "UNIX", "unxi系统");
     
     private String name;
     private String value;
+    private String desc;
     
-    private EletypeEnum(String name, String value) {
+    private SeverTypeEnum(String name, String value, String desc) {
         this.name = name;
         this.value = value;
+        this.desc = desc;
     }    
     
+    public static SeverTypeEnum getSeverTypeByName(String name) {
+        for (SeverTypeEnum c : SeverTypeEnum.values()) {
+            if (c.getName().equals(name)) {
+                return c;
+            }
+        }
+        return null;
+    }
+    
     public static String getValueByName(String name) {
-        for (EletypeEnum c : EletypeEnum.values()) {
+        for (SeverTypeEnum c : SeverTypeEnum.values()) {
             if (c.getName().equals(name)) {
                 return c.value;
             }
@@ -48,7 +57,7 @@ public enum EletypeEnum {
     }
     
     public static String getNameByValue(String value) {
-        for (EletypeEnum c : EletypeEnum.values()) {
+        for (SeverTypeEnum c : SeverTypeEnum.values()) {
             if (c.getValue().equals(value)) {
                 return c.name;
             }
@@ -71,4 +80,13 @@ public enum EletypeEnum {
     public void setValue(String value) {
         this.value = value;
     }
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
 }

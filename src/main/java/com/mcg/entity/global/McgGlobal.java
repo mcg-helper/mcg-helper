@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.mcg.entity.global.datasource.McgDataSource;
+import com.mcg.entity.global.serversource.ServerSource;
 import com.mcg.entity.global.topology.Topology;
 
 @XmlAccessorType(XmlAccessType.NONE)
@@ -32,7 +33,7 @@ import com.mcg.entity.global.topology.Topology;
 public class McgGlobal implements Serializable {
 
 	private static final long serialVersionUID = -1997376482852765213L;
-	//数据源组件数据
+	//数据库数据源组件数据
 	@XmlElement
 	private List<McgDataSource> flowDataSources;
 	//流程下拉树选中节点数据
@@ -60,5 +61,14 @@ public class McgGlobal implements Serializable {
 	public void setSelected(Topology selected) {
 		this.selected = selected;
 	}
+	public List<ServerSource> getServerSources() {
+		return serverSources;
+	}
+	public void setServerSources(List<ServerSource> serverSources) {
+		this.serverSources = serverSources;
+	}
 
+	//服务器数据源组件数据
+	@XmlElement
+	private List<ServerSource> serverSources;
 }

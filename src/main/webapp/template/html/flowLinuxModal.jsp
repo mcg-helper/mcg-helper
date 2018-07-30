@@ -17,13 +17,15 @@
  -->
  
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <div class="container-fluid" >
 	<div class="row">
 		<div class="col-md-12">
 			<ul class="nav nav-tabs" role="tablist">
-				<li role="presentation" class="active"><a href="#${modalId }_pythonProperty" data-toggle="tab">属性</a></li>
-			  	<li role="presentation"><a href="#${modalId }_corePython" data-toggle="tab">源代码</a></li>
+				<li role="presentation" class="active"><a href="#${modalId }_linuxProperty" data-toggle="tab">属性</a></li>
+			  	<li role="presentation"><a href="#${modalId }_coreLinux" data-toggle="tab">源代码</a></li>
 			  	<li role="presentation"><a href="#${modalId }_explain" data-toggle="tab">说明</a></li>
 			</ul>
 		</div>
@@ -31,35 +33,48 @@
 
 	<div class="row margin_top">
 		<div class="col-md-12">
-			<form id="${modalId }_pythonForm" class="form-horizontal" role="form">
+			<form id="${modalId }_linuxForm" class="form-horizontal" role="form">
 				<div class="form-body">
 					<div id="myTabContent" class="tab-content">
-						<div class="tab-pane fade in active" id="${modalId }_pythonProperty">
+						<div class="tab-pane fade in active" id="${modalId }_linuxProperty">
 							<div class="form-group">
 								<label class="col-sm-2 control-label">控件名称</label>
 								<div class="col-sm-4">
 									<div class="fg-line">
 										<input type="hidden" id="${modalId }_modalId" name="id" value="${modalId }" />
-										<input type="text" id="${modalId }_name" name="pythonProperty[name]" class="form-control"  />
+										<input type="text" id="${modalId }_name" name="linuxProperty[name]" class="form-control"  />
 									</div>
 								</div>
 								<label class="col-sm-2 control-label">控件KEY</label>
 								<div class="col-sm-4">
 									<div class="fg-line">
-										<input type="text" id="${modalId }_key" name="pythonProperty[key]" class="form-control"  />
+										<input type="text" id="${modalId }_key" name="linuxProperty[key]" class="form-control"  />
 									</div>
 								</div>									
 							</div>
 							<div class="form-group">
+								<label class="col-sm-2 control-label">服务器数据源</label>
+								<div class="col-sm-10">
+									<div class="fg-line">
+							          	<select id="${modalId }_serverSourceId" name="linuxCore[serverSourceId]" class="selectpicker">
+							          		<option value="">请选择</option>
+						                	<c:forEach items="${serverSources}" var="item">
+							              		<option value="${item.id }">${item.name } : ${item.ip }</option>
+							              	</c:forEach>
+							          	</select>										
+									</div>
+								</div>
+							</div>							
+							<div class="form-group">
 								<label class="col-sm-2 control-label">脚本描述</label>
 								<div class="col-sm-10">
 									<div class="fg-line">
-										<textarea id="${modalId }_pythonDesc" name="pythonProperty[pythonDesc]" rows="2" cols="" class="form-control"></textarea>
+										<textarea id="${modalId }_desc" name="linuxProperty[desc]" rows="7" cols="" class="form-control"></textarea>
 									</div>
 								</div>
 							</div>								
 						</div>
-						<div class="tab-pane fade" id="${modalId }_corePython">
+						<div class="tab-pane fade" id="${modalId }_coreLinux">
 							<div class="form-group">
 								<div class="col-sm-12">
 									<pre id="${modalId }_editor" style="min-height:300px"></pre>
@@ -70,8 +85,8 @@
 							<div class="form-group">
 								<div class="col-sm-12">
 									<div class="fg-line">
-										业务数据处理控件，流程执行时会自动执行main方法，其param参数为所有父级控件的运行值，采用fastjson，
-										可强转换为JSONObject，JSONArray对象方法操作json，该控件中可执行python语言，将处理后的JSON对象结果返回，
+										业务数据处理控件，流程执行时会自动执行源代码中的shell命令，其param参数为所有父级控件的运行值，
+										通过freemaker模板语言，获取父级传递的参数，该控件中可执行Linux Shell命令，
 										可在源代码编辑器中按下ctrl+enter键切换全屏。
 									</div>
 								</div>

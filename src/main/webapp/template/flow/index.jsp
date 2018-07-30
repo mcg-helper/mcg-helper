@@ -106,6 +106,14 @@
 												<div id="toolbarText" class="toolbar_eletype" eletype="text">文本</div>
 											</div>												
 										</div>
+										<div class="row">
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarLinux" class="toolbar_eletype" eletype="linux">Linux</div>
+											</div>
+											<div class="col-md-4 col-md-offset-1">
+												
+											</div>												
+										</div>										
 										
 									</div>
 								</div>

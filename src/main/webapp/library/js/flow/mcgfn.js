@@ -676,7 +676,7 @@ function initFunc() {
 		var param = {};
 		var option = {};
 		option["title"] = "数据源控件";
-		option["width"] = 1100;		
+		option["width"] = 1100;
 		param["modalId"] = modalId.replace(/_Modal/g, "");
 		param["eletype"] = "dataSource";
 		param["option"] = option;
@@ -685,7 +685,7 @@ function initFunc() {
 				baseMap.put("flowDataSourceModalId", param.modalId);
 				initFlowDataSourceModal(param.modalId);
 			},
-		null, param);	
+		null, param);
 		
 	});	
 }

@@ -14,51 +14,49 @@
  * limitations under the License.
  */
 
-package com.mcg.entity.global.topology;
+package com.mcg.entity.flow.linux;
 
 import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * 
- * @ClassName:   Topology   
- * @Description: TODO(流程下拉树状态数据) 
- * @author:      缪聪(mcg-helper@qq.com)
- * @date:        2018年7月28日 下午22:49:39  
- *
- */
+import org.hibernate.validator.constraints.NotBlank;
+
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement
-public class Topology implements Serializable {
+public class LinuxProperty implements Serializable {
 
-    private static final long serialVersionUID = -4836024504602850105L;
-    @XmlElement
-    private String id;
-    @XmlElement
-    private String pId;
-    @XmlElement
-    private String name;
-
-    public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-    public String getpId() {
-        return pId;
-    }
-    public void setpId(String pId) {
-        this.pId = pId;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
+	private static final long serialVersionUID = 1L;
+	
+	@NotBlank(message = "{flowLinux.linuxProperty.key.notBlank}")
+	@XmlElement
+	private String key;
+	@NotBlank(message = "{flowLinux.linuxProperty.name.notBlank}")
+	@XmlElement
+	private String name;
+	@XmlElement
+	private String linuxDesc;
+	
+	public String getKey() {
+		return key;
+	}
+	public void setKey(String key) {
+		this.key = key;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getLinuxDesc() {
+		return linuxDesc;
+	}
+	public void setLinuxDesc(String linuxDesc) {
+		this.linuxDesc = linuxDesc;
+	}
 
 }

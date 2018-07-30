@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.mcg.common.sysenum.DatabaseTypeEnum;
+import com.mcg.common.sysenum.SeverTypeEnum;
 import com.mcg.controller.base.BaseController;
 import com.mcg.entity.flow.data.DataRecord;
 import com.mcg.entity.flow.gmybatis.Table;
@@ -91,6 +92,16 @@ public class CommonController extends BaseController {
     public Map<String, String> getDatabaseType() throws Exception{
         Map<String, String> map = new HashMap<String, String>();
         for (DatabaseTypeEnum dt : DatabaseTypeEnum.values()) {
+            map.put(dt.getName(), dt.getValue());
+        }       
+        return map;
+    }    
+    
+    @RequestMapping(value="/getServerTypes")
+    @ResponseBody   
+    public Map<String, String> getServerTypes() throws Exception{
+        Map<String, String> map = new HashMap<String, String>();
+        for (SeverTypeEnum dt : SeverTypeEnum.values()) {
             map.put(dt.getName(), dt.getValue());
         }       
         return map;
