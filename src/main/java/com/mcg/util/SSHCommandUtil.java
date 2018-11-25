@@ -10,21 +10,8 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-public class SSHLinux {
+public class SSHCommandUtil {
 
-	private static SSHLinux instance;
-
-	private SSHLinux() {
-
-	}
-
-	public static SSHLinux getInstance() {
-		if (instance == null) {
-			instance = new SSHLinux();
-		}
-		return instance;
-	}
-	
 	public static String exeCommand(String host, int port, String user, String password, String command) throws JSchException, IOException {
 
 		String result = null;

@@ -41,7 +41,8 @@ import com.mcg.plugin.tplengine.TplEngine;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.util.DataConverter;
 import com.mcg.util.LevelDbUtil;
-import com.mcg.util.SSHLinux;
+import com.mcg.util.SSHCommandUtil;
+import com.mcg.util.SSHShellUtil;
 
 public class FlowLinuxStrategy implements ProcessStrategy {
 
@@ -106,8 +107,8 @@ public class FlowLinuxStrategy implements ProcessStrategy {
 	
 	public String resolve(String command, ServerSource serverSource) throws Exception {
         
-		String log =  SSHLinux.exeCommand(serverSource.getIp(), serverSource.getPort(), 
-				serverSource.getUserName(), serverSource.getPwd(), command);
+		String log = SSHShellUtil.execute(serverSource.getIp(), serverSource.getPort(), 
+											serverSource.getUserName(),  serverSource.getPwd(), command);
 	    return log;
 	}
 	
