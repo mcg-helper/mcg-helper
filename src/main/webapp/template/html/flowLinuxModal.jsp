@@ -45,7 +45,7 @@
 										<input type="text" id="${modalId }_name" name="linuxProperty[name]" class="form-control"  />
 									</div>
 								</div>
-								<label class="col-sm-2 control-label">控件KEY</label>
+								<label class="col-sm-1 control-label">控件KEY</label>
 								<div class="col-sm-4">
 									<div class="fg-line">
 										<input type="text" id="${modalId }_key" name="linuxProperty[key]" class="form-control"  />
@@ -54,7 +54,7 @@
 							</div>
 							<div class="form-group">
 								<label class="col-sm-2 control-label">服务器数据源</label>
-								<div class="col-sm-10">
+								<div class="col-sm-9">
 									<div class="fg-line">
 							          	<select id="${modalId }_serverSourceId" name="linuxCore[serverSourceId]" class="selectpicker">
 							          		<option value="">请选择</option>
@@ -67,9 +67,9 @@
 							</div>							
 							<div class="form-group">
 								<label class="col-sm-2 control-label">脚本描述</label>
-								<div class="col-sm-10">
+								<div class="col-sm-9">
 									<div class="fg-line">
-										<textarea id="${modalId }_desc" name="linuxProperty[desc]" rows="7" cols="" class="form-control"></textarea>
+										<textarea id="${modalId }_desc" name="linuxProperty[desc]" rows="5" cols="" class="form-control"></textarea>
 									</div>
 								</div>
 							</div>								

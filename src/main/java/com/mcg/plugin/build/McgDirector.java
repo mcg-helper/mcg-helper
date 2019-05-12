@@ -20,17 +20,18 @@ import java.util.ArrayList;
 
 import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.end.FlowEnd;
-import com.mcg.entity.flow.gmybatis.FlowGmybatis;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
 import com.mcg.entity.flow.model.FlowModel;
+import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
 import com.mcg.entity.flow.start.FlowStart;
 import com.mcg.entity.flow.text.FlowText;
+import com.mcg.entity.flow.wonton.FlowWonton;
 
 public class McgDirector {
     private ArrayList<String> sequence = new ArrayList<String>();
@@ -64,11 +65,6 @@ public class McgDirector {
         return (FlowSqlExecute) new McgConcreteBuilder(flowSqlExecute, this.sequence).getMcgProduct();
     }    
     
-    public FlowGmybatis getFlowGmybatisProduct(FlowGmybatis flowGmybatis) {
-        this.sequence.clear();
-        return (FlowGmybatis) new McgConcreteBuilder(flowGmybatis, this.sequence).getMcgProduct();
-    }
-    
     public FlowData getFlowDataProduct(FlowData flowData) {
         this.sequence.clear();
         return (FlowData) new McgConcreteBuilder(flowData, this.sequence).getMcgProduct();
@@ -98,6 +94,16 @@ public class McgDirector {
         this.sequence.clear();
         return (FlowLinux) new McgConcreteBuilder(flowLinux, this.sequence).getMcgProduct();     
     }    
+    
+    public FlowWonton getFlowWontonProduct(FlowWonton flowWonton) {
+    	this.sequence.clear();
+    	return (FlowWonton) new McgConcreteBuilder(flowWonton, this.sequence).getMcgProduct();     
+    }  
+    
+    public FlowProcess getFlowProcessProduct(FlowProcess flowProcess) {
+    	this.sequence.clear();
+    	return (FlowProcess) new McgConcreteBuilder(flowProcess, this.sequence).getMcgProduct();     
+    }  
       
     public FlowEnd getFlowEndProduct(FlowEnd flowEnd) {
         this.sequence.clear();

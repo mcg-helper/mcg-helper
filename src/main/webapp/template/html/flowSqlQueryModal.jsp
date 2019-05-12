@@ -45,7 +45,7 @@
 										<input type="text" id="${modalId }_name" name="sqlQueryProperty[name]" class="form-control"  />
 									</div>
 								</div>
-								<label class="col-sm-2 control-label">控件KEY</label>
+								<label class="col-sm-1 control-label">控件KEY</label>
 								<div class="col-sm-4">
 									<div class="fg-line">
 										<input type="text" id="${modalId }_key" name="sqlQueryProperty[key]" class="form-control"  />
@@ -54,16 +54,16 @@
 							</div>
 							<div class="form-group">
 								<label class="col-sm-2 control-label">脚本描述</label>
-								<div class="col-sm-10">
+								<div class="col-sm-9">
 									<div class="fg-line">
-										<textarea id="${modalId }_desc" name="sqlQueryProperty[desc]" rows="2" cols="" class="form-control"></textarea>
+										<textarea id="${modalId }_desc" name="sqlQueryProperty[desc]" rows="5" cols="" class="form-control"></textarea>
 									</div>
 								</div>
 							</div>								
 						</div>
 						<div class="tab-pane fade" id="${modalId }_coreSqlQuery">
 							<div class="form-group">
-								<label class="col-sm-2 control-label">选择数据源</label>
+								<label class="col-sm-8 control-label">选择数据源</label>
 								<div class="col-sm-4">
 									<div class="fg-line">
 							          	<select id="${modalId }_dataSourceId" name="sqlQueryCore[dataSourceId]" class="selectpicker">

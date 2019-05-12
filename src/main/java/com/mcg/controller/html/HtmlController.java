@@ -16,18 +16,15 @@
 
 package com.mcg.controller.html;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alibaba.fastjson.JSON;
 import com.mcg.controller.base.BaseController;
-import com.mcg.entity.common.SelectEntity;
 import com.mcg.service.FlowService;
 import com.mcg.service.GlobalService;
+import com.mcg.service.WontonService;
 import com.mcg.util.PageData;
 
 /**
@@ -45,11 +42,13 @@ public class HtmlController extends BaseController {
     @Autowired
     private FlowService flowService;
     @Autowired
-    private GlobalService globalService;    
+    private GlobalService globalService;   
+    @Autowired
+    private WontonService wontonService;
     
 	/* 流程节点悬浮工具层Modal */
 	@RequestMapping(value="/flowSuspension")
-	public ModelAndView getFlowElementSuspensionModal()throws Exception{
+	public ModelAndView getFlowElementSuspensionModal() throws Exception{
 		ModelAndView mv = this.getModelAndView();
 		mv.setViewName("html/flowSuspension");
 		return mv;
@@ -95,33 +94,6 @@ public class HtmlController extends BaseController {
 		mv.setViewName("html/flowDataModal");
 		return mv;
 	}
-	
-    /* 流程节点 生成表_Modal */
-    @RequestMapping(value="/flowCreateTableModal")
-    public ModelAndView getCreateTableModal() throws Exception{
-        ModelAndView mv = this.getModelAndView();
-        PageData pd = this.getPageData();
-        mv.addObject("modalId", pd.get("modalId"));
-        Object modelIds = pd.get("modelIds");
-        @SuppressWarnings("unchecked")
-        List<String> modelIdList = (List<String>)JSON.parse(modelIds.toString());
-        List<SelectEntity> selectList = flowService.getModelsByIds(modelIdList);
-        mv.addObject("selectList", selectList);
-        mv.addObject("mcgDataSources", flowService.getMcgDataSources());
-        mv.setViewName("html/flowCreateTableModal");
-        return mv;
-    }
-    
-    /* 流程节点 反向生成mybaits_Modal */
-    @RequestMapping(value="/flowGmybatisModal")
-    public ModelAndView getFlowGmybatisModal() throws Exception{
-        ModelAndView mv = this.getModelAndView();
-        PageData pd = this.getPageData();
-        mv.addObject("modalId", pd.get("modalId"));
-        mv.addObject("mcgDataSources", flowService.getMcgDataSources());
-        mv.setViewName("html/flowGmybatisModal");
-        return mv;
-    }	    
     
 	/* 流程节点 Text_Modal */
 	@RequestMapping(value="/flowTextModal")
@@ -163,6 +135,17 @@ public class HtmlController extends BaseController {
 		mv.addObject("serverSources", globalService.getServerSources());		
 		
 		mv.setViewName("html/flowLinuxModal");
+		return mv;
+	}	
+	
+	/* 流程节点 Wonton_Modal */
+	@RequestMapping(value="/flowWontonModal")
+	public ModelAndView getFlowWontonModal() throws Exception{
+		ModelAndView mv = this.getModelAndView();
+		PageData pd = this.getPageData();
+		mv.addObject("modalId", pd.get("modalId"));
+		mv.addObject("wontons", wontonService.getAll());
+		mv.setViewName("html/flowWontonModal");
 		return mv;
 	}	
 	
@@ -208,6 +191,16 @@ public class HtmlController extends BaseController {
 		mv.setViewName("html/flowScriptModal");
 		return mv;
 	}	
+	
+	/* 流程节点 Process_Modal */
+	@RequestMapping(value="/flowProcessModal")
+	public ModelAndView getFlowProcessModal() throws Exception{
+		ModelAndView mv = this.getModelAndView();
+		PageData pd = this.getPageData();
+		mv.addObject("modalId", pd.get("modalId"));
+		mv.setViewName("html/flowProcessModal");
+		return mv;
+	}
 	
 	/* 流程节点 Text_Modal */
 	@RequestMapping(value="/flowEndModal")

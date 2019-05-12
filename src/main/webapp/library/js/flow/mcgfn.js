@@ -57,7 +57,6 @@ var setting = {
 $(function() {
 	setAutoHeight($("body"),500);
 	
-	$.bootstrapLoading.start({ "loadingTips": "正在处理数据，请稍候...", "borderWidth":0, "opacity":0.5 });
 	$('#mcg_toolbar').affix({
 	   offset: {
 		  top: 150, 
@@ -80,7 +79,6 @@ $(function() {
     	nodeSelected(rootNode);
     	//  系统初始化
     	initFlowSystem();
-    	$.bootstrapLoading.end();
 	});
 
 });
@@ -177,7 +175,7 @@ function bindEvent(id) {
 	);
 */
 }
-//删除流程节点县浮工具层
+//删除所有流程节点县浮工具层
 function removePopover() {
 	$("div.popover").each(function() {
 		$(this).remove();
@@ -249,7 +247,7 @@ function suspend(operate) {
 			    baseMap.put("highlight", "highlight" + baseMap.get("selector")); //把当前被高亮标记div的id放入缓存
 			    var pos = $("#log" + baseMap.get("selector")).offset().top;
 			//    $("html,body").animate({scrollTop: pos}, 100);
-			    $("#mcg_nav_body").animate({scrollTop: (pos - 40)}, 100);
+			    $("#mcg_flow").animate({scrollTop: (pos - 40)}, 100);
 			//    return false;
 			}
 		}		
@@ -648,27 +646,6 @@ function initFunc() {
         	$(this).dialog( "destroy" );
     	});		            	
     	$(parentdiv).dialog("open");
-    //	callback.call();//方法回调
-		
-		/*
-		bootbox.confirm({
-		    title: "清空当前流程数据？",
-		    message: "清空数据不可恢复，您确定清空当前流程数据吗？",
-		    buttons: {
-		        confirm: {
-		            label: '确定'
-		        },	    	
-		        cancel: {
-		            label: '取消'
-		        }
-		    },
-		    callback: function (result) {
-		    	if(result) {
-    		
-		    	}		        
-		    }
-		});	*/
-		
 	
 	});	
 	$('#flowDataSourceBtn').click(function(data){
@@ -680,7 +657,7 @@ function initFunc() {
 		param["modalId"] = modalId.replace(/_Modal/g, "");
 		param["eletype"] = "dataSource";
 		param["option"] = option;
-		common.showAjaxDialog("/html/flowDataSourceModal", null, 
+		common.showAjaxDialog("/html/flowDataSourceModal", setDialogBtns(param), 
 			function (data) {
 				baseMap.put("flowDataSourceModalId", param.modalId);
 				initFlowDataSourceModal(param.modalId);
@@ -793,13 +770,6 @@ function eventInterceptor(id) {
 	});  	
 }
 
-function ccd() {
-	alert("功能研发中，请等待更新");
-}
-function ddc() {
-	alert("功能研发中，请等待更新");
-}
-
 function initConnectLine() {
     // setup some defaults for jsPlumb.
     var instance = jsPlumb.getInstance({
@@ -894,6 +864,7 @@ function initConnectLine() {
     jsPlumb.fire("jsPlumbDemoLoaded", instance);
     baseMap.put("instance", instance);
 }
+
 function uploadFlow() {
 	var form = $("#flowUploadForm");
 	form.ajaxSubmit({  
@@ -912,6 +883,11 @@ function uploadFlow() {
     	}  
 	});  
 	return false;
+}
+
+/* 获取当前流程树选中流程id */
+function getCurrentFlowId() {
+	return $("#flowSelect").attr("flowId");
 }
 
 /*------------------流程树方法开始 ---------------------*/
@@ -993,14 +969,7 @@ function getChildren(ids,treeNode){
 
 /* 用于捕获节点被点击的事件回调函数  */
 function onClick(event, treeId, treeNode) {
-	common.ajax({
-		url : "/flowTree/selected",
-		type : "GET",
-		data : "id=" + treeNode.id,  
-		contentType : "application/json"
-	}, function(data) {
-		nodeSelected(treeNode);
-	});        
+	nodeSelected(treeNode);
 };
 
 /* 节点被选中时，更新下拉按钮的值 */

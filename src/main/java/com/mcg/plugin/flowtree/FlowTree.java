@@ -16,13 +16,17 @@
 
 package com.mcg.plugin.flowtree;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
+import com.mcg.common.Constants;
+import com.mcg.entity.global.McgGlobal;
 import com.mcg.entity.global.topology.Topology;
+import com.mcg.util.LevelDbUtil;
 
 public class FlowTree implements Serializable {
 
@@ -34,10 +38,28 @@ public class FlowTree implements Serializable {
     //所有节点数据
     private List<Topology> topologys;
     
-    public FlowTree(Topology selected, List<Topology> topologys){
-    	setSelected(selected);
-    	setTopologys(topologys);
-    	initTreeMap(topologys);
+    public FlowTree(McgGlobal mcgGlobal) throws IOException{
+    	
+    	if(mcgGlobal == null) {
+    		mcgGlobal = new McgGlobal();
+    		Topology topology = new Topology();
+    		topology.setId("root");
+    		topology.setName("我的流程");
+    		topology.setpId("1");
+    		
+    		mcgGlobal.setTopologys(new ArrayList<Topology>() { 
+				private static final long serialVersionUID = 1L;
+				{ 
+					add(topology); 
+				} 
+			});
+    		LevelDbUtil.putObject(Constants.GLOBAL_KEY, mcgGlobal);
+    	}
+    	
+    	setTopologys(mcgGlobal.getTopologys());
+    	initTreeMap(mcgGlobal.getTopologys());
+    	setSelected(treeMap.get("root"));
+    	
     }
     
     public void initTreeMap(List<Topology> topologys) {

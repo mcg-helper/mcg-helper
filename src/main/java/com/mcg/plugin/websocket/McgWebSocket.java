@@ -26,6 +26,9 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mcg.entity.auth.PermissionCollection;
 import com.mcg.entity.auth.UserCacheBean;
 
@@ -33,10 +36,12 @@ import com.mcg.entity.auth.UserCacheBean;
 @ServerEndpoint(value = "/message", configurator = GetHttpSessionConfigurator.class)
 public class McgWebSocket {
 	
+	private static Logger logger = LoggerFactory.getLogger(McgWebSocket.class);
+	
     @OnMessage
     public void onMessage(String message, Session session) throws IOException, InterruptedException {
 
-//        System.out.println("Received: " + message);
+    	logger.debug("接收数据：{}, sessionId:{}", message, session.getId());
         if (session.isOpen()) {
             session.getBasicRemote().sendText(message);
         }
@@ -55,7 +60,7 @@ public class McgWebSocket {
 
     @OnClose
     public void onClose() {
-//        System.out.println("关闭通道成功");
+    	logger.debug("关闭通道成功");
     }
     
     

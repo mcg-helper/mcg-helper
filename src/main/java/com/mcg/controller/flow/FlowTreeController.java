@@ -50,16 +50,10 @@ public class FlowTreeController extends BaseController {
         
         return flowTreeService.getDatas();
     }
-    
-    @RequestMapping(value="/selected")
-    @ResponseBody
-    public void selected(String id) throws ClassNotFoundException, IOException {
-        flowTreeService.selected(id);
-    }    
-    
+
     @RequestMapping(value="/addOrUpdateNode")
     @ResponseBody
-    public void updateNode(String id, String name, String pId) throws ClassNotFoundException, IOException {
+    public void addOrUpdateNode(String id, String name, String pId) throws ClassNotFoundException, IOException {
         flowTreeService.updateNode(id, name, pId);
     }
     

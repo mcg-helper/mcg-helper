@@ -37,26 +37,29 @@
 						<div class="tab-pane fade in active" id="${modalId }_textProperty">
 							<div class="form-group">
 								<label class="col-sm-2 control-label">控件名称</label>
-								<div class="fg-line col-sm-10">
-									<input type="text" id="${modalId }_name" name="textProperty[name]" class="form-control"  />
+								<div class="col-sm-4">
+									<div class="fg-line">
+										<input type="text" id="${modalId }_name" name="textProperty[name]" class="form-control"  />
+									</div>
 								</div>
+								
+								<label class="col-sm-1 control-label">控件key</label>
+								<div class="col-sm-4">
+									<div class="fg-line">
+										<input type="text" id="${modalId }_key" name="textProperty[key]" class="form-control"  />
+									</div>
+								</div>								
 							</div>		
 							<div class="form-group">
-								<label class="col-sm-2 control-label">控件key</label>
-								<div class="fg-line col-sm-10">
-									<input type="text" id="${modalId }_key" name="textProperty[key]" class="form-control"  />
-								</div>
-							</div>														
-							<div class="form-group">
 								<label class="col-sm-2 control-label">文件名称</label>
-								<div class="fg-line col-sm-10">
+								<div class="fg-line col-sm-9">
 									<input type="hidden" id="${modalId }_textId" name="textId" value="${modalId }" />
 									<input type="text" id="${modalId }_fileName" name="textProperty[fileName]" class="form-control"  />
 								</div>									
 							</div>
 							<div class="form-group">
 								<label class="col-sm-2 control-label">输出路径</label>
-								<div class="fg-line col-sm-10">
+								<div class="fg-line col-sm-9">
 									<input type="text" id="${modalId }_outPutPath" name="textProperty[outPutPath]" class="form-control"  />
 								</div>
 							</div>								

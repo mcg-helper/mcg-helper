@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.mcg.common.SpringContextHelper;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
@@ -38,7 +39,6 @@ import com.mcg.plugin.execute.ProcessStrategy;
 import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.service.FlowService;
-import com.mcg.service.impl.FlowServiceImpl;
 import com.mcg.util.DataConverter;
 
 public class FlowSqlQueryStrategy implements ProcessStrategy {
@@ -78,7 +78,7 @@ public class FlowSqlQueryStrategy implements ProcessStrategy {
 		RunResult runResult = new RunResult();
 		runResult.setElementId(flowSqlQuery.getId());
 		
-        FlowService flowService = new FlowServiceImpl();
+		FlowService flowService = SpringContextHelper.getSpringBean(FlowService.class);
         McgBizAdapter mcgBizAdapter = new FlowDataAdapterImpl(flowService.getMcgDataSourceById(flowSqlQuery.getSqlQueryCore().getDataSourceId()));
         
         List<Map<String, Object>> result = null;

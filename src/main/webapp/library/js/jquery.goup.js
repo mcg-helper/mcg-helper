@@ -59,7 +59,7 @@
         $obj.on('click', function () {
             if (not_clicked === true) {
                 not_clicked = false;
-                $('#mcg_nav_body').animate({scrollTop: 0}, speed, function () {
+                $('#mcg_flow').animate({scrollTop: 0}, speed, function () {
                     not_clicked = true;
                 });
             }
@@ -139,7 +139,7 @@
 
         /* Create required elements */
         var $body = $('body');
-        var $window = $('#mcg_nav_body'); //$(window);
+        var $window = $('#mcg_flow'); //$(window);
 
         var $container = $('<div>');
         $container.addClass(params.containerClass);

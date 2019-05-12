@@ -15,7 +15,6 @@
  */
 
 
-
 //最大可视高度
 var screenMaxHeight = $(window).height();
 //最大可视宽度
@@ -80,7 +79,7 @@ Message.prototype.output = function() {
 					try {
 						result = JSON.parse(param);
 						var editor = new JSONEditor(document.getElementById(container), this.options, result);
-					//	editor.setMode("code");						
+					//	editor.setMode("code");
 					} catch (e) {
 						$("#" + container).html('<pre style="background:#fff;border-radius:0px;border:0px solid #ccc;"><code>' + param + '</code></pre>');
 					}
@@ -89,17 +88,21 @@ Message.prototype.output = function() {
 		}
 	};
 	var notify = {
-			execute:function(){
-				Messenger().post({
-					message: self.msg.body.content,
-					type: self.msg.body.type,
-					hideAfter: 5,
-				 	showCloseButton: true
-				});	
-			}
+		execute:function(){
+			Messenger().post({
+				message: self.msg.body.content,
+				type: self.msg.body.type,
+				hideAfter: 5,
+			 	showCloseButton: true
+			});
+		}
 	};
+	var wonton = {
+		
+	};
+	
 	if(self.msg.header.mesType == "FLOW") {
-//		console.log(JSON.stringify(this.msg));
+		
 		log[self.msg.body.logType].execute();
 		var html = '';
 		html = log[self.msg.body.logType].html;
@@ -107,31 +110,55 @@ Message.prototype.output = function() {
 		
 		jsonEditor["make"].execute(self.msg.id, log[self.msg.body.logType].value);
 		
-		if(self.msg.body.logType == 'error') {
+		if(self.msg.body.logType == "error") {
 			baseMap.put("selector", self.msg.body.eleId);
 			baseMap.put("highlight", "highlight" + self.msg.body.eleId); //把当前被高亮标记div的id放入缓存
 			$("#highlight" + baseMap.get("selector")).addClass("highlight");
 		    var pos = $("#log" + baseMap.get("selector")).offset().top;
-		    $("html,body").animate({scrollTop: pos}, 100);				
+		    $("html,body").animate({scrollTop: pos}, 100);
 		}
-//    	$("#console div").append(html);
-//        $("#console").scrollTop($("#console div").height() - $("#console").height());		
 	} else if(self.msg.header.mesType == "NOTIFY") {
 		notify.execute();
+	} else if(self.msg.header.mesType == "WONTON") {
+		for(var i=0;i<self.msg.body.dataList.length; i++) {
+			var wontonListTable = $("#wontonListTable");
+			var wontonHeart = wontonListTable.bootstrapTable('getRowByUniqueId', self.msg.body.dataList[i].host);
+			if(wontonHeart == null) {
+				wontonListTable.bootstrapTable('append', self.msg.body.dataList[i]);
+			} else {
+				wontonListTable.bootstrapTable('updateByUniqueId', {
+			        id: self.msg.body.dataList[i].host,
+			        row: self.msg.body.dataList[i]
+			    });
+			}
+		}
 	}
 };
 
 Message.prototype.build = function() {
 	var html = "";
 	if (this.msg.header.mesType == "FLOW") {
+		/*  控件初次产生的日志  */
 		if($("#console").children("#log" + this.msg.body.eleId).length <= 0) {
 			html += '<div id="log' + this.msg.body.eleId + '" class="alert alert-info alert-dismissible" role="alert">';
 			html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><br/>';
 			html += '<ul style="margin-top:21px;background:#fff;" class="messenger messenger-theme-air"><li class="messenger-message-slot"><div class="messenger-message message alert alert-' + this.msg.body.logType + ' "><div id="highlight' + this.msg.body.eleId + '" class="messenger-message-inner">' + this.msg.body.logTypeDesc + '--》' + this.msg.body.eleTypeDesc + '--》' + this.msg.body.comment + '</div></div></li></ul>';
-			html += '<div style="height:auto;" id="' + this.msg.id + '"></div>';
+			if(this.msg.body.eleType == "end") {
+				if(this.msg.body.content != null) {
+					html += '<div style="height:auto;background:#fff;">';
+					var filesData = JSON.parse(this.msg.body.content);
+					for (var key in filesData.availableFileMap) {
+					    html += '&nbsp;&nbsp;' + filesData.availableFileMap[key] + '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onClick="downFlowGenFile(this)" eleId="' + key + '" path="' + filesData.availableFileMap[key] + '">下载</a></br>';
+					}
+					html += '</div>';
+				}
+				
+			} else {
+				html += '<div style="height:auto;" id="' + this.msg.id + '"></div>';
+			}
 			html += '</div>';
 			this.continer = "#console";
-		} else {
+		} else {  /*  同一控件第二次及后续产生的日志  */
 			html += '<ul style="background:#fff;margin-top:13px;" class="messenger messenger-theme-air"><li class="messenger-message-slot"><div class="messenger-message message alert alert-' + this.msg.body.logType + ' "><div class="messenger-message-inner">' + this.msg.body.logTypeDesc + '--》' + this.msg.body.comment + '</div></div></li></ul>';
 			html += '<div style="height:auto;" id="' + this.msg.id + '"></div>';			
 			this.continer = "#log" + this.msg.body.eleId;
@@ -141,10 +168,77 @@ Message.prototype.build = function() {
 	return html;
 }
 
+/*  下载流程中“文本控件”生成的文件   */
+function downFlowGenFile(obj) {
+	var eleId = $(obj).attr("eleId");
+	var path = $(obj).attr("path");
+	if(eleId != null && eleId != "" && path != null && path != "") {
+		var form = $("<form>");
+		form.attr("style", "display:none");
+		form.attr("target", "");
+		form.attr("method", "post");
+		form.attr("action", baseUrl + "/tool/downFlowGenFile");
+		var eleIdInput = $("<input>");
+		eleIdInput.attr("type","hidden");
+		eleIdInput.attr("name","eleId");
+		eleIdInput.attr("value", eleId);
+		form.append(eleIdInput);	
+		var pathInput = $("<input>");
+		pathInput.attr("type","hidden");
+		pathInput.attr("name","path");
+		pathInput.attr("value", path);
+		form.append(pathInput);
+		$("body").append(form);
+		
+		form.submit();
+		form.remove();
+		webSocket = new WebSocket(websocketUrl);
+	    webSocket.onerror = function(event) { 
+	    	
+	    };
+		 
+	    webSocket.onopen = function(event) { 
+	    	
+	    };
+	 
+	    webSocket.onmessage = function(event) {
+				var message = new Message({
+				msg : JSON.parse(event.data)
+			});
+			message.output();
+	    };
+	    
+	    webSocket.onclose = function(event) { 
+	    	
+	    };	
+	}
+}
+
 //提示框插件
 Messenger.options = {
 	    extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
 	    theme: 'air'
+}
+
+Date.prototype.format = function (format) {  
+    var o = {  
+        "M+": this.getMonth() + 1,  
+        "d+": this.getDate(),  
+        "h+": this.getHours(),  
+        "m+": this.getMinutes(),  
+        "s+": this.getSeconds(),  
+        "q+": Math.floor((this.getMonth() + 3) / 3),  
+        "S": this.getMilliseconds()  
+    }  
+    if (/(y+)/.test(format)) {  
+        format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));  
+    }  
+    for (var k in o) {  
+        if (new RegExp("(" + k + ")").test(format)) {  
+            format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));  
+        }  
+    }  
+    return format;  
 }
 
 var common = function(){
@@ -171,7 +265,7 @@ var common = function(){
 	                	ajaxCallBack(result); 
 	            }, error: function (a, b, c) {
 					Messenger().post({
-						message: "非常抱歉,发生异常",
+						message: "非常抱歉, 发生异常!",
 						type: "error",
 						hideAfter: 5,
 					 	showCloseButton: true
@@ -180,106 +274,250 @@ var common = function(){
 	            }
 	        });
 		},
+		ajax : function(option, ajaxCallBack, errorCallBack){
+			$.ajax({
+	            url: baseUrl + option.url + (option.url.indexOf("?") == -1 ? "?" : "&") + "_R=" + Math.random(),
+	            type: option.type,
+	            data: option.data,
+	            contentType: option.contentType,
+	            async: option.async == undefined ? true : option.async,
+	    		dataType : option.dataType, 
+	            jsonp : option.jsonp, 
+	            success: function (data) {
+	                var result = doResult(data, option.url, option.failureCallBack || function () { });
+	                if(ajaxCallBack)
+	                	ajaxCallBack(result); 
+	            }, 
+	            error: errorCallBack
+	        });
+		},		
 		ready : function(){},
 		showAjaxModal : function(url, data, callback, closeCallback, param){
 			var me = this;
-			$.ajax({
-	            url: baseUrl + url + (url.indexOf("?") == -1 ? "?" : "&") + "_R=" + Math.random(),
+			this.ajax({
+	            url: url,
 	            type: 'GET',
 	            "dataType":"html",
 	            "async":false,
-	            "data":param,
-	            success: function (html) {
-	            	 var m = $(html).modal({ backdrop: "static", show: false });
-	            	 m.returnValue = "";
-	            	 var clientHeight = $(window).height();
-	                 m.find(".modal-body").css("max-height", clientHeight - 100);
-	                 m.find(".modal-body").css("overflow-y", 'auto');
-	                 m.modal("show").css({
+	            "data":param
+			}, function(html) {
+
+           	 var m = $(html).modal({ backdrop: "static", show: false });
+           	 m.returnValue = "";
+           	 var clientHeight = $(window).height();
+                m.find(".modal-body").css("max-height", clientHeight - 100);
+                m.find(".modal-body").css("overflow-y", 'auto');
+                m.modal("show").css({
 /*	             		"margin-top": function () {
-	            			return "5%"; //($(window).height() / 2)
-	            		}*/
-	                 });
-	                 
-	                 m.on('shown.bs.modal', function () {
+           			return "5%"; //($(window).height() / 2)
+           		}*/
+                });
+                
+                m.on('shown.bs.modal', function () {
 /*		                 m.draggable({
-		                	 cursor: "move",
-		                	 handle: '.modal-header'
-			 			 });	         
-		                 $(".modal-backdrop").remove();
-		                 */
-		                 
-	                	 if(callback) {
-	                		 callback(param);
-	                	 }
-	                     me.ready.call(m, data);
-	                     
-	                 });
-	                 m.on('hidden.bs.modal', function () {
-	                     if (m.returnValue) {
-	                        if (closeCallback)
-	                        	closeCallback(m.returnValue);
-	                     }
-	                     m.remove();
-	                 });
-                 
-	            }, error: function (a, b, c) {
-	            	alert("抱歉，数据请求失败！<br/>url:" + url);
-	            }
-           });
+	                	 cursor: "move",
+	                	 handle: '.modal-header'
+		 			 });	         
+	                 $(".modal-backdrop").remove();
+	                 */
+	                 
+               	 if(callback) {
+               		 callback(param);
+               	 }
+                    me.ready.call(m, data);
+                    
+                });
+                m.on('hidden.bs.modal', function () {
+                    if (m.returnValue) {
+                       if (closeCallback)
+                       	closeCallback(m.returnValue);
+                    }
+                    m.remove();
+                });
+			});
+			
 		}, 
-		showAjaxDialog : function(url, data, callback, closeCallback, param){
+		showAjaxDialog : function(url, btns, callback, closeCallback, param){
 			if($("#dialog"+param.modalId).length > 0) {
 				return ;
 			}
 			var me = this;
-			$.ajax({
-	            url: baseUrl + url + (url.indexOf("?") == -1 ? "?" : "&") + "_R=" + Math.random(),
+			this.ajax({
+	            url: url,
 	            type: 'GET',
 	            "dataType":"html",
 	            "async":false,
-	            "data":param,
-	            success: function (html) {
-	                var parentdiv=$('<div></div>');       
-	                parentdiv.attr('id', "dialog"+param.modalId);
-	                $(parentdiv).html(html);
-	            	 
-	            	$(parentdiv).dialog({
-	            		title: param.option.title,
-	            		autoOpen: false,
-	            		closeOnEscape: false,
-	            		width: param.option.width,
-	            		height: "auto",
-	            		buttons: setDialogBtns(param),
-				        　　　　position: {
-				      　　　　  	my: "center top",
-				      　　　　　　	at: "center top",
-				      　　　　　　	of: window,
-				      　　　　　　	collision: "flip"/*,
-				      　　　　　　	using: function( pos ) {
-					      　　          	$(this).css({
-				      　　　　　　　　          	"position":"fix", //absolute
-				      　　　　　　　　          	"margin":"auto",
-						      　　　　　　　 "left": 0,
-						            "right": 0,
-				      　　　　　　　　		"top":"20px"
-				      　　　　　　		});
-				      　　　　　　	}*/
-			      　　　　		}
-	            	}).on( "dialogclose", function( event, ui ) {
-		            	$(this).dialog( "destroy" );
-	            	});	            	
-	            	$(parentdiv).dialog("open");
-                	if(callback) {
-                		param["dialog"] = this;
-                		callback(param);
-                	}
-	            }
-           });			
-		}
-	};
-}();
+	            "data":param
+			}, function(html) {
 
+                var parentdiv=$('<div></div>');       
+                parentdiv.attr('id', "dialog"+param.modalId);
+                $(parentdiv).html(html);
+            	
+            	$(parentdiv).dialog({
+            		title: param.option.title,
+            		autoOpen: false,
+            		closeOnEscape: false,
+            		width: param.option.width,
+            		height: "auto",
+            		buttons: btns,
+			        　　　position: {
+			      　　　　  	my: "center top",
+			      　　　　　　	at: "center top",
+			      　　　　　　	of: window,
+			      　　　　　　	collision: "flip"/*,
+			      　　　　　　	using: function( pos ) {
+				      　　          	$(this).css({
+			      　　　　　　　　          	"position":"fix", //absolute
+			      　　　　　　　　          	"margin":"auto",
+					      　　　　　　　 "left": 0,
+					            "right": 0,
+			      　　　　　　　　		"top":"20px"
+			      　　　　　　		});
+			      　　　　　　	}*/
+		      　　　　	}
+            	}).on( "dialogclose", function( event, ui ) {
+	            	$(this).dialog( "destroy" );
+            	});	            	
+            	$(parentdiv).dialog("open");
+            	if(callback) {
+            		param["dialog"] = this;
+            		callback(param);
+            	}
+			});
+			
+		},
+		formUtils : {
+			setValues : function(formId, data) {
+				var form = $("#" + formId)[0];
+			    if (form != null){
+			    	
+			        for(var i = 0;i < form.elements.length;i++){
+			            var oField =  form.elements[i];
+			            if (oField.type != "button"){
+			            	if(oField.name.indexOf("[") > 0) {
+			            		var key = oField.name.substring(0, oField.name.indexOf("["));
+			            		var obj = data[key];
+			            		var valueName = oField.name.substring(oField.name.indexOf("[") + 1, oField.name.indexOf("]"));
+			            		var value = obj[valueName];
+			            	//	console.log("oField.name="+ oField.name + "---key =" +key + "---valueName=" + valueName + "---value=" + value);
+				                if(typeof (value) == "undefined") {
+				                    continue ;
+				                }
+				                
+				                if(oField.type == "checkbox" || oField.type == "radio"){
+				                	
+				                    if (value == null || value == "" || value == "0" || value == "false"){
+				                        oField.checked = false;
+				                    }else{
+				                        oField.checked = true;
+				                    }
+
+				                } else if(oField.type == "text"
+				                    || oField.type == "number"
+				                    || oField.type == "password"
+				                    || oField.type == "hidden"
+				                    || oField.type == "textarea"){
+				                    oField.value = value;
+				                } else if(oField.type == "select" || oField.type == "select-one") {
+				                	$(oField).val(value);
+				                	$(oField).selectpicker('refresh');
+				                	$(oField).selectpicker('val', value + "");
+				                    
+				                } else{
+				                    //其它的表单就不用设置了,比如image,reset,submit
+				                    oField.value = value;
+				                }
+				                
+			            		oField.value = obj[valueName];
+			            	}
+			            	
+			            } else {
+			            	//暂不处理button
+			            }
+			        }
+
+			    } else{
+					Messenger().post({
+						message: "表单不存在, 初始化值失败!",
+						type: "error",
+						hideAfter: 5,
+					 	showCloseButton: true
+					});				    	
+			    }				
+				
+			}
+		},
+		dateUtils : {
+			/**   
+			 *转换日期对象为日期字符串   
+			 * @param date 日期对象   
+			 * @param isFull 是否为完整的日期数据,   
+			 *               为true时, 格式如"2000-03-05 01:05:04"   
+			 *               为false时, 格式如 "2000-03-05"   
+			 * @return 符合要求的日期字符串   
+			 */
+			getSmpFormatDate : function(date, isFull) {  
+			     var pattern = "";  
+			     if (isFull == true || isFull == undefined) {  
+			         pattern = "yyyy-MM-dd hh:mm:ss";  
+			     } else {  
+			         pattern = "yyyy-MM-dd";  
+			     }  
+			     return this.getFormatDate(date, pattern);  
+			 }, 
+			 /**   
+			 *转换当前日期对象为日期字符串   
+			 * @param date 日期对象   
+			 * @param isFull 是否为完整的日期数据,   
+			 *               为true时, 格式如"2000-03-05 01:05:04"   
+			 *               为false时, 格式如 "2000-03-05"   
+			 * @return 符合要求的日期字符串   
+			 */		
+			getSmpFormatNowDate : function(isFull) {
+				return this.getSmpFormatDate(new Date(), isFull); 
+			},
+			 /**   
+			 *转换long值为日期字符串   
+			 * @param l long值   
+			 * @param isFull 是否为完整的日期数据,   
+			 *               为true时, 格式如"2000-03-05 01:05:04"   
+			 *               为false时, 格式如 "2000-03-05"   
+			 * @return 符合要求的日期字符串   
+			 */ 	
+			getSmpFormatDateByLong : function(l, isFull) {
+				return this.getSmpFormatDate(new Date(l), isFull);  
+			},
+			 /**   
+			 *转换long值为日期字符串   
+			 * @param l long值   
+			 * @param pattern 格式字符串,例如：yyyy-MM-dd hh:mm:ss   
+			 * @return 符合要求的日期字符串   
+			 */ 	
+			getFormatDateByLong : function(l, pattern) {  
+				return this.getFormatDate(new Date(l), pattern);  
+			},
+			 /**   
+			 *转换日期对象为日期字符串   
+			 * @param date    
+			 * @param pattern 格式字符串,例如：yyyy-MM-dd hh:mm:ss   
+			 * @return 符合要求的日期字符串   
+			 */	
+			getFormatDate : function(date, pattern) {
+				if (date == undefined) {  
+					date = new Date();  
+				}  
+				if (pattern == undefined) {  
+					pattern = "yyyy-MM-dd hh:mm:ss";  
+			    }  
+			    return date.format(pattern); 		
+			}
+				 
+		}		
+	};
+	
+	
+}();
 
 /*===========定义生成uuid函数开始
 用法：Math.uuid()
@@ -410,7 +648,7 @@ jQuery.bootstrapLoading = {
 			//提示颜色
 			delayTime : 1000,
 			//页面加载完成后，加载页面渐出速度
-			zindex : 999,
+			zindex : 9999999,
 			//loading页面层次
 			sleep : 0
 		//设置挂起,等于0时则无需挂起
@@ -442,7 +680,7 @@ jQuery.bootstrapLoading = {
 				+ ';font-size:20px;">'
 				+ '<div></div><div></div><div></div><div></div><div></div></div></div>';
 		//呈现loading效果
-		$("#mcg_tips").append(_LoadingHtml);
+		$("#mcg_header").append(_LoadingHtml);
 		//获取loading提示框宽高
 		var _LoadingTipsH = document.getElementById("loadingTips").clientHeight, _LoadingTipsW = document
 				.getElementById("loadingTips").clientWidth;
@@ -460,6 +698,25 @@ jQuery.bootstrapLoading = {
 	}
 }
 /*===============定义loading结束=============*/
+
+$(document).ajaxStart(function(){
+    $.bootstrapLoading.start({ "loadingTips": "正在处理数据，请稍候...", "borderWidth":0, "opacity":0.5 });
+});
+
+$(document).ajaxStop(function(){
+    $.bootstrapLoading.end();
+});
+
+$(document).ajaxError(function(){
+	Messenger().post({
+		message: "非常抱歉，发生异常！",
+		type: "error",
+		hideAfter: 5,
+	 	showCloseButton: true
+	});
+    $.bootstrapLoading.end();
+});
+
 var Tools = function(param){
 }
 //将带下划线的字符转换为驼峰命名

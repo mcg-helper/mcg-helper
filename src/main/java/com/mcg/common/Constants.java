@@ -31,7 +31,7 @@ public class Constants {
     /*   字符编码        */
     public static final Charset CHARSET = Charset.forName("utf-8");
     /*   版本号        */
-    public static final String VERSION = "mcg-helper_V1.4.0-Release";
+    public static final String VERSION = "mcg-helper_V1.5.0-Release";
     /*   全局变量key   */
     public static final String GLOBAL_KEY = "mcgGlobal";
     /*   流程文件扩展名        */
@@ -51,7 +51,9 @@ public class Constants {
 	/*   SSH Linux控件 结束符        */
 	public final static String LINUX_EOF = "exit";
 	/*   SSH Linux控件 换行符        */
-	public final static String LINUX_ENTER = "\n";	
+	public final static String LINUX_ENTER = "\n";
+	/*   混沌客户端数据key   */
+	public final static String WONTON_KEY = "mcgWontonData";
 	/*   统计代码        */
 	public final static String js = "<script>var _hmt = _hmt || [];(function() {var hm = document.createElement(\"script\");hm.src = \"https://hm.baidu.com/hm.js?221fd6bfa9a0ff2f4a99e9f4ddb0075a\";var s = document.getElementsByTagName(\"script\")[0]; s.parentNode.insertBefore(hm, s);})();</script>";
     	

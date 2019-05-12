@@ -23,6 +23,8 @@ import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -34,6 +36,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class McgFileUtils {
 
+	private static Logger logger = LoggerFactory.getLogger(McgFileUtils.class);
     /**
      * 
      * @Title:       createDir   
@@ -62,7 +65,7 @@ public class McgFileUtils {
         		FileUtils.forceDelete(file);
             result = true;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("删除文件出错，路径：{}，异常信息：{}", path, e.getMessage());
         }
         return result;
     }	
@@ -75,7 +78,7 @@ public class McgFileUtils {
         		fileContent = FileUtils.readFileToString(file, encoding);
         	}
         } catch (IOException e) {  
-            e.printStackTrace();  
+        	logger.error("读文件出错，路径：{}，encoding：{}，异常信息：{}", path, encoding, e.getMessage());  
         } 		
         return fileContent;
 	}
@@ -97,7 +100,7 @@ public class McgFileUtils {
             FileUtils.copyInputStreamToFile(source, new File(target + File.separator + fileName));
             result = true;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("将流写指定文件出错，路径：{}， 异常信息：{}", (target + File.separator + fileName), e.getMessage());
         }
         return result;
     }
@@ -119,7 +122,7 @@ public class McgFileUtils {
             FileUtils.writeStringToFile(new File(target + fileName), content, encoding);
             result = true;
         } catch (IOException e) {  
-            e.printStackTrace();  
+            logger.error("将字符串写入指定文件出错，路径：{}，encoding：{}， 数据：{}，异常信息：{}", (target + fileName), encoding, content, e.getMessage());
         }  
         
         return result;
@@ -140,7 +143,7 @@ public class McgFileUtils {
             FileUtils.cleanDirectory(new File(path));
             result = true;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("清除目录下的所有文件及目录，但不删除目录出错，异常信息：{}", e.getMessage());
         }
         return result;
     }
@@ -161,7 +164,7 @@ public class McgFileUtils {
             FileUtils.copyDirectory(new File(source), new File(target));
             result = true;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("拷贝目录内容到另一个目录中出错，源路径：{}，目标路径：{}，异常信息：{}", source, target, e.getMessage());
         }
         return result;
     }
@@ -178,15 +181,16 @@ public class McgFileUtils {
      */
     public static boolean downFile(String url, String target) {
         boolean result = false;
+        String path = null;
         try {
             InputStream in = new URL(url).openStream();
             byte[] fileData = IOUtils.toByteArray(in);
-            String path = target + "/" + getFileNameByUrl(url);
+            path = target + "/" + getFileNameByUrl(url);
             FileUtils.writeByteArrayToFile(new File(path), fileData);
             IOUtils.closeQuietly(in);  
             result = true;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("下载文件出错，路径：{}， 异常信息：{}", path, e.getMessage());
         }
         
         return result;
@@ -218,7 +222,7 @@ public class McgFileUtils {
             in = new URL(url).openStream();
             result = IOUtils.toString( in ); 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } finally {  
             IOUtils.closeQuietly(in);  
         }  
@@ -239,7 +243,7 @@ public class McgFileUtils {
     		}
 			result = true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("清空文件的数据，但不删除文件出错，路径：{}，异常信息：{}", path, e.getMessage());
 		}
     	return result;
     }

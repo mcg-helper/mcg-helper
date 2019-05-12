@@ -34,8 +34,6 @@ public interface FlowTreeService {
     //获取流程树数据
 	FlowTree getDatas() throws ClassNotFoundException, IOException;
 	
-	boolean selected(String id) throws ClassNotFoundException, IOException;
-    
     boolean updateNode(String id, String name, String pId) throws ClassNotFoundException, IOException;
     
     boolean deleteNode(List<String> ids) throws ClassNotFoundException, IOException;

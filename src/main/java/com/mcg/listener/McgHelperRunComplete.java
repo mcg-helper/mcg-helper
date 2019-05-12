@@ -19,6 +19,9 @@ package com.mcg.listener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 
  * @ClassName:   McgHelperRunComplete   
@@ -30,18 +33,20 @@ import javax.servlet.http.HttpServlet;
 public class McgHelperRunComplete extends HttpServlet {
 
     private static final long serialVersionUID = 3529712260551712017L;
-
+    private static Logger logger = LoggerFactory.getLogger(McgHelperRunComplete.class);
+    
     @Override
     public void init() throws ServletException {
         
         super.init();
-        System.out.println();
-        System.out.println("--------------------------------------------------------------------------------");
-        System.out.println();
-        System.out.println("mcg-helper研发小助手启动完成，请访问http://localhost:8888/mcg");
-        System.out.println();
-        System.out.println("--------------------------------------------------------------------------------");
-        System.out.println();
+        
+        logger.info("\n");
+        logger.info("--------------------------------------------------------------------------------");
+        logger.info("\n");
+        logger.info("mcg-helper研发助手启动完成!");
+        logger.info("\n");
+        logger.info("--------------------------------------------------------------------------------");
+        logger.info("\n");
         
     }
 

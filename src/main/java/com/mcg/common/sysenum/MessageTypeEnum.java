@@ -26,7 +26,7 @@ package com.mcg.common.sysenum;
  */
 public enum MessageTypeEnum {
 
-    SYSTEM("系统消息", "system"),  FLOW("流程消息", "flow"), NOTIFY("通知", "notify");
+    SYSTEM("系统消息", "system"),  FLOW("流程消息", "flow"), NOTIFY("通知", "notify"), WONTON("混沌工程", "notify");
     
     private String name;
     private String value;

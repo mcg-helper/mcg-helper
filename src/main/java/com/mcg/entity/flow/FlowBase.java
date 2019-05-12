@@ -20,6 +20,7 @@ import com.mcg.plugin.build.McgProduct;
 public abstract class FlowBase extends McgProduct {
     
     private static final long serialVersionUID = -7660980819340679924L;
+    private String flowId;
     private String label;
     private String width;
     private String height;
@@ -31,7 +32,13 @@ public abstract class FlowBase extends McgProduct {
     private String name;
     private String sign;
     
-    public String getLabel() {
+    public String getFlowId() {
+		return flowId;
+	}
+	public void setFlowId(String flowId) {
+		this.flowId = flowId;
+	}
+	public String getLabel() {
         return label;
     }
     public void setLabel(String label) {

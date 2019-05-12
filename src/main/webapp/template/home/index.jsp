@@ -36,6 +36,13 @@
     	</div>
        	<div class="row">
 	   		<div class="col-md-4">
+	   			<h3>开源地址</h3>
+	   			<p>
+	   				mcg-helper为github开源项目，欢迎有需求或兴趣的朋友关注或下载，共同探讨与完善------
+	   				<a href="https://github.com/mcg-helper/mcg-helper" target="_blank">下载请点击这里</a>
+	   			</p>
+	   		</div>
+	   		<div class="col-md-4">
 	   			<h3>QQ群</h3>
 	   			<p>
 	   				群号：619815829，学习交流沟通，分享彼此经验，这里畅所欲言，欢迎大家提出宝贵建议与意见！
@@ -44,50 +51,36 @@
 	   		<div class="col-md-4">
 	   			<h3>使用指南</h3>
 	   			<p>
-	   				与csdn学院视频有所不同，这里纯粹讲解工具的使用，视频在百度云盘上，点击视频同样可在线观看------
+	   				免费视频教程，便于快速认识和掌握工具的使用，视频在百度云盘上，点击视频可在线观看------
 	   				<a href="https://pan.baidu.com/s/1sliEqhJ#list/path=%2F%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97" target="_blank">观看请点击这里</a>
 	   			</p>
 	   		</div>	   		
-	   		<div class="col-md-4">
-	   			<h3>csdn博客</h3>
-	   			<p>
-	   				这里有最新的动态资讯、图文教程、使用指南，欢迎大家留言关注------
-	   				<a href="http://blog.csdn.net/loginandpwd/article" target="_blank">访问请点击这里</a>
-	   			</p>
-	   		</div>
 		</div>
 		<div class="row">
 	   		<div class="col-md-4">
 	   			<h3>csdn学院</h3>
 	   			<p>
-	   				视频教程更为直接有效，便于认识和掌控工具，《代码生成实战初级篇》课程以实战演练方式，运用工具实现百分之百的代码生成，这里需要开通csdn学院会员------
-	   				<a href="http://edu.csdn.net/course/detail/5953" target="_blank">观看请点击这里</a>
+	   				付费视频课程，以工作中实际需求为主题，采用手把手的方式进行实战演练，逐步将日常工作进行自动化，起到简化工作量提升效率------
+	   				<a href="https://edu.csdn.net/lecturer/1588" target="_blank">观看请点击这里</a>
 	   			</p>
 	   		</div>
+	   		
 	   		<div class="col-md-4">
-	   			<h3>示例下载</h3>
+	   			<h3>csdn博客</h3>
 	   			<p>
-	   				提供博客教程、视频教程中分享讲解的示例，下载后可导入到工具中进行学习，通过运行调试能够更好的学习使用与掌握------
-	   				<a href="https://pan.baidu.com/s/1jI5h5sU#list/path=%2Fdemo" target="_blank">下载请点击这里</a>
+	   				这里有最新的动态资讯、图文教程、场景案例，欢迎大家关注留言------
+	   				<a href="http://blog.csdn.net/loginandpwd/article" target="_blank">访问请点击这里</a>
 	   			</p>
 	   		</div>
-	   		<div class="col-md-4">
-	   			<h3>软件下载</h3>
-	   			<p>
-	   				本软件跨平台且无浸入性，基于流程图，采用拖拽式控件，人性化交互设计，提供便捷实用的功能服务，完全性自定义，能够实现任何语言、任何框架的代码生成------
-	   				<a href="https://pan.baidu.com/s/1bOe1mY#list/path=%2Fmcg-helper" target="_blank">下载请点击这里</a>
-	   			</p>
-	   		</div>
-		</div>
-		<div class="row">
+
 			<div class="col-md-4" >
-	   			<h3>软件信息</h3>
+	   			<h3>版本信息</h3>
 	   			<p>
 	   				浏览器：建议使用chrome、firefox、IE10（+）<br/>
 	   				版本号：${version }<br/>
 	   				email：mcg-helper@qq.com
 	   			</p>
-	   		</div>  			
+	   		</div>  
 		</div>
 
    </div>

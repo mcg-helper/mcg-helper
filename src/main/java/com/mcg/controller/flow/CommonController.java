@@ -30,8 +30,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.mcg.common.sysenum.DatabaseTypeEnum;
 import com.mcg.common.sysenum.SeverTypeEnum;
 import com.mcg.controller.base.BaseController;
+import com.mcg.entity.common.Table;
 import com.mcg.entity.flow.data.DataRecord;
-import com.mcg.entity.flow.gmybatis.Table;
 import com.mcg.entity.global.datasource.McgDataSource;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.ehcache.CachePlugin;
@@ -81,9 +81,10 @@ public class CommonController extends BaseController {
     @ResponseBody    
     public McgProduct getMcgProductById() {
     	PageData pd = this.getPageData();
-        if(pd.get("id") == null)
+        if(pd.get("flowId") == null || pd.get("id") == null) {
         	return null;    	
-    	McgProduct mcgProduct = (McgProduct)CachePlugin.get(pd.getString("id"));
+        }
+    	McgProduct mcgProduct = (McgProduct)CachePlugin.getFlowEntity(pd.getString("flowId"), pd.getString("id"));
     	return mcgProduct;
     }
     

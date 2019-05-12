@@ -36,12 +36,12 @@ public class McgGlobal implements Serializable {
 	//数据库数据源组件数据
 	@XmlElement
 	private List<McgDataSource> flowDataSources;
-	//流程下拉树选中节点数据
-	@XmlElement
-	private Topology selected;
 	//流程下拉树数据
 	@XmlElement
 	private List<Topology> topologys;
+	//服务器数据源组件数据
+	@XmlElement
+	private List<ServerSource> serverSources;
 	
 	public List<McgDataSource> getFlowDataSources() {
 		return flowDataSources;
@@ -55,12 +55,6 @@ public class McgGlobal implements Serializable {
 	public void setTopologys(List<Topology> topologys) {
 		this.topologys = topologys;
 	}
-	public Topology getSelected() {
-		return selected;
-	}
-	public void setSelected(Topology selected) {
-		this.selected = selected;
-	}
 	public List<ServerSource> getServerSources() {
 		return serverSources;
 	}
@@ -68,7 +62,4 @@ public class McgGlobal implements Serializable {
 		this.serverSources = serverSources;
 	}
 
-	//服务器数据源组件数据
-	@XmlElement
-	private List<ServerSource> serverSources;
 }

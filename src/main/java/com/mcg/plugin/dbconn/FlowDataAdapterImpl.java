@@ -21,10 +21,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.postgresql.ds.PGPoolingDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mcg.common.sysenum.DatabaseTypeEnum;
+import com.mcg.entity.common.Table;
 import com.mcg.entity.flow.data.DataRecord;
-import com.mcg.entity.flow.gmybatis.Table;
 import com.mcg.entity.global.datasource.McgDataSource;
 import com.mcg.plugin.dbconn.mssql.MssqlConnectImpl;
 import com.mcg.plugin.dbconn.mysql.MysqlConnectImpl;
@@ -37,6 +39,8 @@ import oracle.jdbc.pool.OracleDataSource;
 
 public class FlowDataAdapterImpl implements McgBizAdapter {
 
+	private static Logger logger = LoggerFactory.getLogger(FlowDataAdapterImpl.class);
+	
     private McgConnect mcgConnect;
     
     public FlowDataAdapterImpl(McgDataSource mcgDataSource) {
@@ -52,7 +56,7 @@ public class FlowDataAdapterImpl implements McgBizAdapter {
             try {
 				mysqlDataSource.setConnectTimeout(3000);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.debug("mysql数据源适配失败，异常信息：{}", e.getMessage());
 			}
             mcgConnect = new MysqlConnectImpl(mysqlDataSource);
         } else if(DatabaseTypeEnum.ORACLE.getValue().equals(mcgDataSource.getDbType())) {
@@ -68,28 +72,33 @@ public class FlowDataAdapterImpl implements McgBizAdapter {
                 oracleDataSource.setLoginTimeout(3000);
                 mcgConnect = new OracleConnectImpl(oracleDataSource);
             } catch (SQLException e) {
-                e.printStackTrace();
+            	logger.debug("oracle数据源适配失败，异常信息：{}", e.getMessage());
             }
         } else if(DatabaseTypeEnum.MSSQL.getValue().equals(mcgDataSource.getDbType())) {
-            SQLServerDataSource sqlServerDataSource = new SQLServerDataSource();
-            sqlServerDataSource.setDatabaseName(mcgDataSource.getDbName());
-            sqlServerDataSource.setUser(mcgDataSource.getDbUserName());
-            sqlServerDataSource.setPassword(mcgDataSource.getDbPwd());
-            sqlServerDataSource.setServerName(mcgDataSource.getDbServer());
-            sqlServerDataSource.setPortNumber(mcgDataSource.getDbPort());
-            sqlServerDataSource.setLoginTimeout(3000);
-            mcgConnect = new MssqlConnectImpl(sqlServerDataSource);
+        	try {
+	            SQLServerDataSource sqlServerDataSource = new SQLServerDataSource();
+	            sqlServerDataSource.setDatabaseName(mcgDataSource.getDbName());
+	            sqlServerDataSource.setUser(mcgDataSource.getDbUserName());
+	            sqlServerDataSource.setPassword(mcgDataSource.getDbPwd());
+	            sqlServerDataSource.setServerName(mcgDataSource.getDbServer());
+	            sqlServerDataSource.setPortNumber(mcgDataSource.getDbPort());
+	            sqlServerDataSource.setLoginTimeout(3000);
+	            mcgConnect = new MssqlConnectImpl(sqlServerDataSource);
+        	} catch (Exception e) {
+        		logger.debug("oracle数据源适配失败，异常信息：{}", e.getMessage());
+			}
         } else if(DatabaseTypeEnum.POSTGRESQL.getValue().equals(mcgDataSource.getDbType())) {
-            PGPoolingDataSource pgDataSource = new PGPoolingDataSource();
-            pgDataSource.setDatabaseName(mcgDataSource.getDbName());
-            pgDataSource.setUser(mcgDataSource.getDbUserName());
-            pgDataSource.setPassword(mcgDataSource.getDbPwd());
-            pgDataSource.setPortNumber(mcgDataSource.getDbPort());
-            pgDataSource.setServerName(mcgDataSource.getDbServer());
-            try {
+        	PGPoolingDataSource pgDataSource = new PGPoolingDataSource();
+        	try {
+	            pgDataSource.setDatabaseName(mcgDataSource.getDbName());
+	            pgDataSource.setUser(mcgDataSource.getDbUserName());
+	            pgDataSource.setPassword(mcgDataSource.getDbPwd());
+	            pgDataSource.setPortNumber(mcgDataSource.getDbPort());
+	            pgDataSource.setServerName(mcgDataSource.getDbServer());
+            
 				pgDataSource.setLoginTimeout(3000);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.debug("postgresql数据源适配失败，异常信息：{}", e.getMessage());
 			}
             mcgConnect = new PostgresqlConnectImpl(pgDataSource);
             
@@ -122,7 +131,13 @@ public class FlowDataAdapterImpl implements McgBizAdapter {
 
     @Override
     public boolean testConnect() {
-        return mcgConnect.testConnect();
+    	boolean flag = false;
+    	try {
+    		flag = mcgConnect.testConnect();
+    	} catch (Exception e) {
+    		logger.debug("数据连接测试失败，异常信息：{}", e.getMessage());
+		}
+        return flag;
     }
     
 }

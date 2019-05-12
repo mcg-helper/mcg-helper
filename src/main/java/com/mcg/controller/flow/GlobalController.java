@@ -23,8 +23,8 @@ import com.mcg.entity.global.serversource.ServerSource;
 import com.mcg.entity.message.Message;
 import com.mcg.entity.message.NotifyBody;
 import com.mcg.plugin.websocket.MessagePlugin;
+import com.mcg.service.DbService;
 import com.mcg.service.GlobalService;
-import com.mcg.util.LevelDbUtil;
 import com.mcg.util.Tools;
 
 /**
@@ -41,6 +41,8 @@ public class GlobalController {
 
 	@Autowired
 	private GlobalService globalService;
+	@Autowired
+	private DbService dbService;
 	
     @RequestMapping(value="saveDataSource", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -51,7 +53,7 @@ public class GlobalController {
         McgResult mcgResult = new McgResult();
         
         if(Tools.validator(result, mcgResult, notifyBody)) {
-            McgGlobal lastMcgGlobal = (McgGlobal)LevelDbUtil.getObject(Constants.GLOBAL_KEY, McgGlobal.class);
+            McgGlobal lastMcgGlobal = (McgGlobal)dbService.query(Constants.GLOBAL_KEY, McgGlobal.class);
             lastMcgGlobal.setFlowDataSources(mcgGlobal.getFlowDataSources());
             lastMcgGlobal.setServerSources(mcgGlobal.getServerSources());
             globalService.updateGlobal(lastMcgGlobal);

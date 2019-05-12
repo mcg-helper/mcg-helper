@@ -33,7 +33,12 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class RSAEncrypt {
+	
+	private static Logger logger = LoggerFactory.getLogger(RSAEncrypt.class);
     /**
      * 字节数据转字符串专用集合
      */
@@ -48,7 +53,7 @@ public class RSAEncrypt {
         try {
             keyPairGen = KeyPairGenerator.getInstance("RSA");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+        	logger.error(e.getMessage());
         }
         // 初始化密钥对生成器，密钥大小为96-2048位
         keyPairGen.initialize(1024, new SecureRandom());
@@ -79,10 +84,13 @@ public class RSAEncrypt {
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(buffer);
             return (RSAPublicKey) keyFactory.generatePublic(keySpec);
         } catch (NoSuchAlgorithmException e) {
+        	logger.error("无此算法，异常信息：{}", e.getMessage());
             throw new Exception("无此算法");
         } catch (InvalidKeySpecException e) {
+        	logger.error("公钥非法，异常信息：{}", e.getMessage());
             throw new Exception("公钥非法");
         } catch (NullPointerException e) {
+        	logger.error("公钥数据为空，异常信息：{}", e.getMessage());
             throw new Exception("公钥数据为空");
         }
     }
@@ -94,10 +102,13 @@ public class RSAEncrypt {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
         } catch (NoSuchAlgorithmException e) {
+        	logger.error("无此算法，异常信息：{}", e.getMessage());
             throw new Exception("无此算法");
         } catch (InvalidKeySpecException e) {
+        	logger.error("私钥非法，异常信息：{}", e.getMessage());
             throw new Exception("私钥非法");
         } catch (NullPointerException e) {
+        	logger.error("私钥数据为空，异常信息：{}", e.getMessage());
             throw new Exception("私钥数据为空");
         }
     }
@@ -123,15 +134,19 @@ public class RSAEncrypt {
             byte[] output = cipher.doFinal(plainTextData);
             return output;
         } catch (NoSuchAlgorithmException e) {
+        	logger.error("无此加密算法，异常信息：{}", e.getMessage());
             throw new Exception("无此加密算法");
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
+        	logger.error(e.getMessage());
             return null;
         } catch (InvalidKeyException e) {
+        	logger.error("加密公钥非法，异常信息：{}", e.getMessage());
             throw new Exception("加密公钥非法,请检查");
         } catch (IllegalBlockSizeException e) {
+        	logger.error("明文长度非法，异常信息：{}", e.getMessage());
             throw new Exception("明文长度非法");
         } catch (BadPaddingException e) {
+        	logger.error("明文数据已损坏，异常信息：{}", e.getMessage());
             throw new Exception("明文数据已损坏");
         }
     }
@@ -156,15 +171,19 @@ public class RSAEncrypt {
             byte[] output = cipher.doFinal(plainTextData);
             return output;
         } catch (NoSuchAlgorithmException e) {
+        	logger.error("无此加密算法，异常信息：{}", e.getMessage());
             throw new Exception("无此加密算法");
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
+        	logger.error(e.getMessage());
             return null;
         } catch (InvalidKeyException e) {
+        	logger.error("加密私钥非法，异常信息：{}", e.getMessage());
             throw new Exception("加密私钥非法,请检查");
         } catch (IllegalBlockSizeException e) {
+        	logger.error("明文长度非法，异常信息：{}", e.getMessage());
             throw new Exception("明文长度非法");
         } catch (BadPaddingException e) {
+        	logger.error("明文数据已损坏，异常信息：{}", e.getMessage());
             throw new Exception("明文数据已损坏");
         }
     }
@@ -190,15 +209,19 @@ public class RSAEncrypt {
             byte[] output = cipher.doFinal(cipherData);
             return output;
         } catch (NoSuchAlgorithmException e) {
+        	logger.error("无此解密算法，异常信息：{}", e.getMessage());
             throw new Exception("无此解密算法");
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
+        	logger.error(e.getMessage());
             return null;
         } catch (InvalidKeyException e) {
+        	logger.error("解密私钥非法，异常信息：{}", e.getMessage());
             throw new Exception("解密私钥非法,请检查");
         } catch (IllegalBlockSizeException e) {
+        	logger.error("密文长度非法，异常信息：{}", e.getMessage());
             throw new Exception("密文长度非法");
         } catch (BadPaddingException e) {
+        	logger.error("密文数据已损坏，异常信息：{}", e.getMessage());
             throw new Exception("密文数据已损坏");
         }
     }
@@ -224,15 +247,19 @@ public class RSAEncrypt {
             byte[] output = cipher.doFinal(cipherData);
             return output;
         } catch (NoSuchAlgorithmException e) {
+        	logger.error("无此解密算法，异常信息：{}", e.getMessage());
             throw new Exception("无此解密算法");
         } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
+        	logger.error(e.getMessage());
             return null;
         } catch (InvalidKeyException e) {
+        	logger.error("解密公钥非法，异常信息：{}", e.getMessage());
             throw new Exception("解密公钥非法,请检查");
         } catch (IllegalBlockSizeException e) {
+        	logger.error("密文长度非法，异常信息：{}", e.getMessage());
             throw new Exception("密文长度非法");
         } catch (BadPaddingException e) {
+        	logger.error("密文数据已损坏，异常信息：{}", e.getMessage());
             throw new Exception("密文数据已损坏");
         }
     }

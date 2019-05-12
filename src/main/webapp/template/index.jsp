@@ -31,7 +31,7 @@
 <body>
 	<!-- head开始 -->
 	<div id="mcg_header" class="container-fluid">
-		<div class="row">
+		<div class="row ">
 		    <div class="mcg_header">
 		    </div>
 	    </div>
@@ -42,6 +42,7 @@
 	<div id="mcg_tips" class="container-fluid">
 
 	</div>
+	
 	<!-- tips结束 -->
 	
 	<!-- main开始 -->
@@ -49,23 +50,34 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div id="mcg_nav" class="mcg_main_nav_header">
-					<ul class="nav nav-pills" role="tablist">
-						<li role="presentation" class="active"><a id="mcg_home" href="#">主页</a></li>
-						<li role="presentation"><a id="mcg_flow" href="#">工作台</a></li>
-					</ul>				
+					<div class="navbar-header pull-right">
+						 <a class="navbar-brand" href="https://github.com/mcg-helper/mcg-helper" target="_blank">mcg-helper</a>
+					</div>
+						<ul class="nav nav-pills" role="tablist" id="mcgTab">
+							<li role="presentation" class="active"><a href="#mcg_home" data-toggle="tab">主页</a></li>
+							<li role="presentation"><a href="#mcg_flow" data-toggle="tab">工作台</a></li>
+							<li role="presentation"><a href="#mcg_wonton" data-toggle="tab">混沌工程</a></li>
+						</ul>
+
 				</div>
 			</div>
 		</div>
 		<div class="row autoHeight">
 			<div class="col-md-12 autoHeight">
-				<div id="mcg_nav_body" class="mcg_main_highlight autoHeight" style="overflow-x: auto;overflow-y: auto;"></div>
+			
+				<div class="tab-content autoHeight">
+					<div id="mcg_home" class="tab-pane active mcg_main_highlight autoHeight" style="overflow-x: auto;overflow-y: auto;"></div>
+					<div id="mcg_flow" class="tab-pane mcg_main_highlight autoHeight"style="overflow-x: auto;overflow-y: auto;"></div>
+					<div id="mcg_wonton" class="tab-pane mcg_main_highlight autoHeight"  style="overflow-x: auto;overflow-y: auto;"></div>
+				</div>
 			</div>
+
 		</div>
 
 	</div>
 	<!-- main结束 -->
 	
-	<!-- footer开始  navbar-fixed-bottom -->
+	<!-- footer开始  navbar-fixed-bottom 
 	<div id="mcg_footer" class="container-fluid mcg_footer">
 		<div class="row">
 			如有问题或建议请发送邮件到mcg-helper@qq.com进行反馈与交流，感谢您的支持！
@@ -74,6 +86,7 @@
 		   	Copyright © 2018, mcg-helper@qq.com, All Rights Reserved
 		</div>
 	</div>
+	-->
 	<!-- footer结束 -->
 </body>
 </html>

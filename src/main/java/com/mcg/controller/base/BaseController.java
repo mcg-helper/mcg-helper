@@ -18,11 +18,13 @@ package com.mcg.controller.base;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSON;
 import com.mcg.util.PageData;
 
 /**
@@ -35,10 +37,11 @@ import com.mcg.util.PageData;
  */
 public class BaseController {
     
-	protected Logger logger = Logger.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(BaseController.class);
 	
 	public PageData getPageData(){
 		PageData pd = new PageData(this.getRequest());
+		logger.debug("BaseController获取参数:", JSON.toJSONString(pd));
 		return pd;
 	}
 

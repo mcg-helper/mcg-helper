@@ -36,15 +36,15 @@ function createHtmlModal(id, param) {
 		} else if($("#"+id).attr("eletype") == "json") {
 			url = "/html/flowJsonModal";
 			option["title"] = "json控件";
-			option["width"] = 1000;
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "sqlQuery") {
 			url = "/html/flowSqlQueryModal";
 			option["title"] = "sql查询";
-			option["width"] = 1000;
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "sqlExecute") {
 			url = "/html/flowSqlExecuteModal";
 			option["title"] = "sql执行";
-			option["width"] = 1000;
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "data") {
 			url = "/html/flowDataModal";
 			option["title"] = "data控件";
@@ -52,14 +52,10 @@ function createHtmlModal(id, param) {
 		} else if($("#"+id).attr("eletype") == "start") {
 			url = "/html/flowStartModal";
 			option["title"] = "开始控件";
-			option["width"] = 800;
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "text"){
 			url = "/html/flowTextModal";
 			option["title"] = "文本控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "gmybatis") {
-			url = "/html/flowGmybatisModal";
-			option["title"] = "mybatis控件";
 			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "script") {
 			url = "/html/flowScriptModal";
@@ -77,18 +73,25 @@ function createHtmlModal(id, param) {
 			url = "/html/flowLinuxModal";
 			option["title"] = "linux控件";
 			option["width"] = 1100;
+		} else if($("#"+id).attr("eletype") == "wonton") {
+			url = "/html/flowWontonModal";
+			option["title"] = "混沌控件";
+			option["width"] = 1100;
+		} else if($("#"+id).attr("eletype") == "process") {
+			url = "/html/flowProcessModal";
+			option["title"] = "子流程控件";
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "end") {
 			url = "/html/flowEndModal";
 			option["title"] = "结束控件";
-			option["width"] = 800;
+			option["width"] = 1100;
 		}
 
 		param["modalId"] = modalId.replace(/_Modal/g, "");
 		param["eletype"] = $("#"+id).attr("eletype");
 		param["option"] = option;
 		if(url != null)
-			common.showAjaxDialog(url, null, createModalCallBack, null, param);
-//			common.showAjaxModal(url, null, createModalCallBack, null, param);
+			common.showAjaxDialog(url, setDialogBtns(param), createModalCallBack, null, param);
 	}
 }
 
@@ -120,12 +123,12 @@ function setDialogBtns(param) {
 						row["value"] = tableData[i].value;
 						row["desc"] = tableData[i].desc;
 						$("#" + param.modalId + "_flowStartTable").bootstrapTable('updateRow', {"index":i, "row":row  });
-					} 			
+					}
 		 			$("#" + param.modalId + "_flowStartTable").bootstrapTable('append', { "id": Math.uuid(), "key": "", "value": "", "desc": "" });
 				}
 			},
 			{
-				class: "btn btn-default",			
+				class: "btn btn-default",
 				text: "删除",
 				click: function() {
 		            var ids = $.map($("#" + param.modalId + "_flowStartTable").bootstrapTable('getSelections'), function (row) {
@@ -145,7 +148,7 @@ function setDialogBtns(param) {
 				}
 			},
 			{
-				class: "btn btn-primary",			
+				class: "btn btn-primary",
 				text: "保存",
 				click: function() {
 					var _this = this;
@@ -157,10 +160,11 @@ function setDialogBtns(param) {
 						row["value"] = tableData[i].value;
 						row["desc"] = tableData[i].desc;
 						rowsData.var.push(row);
-					}			
+					}
 					var data = $("#" + param.modalId + "_startForm").serializeJSON();
 					var result = JSON.parse(data);
 					result["startProperty"] = rowsData;
+					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveStart",
 						type : "POST",
@@ -190,10 +194,12 @@ function setDialogBtns(param) {
 				click: function() {
 					var _this = this;
 					var data = $("#" + param.modalId　+ "_endForm").serializeJSON();
+					var result = JSON.parse(data);
+					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveFlowEnd",
 						type : "POST",
-						data : data,
+						data : JSON.stringify(result),
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
@@ -286,7 +292,7 @@ function setDialogBtns(param) {
 					var data = $("#" + param.modalId + "_modelForm").serializeJSON();
 					var result = JSON.parse(data);
 					result["modelField"] = rowsData;
-					
+					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveModel",
 						type : "POST",
@@ -321,6 +327,7 @@ function setDialogBtns(param) {
 					var jsonCore = {};
 					jsonCore["source"] = param.editor.getValue();
 					result["jsonCore"] = jsonCore; 
+					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveJson",
 						type : "POST",
@@ -352,6 +359,7 @@ function setDialogBtns(param) {
 					var data = $("#" + param.modalId + "_sqlQueryForm").serializeJSON();
 					var result = JSON.parse(data);
 					result.sqlQueryCore["source"] = param.editor.getValue(); 
+					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveSqlQuery",
 						type : "POST",
@@ -383,6 +391,7 @@ function setDialogBtns(param) {
 					var data = $("#" + param.modalId + "_sqlExecuteForm").serializeJSON();
 					var result = JSON.parse(data);
 					result.sqlExecuteCore["source"] = param.editor.getValue(); 
+					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveSqlExecute",
 						type : "POST",
@@ -477,7 +486,8 @@ function setDialogBtns(param) {
 					}
 					var data = $("#" + param.modalId + "_dataForm").serializeJSON();
 					var result = JSON.parse(data);
-					result.dataField["dataRecord"] = rowsData;			
+					result.dataField["dataRecord"] = rowsData;
+					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveData",
 						type : "POST",
@@ -500,71 +510,6 @@ function setDialogBtns(param) {
 				}
 			}
 		];			
-	} else if(param.eletype == "gmybatis") {
-		buttons = [
-			{
-				class: "btn btn-default",			
-				text: "删除",
-				click: function() {
-		            var ids = $.map($("#" + param.modalId + "_flowGmybatisTable").bootstrapTable('getSelections'), function (row) {
-		                return row.id;
-		            });
-		            $("#" + param.modalId + "_flowGmybatisTable").bootstrapTable('remove', {
-		                field: 'id',
-		                values: ids
-		            });					
-				}
-			},
-			{
-				class: "btn btn-default",			
-				text: "清空",
-				click: function() {
-					$("#" + param.modalId + "_flowGmybatisTable").bootstrapTable('removeAll');
-				}
-			},
-			{
-				class: "btn btn-primary",			
-				text: "保存",
-				click: function() {
-					var _this = this;
-					var data = $("#" + param.modalId + "_gmybatisForm").serializeJSON();
-					var result = JSON.parse(data);
-					var tableData = $("#" + param.modalId + "_flowGmybatisTable").bootstrapTable('getData');
-					var tables = [];
-					for(var i=0; i<tableData.length; i++) {
-						if(tableData[i].selected == true) {
-							var row={};
-							row["tableName"] = tableData[i].tableName;
-							row["entityName"] = tableData[i].entityName;
-							row["daoName"] = tableData[i].daoName;
-							row["xmlName"] = tableData[i].xmlName;
-							tables.push(row);
-						}
-					}
-					result["relation"].dataSourceId = $("#" + param.modalId + "_dataSourceId").val();
-					result["relation"].tables = tables;
-					common.ajax({
-						url : "/flow/saveGmybatis",
-						type : "POST",
-						data : JSON.stringify(result),
-						contentType : "application/json"
-					}, function(data) {
-						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.gmybatisProperty.name);
-							$( _this ).dialog( "destroy" );
-						}
-					});					
-					
-				}
-			},
-			{
-				class: "btn btn-default",
-				text: "关闭",
-				click: function() {
-					$( this ).dialog( "destroy" );
-				}
-			}
-		];			
 	} else if(param.eletype == "script") {
 		buttons = [
 			{
@@ -577,6 +522,7 @@ function setDialogBtns(param) {
 					var scriptCore = {};
 					scriptCore["source"] = param.editor.getValue();
 					result["scriptCore"] = scriptCore; 
+					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveScript",
 						type : "POST",
@@ -612,6 +558,7 @@ function setDialogBtns(param) {
 					var javaCore = {};
 					javaCore["source"] = param.editor.getValue();
 					result["javaCore"] = javaCore; 
+					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveJava",
 						type : "POST",
@@ -647,6 +594,7 @@ function setDialogBtns(param) {
 							var pythonCore = {};
 							pythonCore["source"] = param.editor.getValue();
 							result["pythonCore"] = pythonCore; 
+							result["flowId"] = getCurrentFlowId();
 							common.ajax({
 								url : "/flow/savePython",
 								type : "POST",
@@ -682,6 +630,7 @@ function setDialogBtns(param) {
 							linuxCore["source"] = param.editor.getValue();
 							linuxCore["serverSourceId"] = $("#" + param.modalId + "_serverSourceId").val();
 							result["linuxCore"] = linuxCore; 
+							result["flowId"] = getCurrentFlowId();
 							common.ajax({
 								url : "/flow/saveLinux",
 								type : "POST",
@@ -704,6 +653,42 @@ function setDialogBtns(param) {
 						}
 					}
 				];			
+	} else if(param.eletype == "wonton") {
+		buttons = [
+			{
+				class: "btn btn-primary",
+				text: "保存",
+				click: function() {
+					var _this = this;
+					var result = JSON.parse($("#" + param.modalId + "_wontonForm").serializeJSON());
+					result.wontonNetRule["targetIps"] = result.wontonNetRule.TargetIps.split(",");
+					result.wontonNetRule.TargetIps = result.wontonNetRule.TargetIps.split(",");
+					result.wontonNetRule["targetPorts"] = result.wontonNetRule.TargetPorts.split(",");
+					result.wontonNetRule.TargetPorts = result.wontonNetRule.TargetPorts.split(",");
+					result.wontonNetRule["targetProtos"] = result.wontonNetRule.TargetProtos.split(",");
+					result.wontonNetRule.TargetProtos = result.wontonNetRule.TargetProtos.split(",");
+					result["flowId"] = getCurrentFlowId();
+					common.ajax({
+						url : "/flow/saveWonton",
+						type : "POST",
+						data : JSON.stringify(result),
+						contentType : "application/json"
+					}, function(data) {
+						if(data.statusCode == 1) {
+							changeElementSign(param.modalId, result.wontonProperty.name);
+							$( _this ).dialog( "destroy" );
+						}
+					});
+				}
+			},
+			{
+				class: "btn btn-default",			
+				text: "关闭",
+				click: function() {
+					$( this ).dialog( "destroy" );
+				}
+			}
+		];			
 	} else if(param.eletype == "text") {
 		buttons = [
 			{
@@ -716,6 +701,7 @@ function setDialogBtns(param) {
 					var textCore = {};
 					textCore["source"] = param.editor.getValue();
 					result["textCore"] = textCore; 
+					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveText",
 						type : "POST",
@@ -863,6 +849,38 @@ function setDialogBtns(param) {
 				}
 			}
 		];	
+	} else if(param.eletype == "process") {
+		buttons = [
+			{
+				class: "btn btn-primary",			
+				text: "保存",
+				click: function() {
+					var _this = this;
+					var data = $("#" + param.modalId + "_processForm").serializeJSON();
+					var result = JSON.parse(data);
+					result["flowId"] = getCurrentFlowId();
+					common.ajax({
+						url : "/flow/saveProcess",
+						type : "POST",
+						data : JSON.stringify(result),
+						contentType : "application/json"
+					}, function(data) {
+						if(data.statusCode == 1) {
+							changeElementSign(param.modalId, result.processProperty.name);
+							$( _this ).dialog( "destroy" );
+						}
+					});					
+					
+				}
+			},
+			{
+				class: "btn btn-default",			
+				text: "关闭",
+				click: function() {
+					$( this ).dialog( "destroy" );
+				}
+			}
+		];			
 	}
 	
 	return buttons;
@@ -872,13 +890,13 @@ function setDialogBtns(param) {
  * 由于多层使用modal后，无法在页面中执行js，所以可在回调中执行js
  *  */
 function createModalCallBack(param) {
+	
 	if(param.eletype == "model") {
 
 		$("#" + param.modalId + "_flowModelTable").on('click-cell.bs.table', function ($element, field, value, row) {
 			_fieldName_ = field;
 			_tableName_ = param.modalId + "_flowModelTable";
 		});
-		
 		initFlowModelModal(param.modalId);
 	} else if(param.eletype == "json") {
 		var editor = ace.edit(param.modalId + "_editor");
@@ -1048,6 +1066,28 @@ function createModalCallBack(param) {
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
 		param["editor"] = editor;
 		initLinuxModal(param.modalId, editor);
+	} else if(param.eletype == "wonton") {
+
+	 	$("#"+ param.modalId + "_tab a").each(function(){
+			$(this).on("shown.bs.tab", function (e) {
+		    	var href = $(this).attr("href");
+		    	var id = href.substring(href.indexOf("#") + 1);
+		    	$('#'+id + ' input[type=checkbox]').bootstrapSwitch({
+		    		animate:true
+		    	});
+		    	if($('#'+id + ' input[type=checkbox]').val() == "true") {
+		    		$('#'+id + ' input[type=checkbox]').bootstrapSwitch('state', true);
+		    	}
+		     });
+		});		
+		
+		$(".selectpicker").selectpicker({
+			noneSelectedText: "请选择",
+			liveSearch: true,
+			width:"100%"
+		});		
+		
+		initWontonModal(param.modalId);
 	} else if(param.eletype == "data") {
 		$(".selectpicker").selectpicker({
 			noneSelectedText: "请选择",
@@ -1099,41 +1139,64 @@ function createModalCallBack(param) {
 		}); 	
 		
 		initDataModal(param.modalId);
-	} else if(param.eletype == "gmybatis") {
-		$(".selectpicker").selectpicker({
-			noneSelectedText: "请选择",
-			width:"100%"
-		});
-		$("#" + param.modalId + "_dataSourceId").change(function () {
-			if($("#" + param.modalId + "_dataSourceId").val() != null && $("#" + param.modalId + "_dataSourceId").val() != "" ) {
-				common.ajax({
-					url : "/common/getTableByDataSourceId",
-					type : "POST",
-					data : "dataSourceId=" + $("#" + param.modalId + "_dataSourceId").val(),
-				}, function(data) {
-					$("#" + param.modalId + "_flowGmybatisTable").bootstrapTable('removeAll');
-					for(var i=0; i<data.length; i++) {
-			 			$("#" + param.modalId + "_flowGmybatisTable").bootstrapTable('append', { "id": Math.uuid(), "tableName": data[i].tableName, "entityName": data[i].entityName,
-			 				"daoName": data[i].daoName, "xmlName": data[i].xmlName, "selected": "" });					
-					}
-				});				
-			}
-		});
+	} else if(param.eletype == "process") {
+		var setting = {
+		        view: {
+		            selectedMulti: false
+		        },
+		    	callback: {
+		    		beforeClick: zTreeBeforeClick,
+		    		onClick: flowSelected
+		    	},
+		        check: {
+		            enable: false
+		        },
+		        data: {
+		            simpleData: {
+		                enable: true
+		            }
+		        }
+		};
 
-/* 		$("#" + param.modalId + "_addGmybatisBtn").click(function(){
- 			$("#" + param.modalId + "_flowGmybatisTable").bootstrapTable('append', { "id": Math.uuid(), "tableName": "我的tableName", "entityName": "我的entityName",
- 				"daoName": "我的daoName", "xmlName": "我的xmlName", "selected": "我的selected" });
- 			
- 		});*/
-		$("#" + param.modalId + "_flowGmybatisTable").on('click-cell.bs.table', function ($element, field, value, row) {
-			_fieldName_ = field;
-			_tableName_ = param.modalId + "_flowGmybatisTable";
-		}); 		
-	
-		initGmybatisModal(param.modalId);
+		common.ajax({
+			url : "/flowTree/getDatas",
+			type : "GET",
+			data : null,
+			contentType : "application/json"
+		}, function(data) {
+			var flowTreeName = param.modalId + "_flowTree";
+	    	$.fn.zTree.init($("#" + flowTreeName), setting, data.topologys);
+	    	var treeObj = $.fn.zTree.getZTreeObj(flowTreeName);
+	    	treeObj.expandAll(true);
+	    	
+	    	initProcessModal(param.modalId, treeObj);
+	    	
+		});
+		
 	} else if(param.eletype == "end") {
 		initFlowEndModal(param.modalId);
 	}
+}
+
+function zTreeBeforeClick(treeId, treeNode, clickFlag) {
+	var result = false;
+	if(treeNode.id !== $("#flowSelect").attr("flowId")) {
+		result = true;
+	} else {
+		Messenger().post({
+			message: "不能将当前编辑中的流程作为子流程！",
+			type: "error",
+			hideAfter: 5,
+		 	showCloseButton: true
+		});
+	}
+    return result;
+}
+
+function flowSelected(event, treeId, treeNode) {
+	var modalFlowTreeId = treeNode.tId.substring(0, treeNode.tId.indexOf("_flowTree"));
+	$("#" + modalFlowTreeId + "_flowName").html(treeNode.name+"&nbsp;<span class='caret'></span>");
+	$("#" + modalFlowTreeId + "_flowId").val(treeNode.id);
 }
 
 /* 设置ace编辑器全屏功能   */

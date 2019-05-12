@@ -17,7 +17,9 @@
 package com.mcg.plugin.execute.strategy;
 
 import java.util.ArrayList;
+
 import com.alibaba.fastjson.JSON;
+import com.mcg.common.SpringContextHelper;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
@@ -33,7 +35,6 @@ import com.mcg.plugin.execute.ProcessStrategy;
 import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.service.FlowService;
-import com.mcg.service.impl.FlowServiceImpl;
 import com.mcg.util.DataConverter;
 
 public class FlowSqlExecuteStrategy implements ProcessStrategy {
@@ -73,16 +74,12 @@ public class FlowSqlExecuteStrategy implements ProcessStrategy {
 		RunResult runResult = new RunResult();
 		runResult.setElementId(flowSqlExecute.getId());
 		
-        FlowService flowService = new FlowServiceImpl();
+		FlowService flowService = SpringContextHelper.getSpringBean(FlowService.class);
         McgBizAdapter mcgBizAdapter = new FlowDataAdapterImpl(flowService.getMcgDataSourceById(flowSqlExecute.getSqlExecuteCore().getDataSourceId()));
         
-        Integer rows = mcgBizAdapter.executeUpdate(flowSqlExecute.getSqlExecuteCore().getSource(), null);
+        int rows = mcgBizAdapter.executeUpdate(flowSqlExecute.getSqlExecuteCore().getSource(), null);
      
-        if(rows == null) {
-            runResult.setSourceCode("成功执行");
-        } else {
-            runResult.setSourceCode("成功执行，影响行数【" + rows  + "】行");
-        }
+        runResult.setSourceCode("成功执行，影响行数【" + rows  + "】行");
 		executeStruct.getRunStatus().setCode("success");
 		return runResult;
 	}

@@ -18,11 +18,14 @@ package com.mcg.entity.generate;
 
 import java.io.Serializable;
 import java.util.Map;
+
+import javax.servlet.http.HttpSession;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.mcg.entity.global.topology.Topology;
 import com.mcg.plugin.build.McgProduct;
 
 @XmlAccessorType(XmlAccessType.NONE)
@@ -30,6 +33,10 @@ import com.mcg.plugin.build.McgProduct;
 public class ExecuteStruct implements Serializable {
 
     private static final long serialVersionUID = -677740433314925325L;
+    @XmlElement
+    private HttpSession session;
+    @XmlElement
+    private Topology topology;
     @XmlElement
     private Orders orders;
     @XmlElement
@@ -63,5 +70,17 @@ public class ExecuteStruct implements Serializable {
     public void setDataMap(Map<String, McgProduct> dataMap) {
         this.dataMap = dataMap;
     }
+	public HttpSession getSession() {
+		return session;
+	}
+	public void setSession(HttpSession session) {
+		this.session = session;
+	}
+	public Topology getTopology() {
+		return topology;
+	}
+	public void setTopology(Topology topology) {
+		this.topology = topology;
+	}
 
 }

@@ -19,39 +19,46 @@ package com.mcg.service.impl;
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.mcg.common.Constants;
 import com.mcg.entity.global.McgGlobal;
 import com.mcg.entity.global.serversource.ServerSource;
+import com.mcg.service.DbService;
 import com.mcg.service.GlobalService;
-import com.mcg.util.LevelDbUtil;
 
 @Service
 public class GlobalServiceImpl implements GlobalService {
 
+	private static Logger logger = LoggerFactory.getLogger(GlobalServiceImpl.class);
+    @Autowired
+    private DbService dbService;
+	
     @Override
 	public McgGlobal getMcgGlobal() throws ClassNotFoundException, IOException {
     	
-    	return (McgGlobal)LevelDbUtil.getObject(Constants.GLOBAL_KEY, McgGlobal.class);
+    	return (McgGlobal)dbService.query(Constants.GLOBAL_KEY, McgGlobal.class);
 	}
 
 	@Override
     public boolean updateGlobal(McgGlobal mcgGlobal) throws IOException {
     	boolean result = false;
 
-		LevelDbUtil.putObject(Constants.GLOBAL_KEY, mcgGlobal);
+    	dbService.save(Constants.GLOBAL_KEY, mcgGlobal);
 		result = true;
         return result;
     }
     
     @Override
 	public boolean saveFlowEmpty(String flowId) {
-    	
-    	LevelDbUtil.delete(flowId);
+    	dbService.delete(flowId);
 		return true;
 	}
 
@@ -74,7 +81,7 @@ public class GlobalServiceImpl implements GlobalService {
 	@Override
 	public List<ServerSource> getServerSources() throws ClassNotFoundException, IOException {
 		List<ServerSource> serverSourceList = null;
-		McgGlobal mcgGlobal = (McgGlobal)LevelDbUtil.getObject(Constants.GLOBAL_KEY, McgGlobal.class);
+		McgGlobal mcgGlobal = (McgGlobal)dbService.query(Constants.GLOBAL_KEY, McgGlobal.class);
 		if(mcgGlobal != null) {
 			serverSourceList = mcgGlobal.getServerSources();
 		}
@@ -92,7 +99,7 @@ public class GlobalServiceImpl implements GlobalService {
 	        session.setPassword(serverSource.getPwd());
 	        session.connect();
 		} catch (JSchException e) {
-			e.printStackTrace();
+			logger.error("测试连接服务器出错，服务器信息：{}，异常信息：{}", JSON.toJSONString(serverSource), e.getMessage());
 		} finally {
 			result = session.isConnected();
 			session.disconnect();

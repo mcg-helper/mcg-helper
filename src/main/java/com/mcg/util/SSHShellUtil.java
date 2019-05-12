@@ -1,3 +1,19 @@
+/*
+ * @Copyright (c) 2018 缪聪(mcg-helper@qq.com)
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");  
+ * you may not use this file except in compliance with the License.  
+ * You may obtain a copy of the License at  
+ *     
+ *     http://www.apache.org/licenses/LICENSE-2.0  
+ *     
+ * Unless required by applicable law or agreed to in writing, software  
+ * distributed under the License is distributed on an "AS IS" BASIS,  
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
+ * See the License for the specific language governing permissions and  
+ * limitations under the License.
+ */
+
 package com.mcg.util;
 
 import java.io.IOException;
@@ -7,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelShell;
@@ -15,10 +33,10 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 import com.mcg.common.Constants;
+import com.mcg.plugin.task.McgTask;
 
 public class SSHShellUtil {
 
-	
 	public static String execute(String ip, int port, String userName, String password, String shell) throws JSchException, IOException {
 		String response = null;
 		JSch.setLogger(new ShellLogger());
@@ -33,7 +51,7 @@ public class SSHShellUtil {
 		PipedOutputStream pipedOutputStream = new PipedOutputStream();
 		pipedOutputStream.connect(pipedInputStream);
 		
-		Thread thread = new Thread(new MonitorShellUser(shell, pipedOutputStream));
+		Thread thread = new Thread(new MonitorShellUser(channel, shell, pipedOutputStream));
 		thread.start();
 		
 		channel.setInputStream(pipedInputStream);
@@ -43,7 +61,9 @@ public class SSHShellUtil {
 		shellPipedOutputStream.connect(receiveStream);
 		
 		channel.setOutputStream(shellPipedOutputStream);
-		((ChannelShell)channel).setEnv("LANG", "zh_CN.UTF-8");
+		((ChannelShell)channel).setPtyType("dumb", 160, 24, 1000, 480);
+		//((ChannelShell)channel).setTerminalMode("binary".getBytes());
+	//	((ChannelShell)channel).setEnv("LANG", "zh_CN.UTF-8");
 		try {
 			channel.connect();
 			response = IOUtils.toString(receiveStream, "UTF-8");
@@ -62,6 +82,7 @@ public class SSHShellUtil {
 	}
 	
 	public static class ShellLogger implements com.jcraft.jsch.Logger {
+		private static Logger shellLogger = LoggerFactory.getLogger(ShellLogger.class);
 		static ConcurrentHashMap<Integer, String> levelMap = new ConcurrentHashMap<>();
 		static {
 			levelMap.put(new Integer(DEBUG), "DEBUG: ");
@@ -78,13 +99,13 @@ public class SSHShellUtil {
 
 		@Override
 		public void log(int level, String message) {
-			System.out.print(levelMap.get(new Integer(level)));
-			System.out.println(message);
+			shellLogger.debug("level:{}, message:{}", levelMap.get(new Integer(level)), message);
 		}
 
 	}
 	
 	public static class SSHUserInfo implements UserInfo {
+		private static Logger sshUserInfoLogger = LoggerFactory.getLogger(SSHUserInfo.class);
 		String password;
 		public SSHUserInfo(String password) {
 			this.password = password;
@@ -102,7 +123,7 @@ public class SSHShellUtil {
 		}
 
 		public boolean promptPassphrase(String message) {
-			System.out.println(message);
+			sshUserInfoLogger.debug("promptPassphrase={}", message);
 			return true;
 		}
 
@@ -111,7 +132,7 @@ public class SSHShellUtil {
 		}
 
 		public void showMessage(String message) {
-			System.out.println("showMessage=" + message);
+			sshUserInfoLogger.debug("showMessage={}", message);
 		}
 
 	}	
@@ -120,10 +141,13 @@ public class SSHShellUtil {
 
 class MonitorShellUser implements Runnable {
 
+	private static Logger monitorShellUserLogger = LoggerFactory.getLogger(McgTask.class);
 	private String shell;
 	private PipedOutputStream pipedOutputStream;
+	private Channel channel;
 	
-	public MonitorShellUser(String shell, PipedOutputStream pipedOutputStream) {
+	public MonitorShellUser(Channel channel, String shell, PipedOutputStream pipedOutputStream) {
+		this.channel = channel;
 		this.shell = shell;
 		this.pipedOutputStream = pipedOutputStream;
 	}
@@ -134,6 +158,7 @@ class MonitorShellUser implements Runnable {
 		try {
 			String[] commands = shell.split(Constants.LINUX_ENTER);
 			for(String command : commands) {
+				command = command.trim();
 				if(command.startsWith(Constants.LINUX_INTERACT)) {
 					try {
 						String sleepTime = command.substring(command.indexOf(Constants.LINUX_INTERACT) + Constants.LINUX_INTERACT.length()).trim();
@@ -145,6 +170,7 @@ class MonitorShellUser implements Runnable {
 						
 						continue;
 					} catch (Exception e) {
+						monitorShellUserLogger.error("执行linux命令失败，命令：{}，异常信息：{}", command, e.getMessage());
 						pipedOutputStream.write((command + Constants.LINUX_ENTER).getBytes());
 						break;
 					}
@@ -152,19 +178,21 @@ class MonitorShellUser implements Runnable {
 				}
 				pipedOutputStream.write((command + Constants.LINUX_ENTER).getBytes());
 			}
-			
-			for(int i=0; i<5; i++) {
-				pipedOutputStream.write((Constants.LINUX_EOF + Constants.LINUX_ENTER).getBytes());
+
+			while (!channel.isClosed()) {
+				this.pipedOutputStream.write((Constants.LINUX_EOF + Constants.LINUX_ENTER).getBytes());
+				Thread.sleep(500);
 			}
-			pipedOutputStream.flush();
 			
-		} catch (IOException e) {
-			e.printStackTrace();
+			pipedOutputStream.flush();
+
+		} catch (Exception e) {
+			monitorShellUserLogger.error("执行shell出错，异常信息：{}", e.getMessage());
 		} finally {
 			try {
 				pipedOutputStream.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				monitorShellUserLogger.error(e.getMessage());
 			}
 		}
 

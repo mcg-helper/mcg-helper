@@ -19,7 +19,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
 	String path = request.getContextPath();
-	String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+	String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path;
 %>
 <!DOCTYPE html>
 <html>
@@ -31,17 +31,12 @@
 		<link rel="shortcut icon" type="image/png" href="../../img/favicon.png">
         <title>mcg-helper研发助手</title>
 		
-		<link rel="stylesheet" href="<%=basePath %>library/css/core.css?_v=${version}">
-		<link rel="stylesheet" href="<%=basePath %>library/css/drage.css?_v=${version}">
-		<script type="text/javascript" src="<%=basePath %>library/js/flow/jquery.jsPlumb-1.7.5-min.js?_v=${version}"></script>
-		<script type="text/javascript" src="<%=basePath %>library/js/flow/wigdet.js?_v=${version}"></script>	
-		<script type="text/javascript" src="<%=basePath %>library/js/flow/mcgfn.js?_v=${version}"></script>			
-		<script type="text/javascript" src="<%=basePath %>library/js/flow/htmlmodel.js?_v=${version}"></script>
+		<script type="text/javascript" src="<%=basePath %>/library/js/flow/mcgfn.js?_v=${version}"></script>			
 	</head>
 
 	<body>
 		<!-- 主面body开始 -->
-		<div id="mcg_body"  class="container-fluid autoHeight">
+		<div id="mcg_body" class="container-fluid autoHeight">
 			<div class="row autoHeight">
 				<!-- 工具区开始 -->
 				<div class="col-md-2 autoHeight">
@@ -76,11 +71,11 @@
 										</div>
 										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarGmybatis" class="toolbar_eletype" eletype="gmybatis">gmybatis</div>
-											</div>
-											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarData" class="toolbar_eletype" eletype="data">data</div>
 											</div>
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarText" class="toolbar_eletype" eletype="text">文本</div>
+											</div>	
 										</div>
 										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
@@ -103,17 +98,17 @@
 												<div id="toolbarPython" class="toolbar_eletype" eletype="python">Python</div>
 											</div>
 											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarText" class="toolbar_eletype" eletype="text">文本</div>
-											</div>												
+												<div id="toolbarLinux" class="toolbar_eletype" eletype="linux">Linux</div>
+											</div>											
 										</div>
 										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarLinux" class="toolbar_eletype" eletype="linux">Linux</div>
+												<div id="toolbarWonton" class="toolbar_eletype" eletype="wonton">混沌</div>
 											</div>
 											<div class="col-md-4 col-md-offset-1">
-												
-											</div>												
-										</div>										
+												<div id="toolbarProcess" class="toolbar_eletype" eletype="process">子流程</div>
+											</div>
+										</div>
 										
 									</div>
 								</div>

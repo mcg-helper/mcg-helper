@@ -17,6 +17,7 @@
 package com.mcg.entity.generate;
 
 import java.io.Serializable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -28,11 +29,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class RunStatus implements Serializable {
 
     private static final long serialVersionUID = -7093061150060549223L;
-    //success:成功执行当前控件，exception:执行当前控件发生异常
+
     @XmlElement
     private String code;
     @XmlElement
     private String executeId;
+    @XmlElement
+    private ConcurrentHashMap<String, String> availableFileMap = new ConcurrentHashMap<String, String>();
     
     public String getCode() {
         return code;
@@ -46,5 +49,12 @@ public class RunStatus implements Serializable {
     public void setExecuteId(String executeId) {
         this.executeId = executeId;
     }
+	public ConcurrentHashMap<String, String> getAvailableFileMap() {
+		return availableFileMap;
+	}
+	public void setAvailableFileMap(ConcurrentHashMap<String, String> availableFileMap) {
+		this.availableFileMap = availableFileMap;
+	}
+
     
 }

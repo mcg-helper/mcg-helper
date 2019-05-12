@@ -152,7 +152,7 @@ function getElementDataById(id, func) {
 	common.ajax({
 		url : "/common/getMcgProductById",
 		type : "POST",
-		data : "id="+id
+		data : "flowId=" + $("#flowSelect").attr("flowId") + "&id="+id
 	}, func);
 }
 
@@ -259,35 +259,6 @@ function initFlowModelModal(id) {
 		
 	});	
 	
-}
-
-function initGmybatisModal(id) {
-	getElementDataById(id, function(data) {
-		if(data != null && data != "" && data != undefined && data.relation != undefined) {
-			if(data.relation.tables != undefined && data.relation.tables.length > 0) {
-				var rows = [];
-				for(var i=0; i<data.relation.tables.length; i++){
-					rows.push({"id":Math.uuid(), "tableName":data.relation.tables[i].tableName, "entityName":data.relation.tables[i].entityName,
-						"daoName":data.relation.tables[i].daoName, "xmlName":data.relation.tables[i].xmlName, "selected":true });
-				}
-				$("#" + id + "_flowGmybatisTable").bootstrapTable({"data":rows});
-			} else {
-				$("#" + id + "_flowGmybatisTable").bootstrapTable();
-			}
-			$("#" + id + "_name").val(data.gmybatisProperty.name);
-			$("#" + id + "_key").val(data.gmybatisProperty.key);
-			$("#" + id + "_pojoProjectPath").val(data.gmybatisProperty.pojoProjectPath);
-			$("#" + id + "_xmlProjectPath").val(data.gmybatisProperty.xmlProjectPath);
-			$("#" + id + "_daoProjectPath").val(data.gmybatisProperty.daoProjectPath);			
-			$("#" + id + "_pojoOutPath").val(data.gmybatisProperty.pojoOutPath);
-			$("#" + id + "_xmlOutPath").val(data.gmybatisProperty.xmlOutPath);
-			$("#" + id + "_daoOutPath").val(data.gmybatisProperty.daoOutPath);
-			$("#" + id + "_dataSourceId").selectpicker('val', data.relation.dataSourceId);
-		} else {
-			$("#" + id + "_flowGmybatisTable").bootstrapTable();
-		}
-		
-	});
 }
 
 function initDataModal(id) {
@@ -440,6 +411,42 @@ function initLinuxModal(id, editor) {
 		} else {
 			editor.setValue("");
 		}
+	});
+}
+
+function initWontonModal(id) {
+	
+	getElementDataById(id, function(data) {
+		if(data != null && data != "") {
+			common.formUtils.setValues(id + "_wontonForm", data);
+			if(data.wontonNetRule.TargetIp != null) {
+				$("#" + id + "_targetIps").val(data.wontonNetRule.TargetIps.join(","));
+			}
+			if(data.wontonNetRule.TargetPorts != null) {
+				$("#" + id + "_targetPorts").val(data.wontonNetRule.TargetPorts.join(","));
+			}
+			if(data.wontonNetRule.TargetProtos != null) {
+				$("#" + id + "_targetProtos").val(data.wontonNetRule.TargetProtos.join(","));
+			}
+		}
+
+	});
+}
+
+function initProcessModal(id, treeObj) {
+	getElementDataById(id, function(data) {
+		if(data != null && data != "" && data != undefined && data.processProperty != undefined) {
+			common.formUtils.setValues(id + "_processForm", data);
+	    	
+	    	if(data.processProperty.flowId != null || data.processProperty.flowId != "") {
+	    		var rootNode = treeObj.getNodeByParam("id", data.processProperty.flowId, null);
+	    		if(rootNode != null) {
+					$("#" + id + "_flowName").html(rootNode.name+"&nbsp;<span class='caret'></span>");
+			    	treeObj.selectNode(rootNode);
+	    		}
+	    	}
+
+		} 
 	});
 }
 

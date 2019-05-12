@@ -24,17 +24,18 @@ import java.util.Map;
 
 import com.mcg.entity.flow.FlowStruct;
 import com.mcg.entity.flow.data.FlowData;
-import com.mcg.entity.flow.gmybatis.FlowGmybatis;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
 import com.mcg.entity.flow.model.FlowModel;
+import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.sequence.FlowSequence;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
 import com.mcg.entity.flow.text.FlowText;
+import com.mcg.entity.flow.wonton.FlowWonton;
 import com.mcg.entity.generate.Order;
 import com.mcg.entity.generate.Orders;
 import com.mcg.plugin.build.McgProduct;
@@ -119,6 +120,7 @@ public class TopoSort {
 			}
 			n--; // 下一个顶点
 		}
+		
 /*
         //输出矩阵
         for(int i=0; i<map.length; i++) {
@@ -131,7 +133,7 @@ public class TopoSort {
         }
 		*/
         Orders orders = new Orders();
-        List<Order> orderList = new ArrayList<Order>();
+        List<List<Order>> orderLoopList = new ArrayList<>();
         
 		// 流程图排序
 		for (int k = 0; k < num; k++) {
@@ -151,9 +153,11 @@ public class TopoSort {
 	        if(pidList.size() > 0) {
 	            order.setPid(pidList);
 	        }
+	        List<Order> orderList = new ArrayList<>();
 	        orderList.add(order);
+	        orderLoopList.add(orderList);
 		}
-		orders.setOrder(orderList);
+		orders.setOrder(orderLoopList);
 		return orders;
 	}
 	
@@ -206,13 +210,6 @@ public class TopoSort {
     	        sortMap.put(flowJson.getId(), num++);
     	    }
 	    }	    
-	    if(flowStruct.getFlowGmybatises() != null && flowStruct.getFlowGmybatises().getFlowGmybatis() != null && flowStruct.getFlowGmybatises().getFlowGmybatis().size() > 0) {
-            for(FlowGmybatis flowGmybatis : flowStruct.getFlowGmybatises().getFlowGmybatis()) {
-                topoSort.addVertex(flowGmybatis.getGmybatisId());
-                dataMap.put(flowGmybatis.getGmybatisId(), flowGmybatis);
-                sortMap.put(flowGmybatis.getGmybatisId(), num++);
-            }
-	    }
 	    if(flowStruct.getFlowDatas() != null && flowStruct.getFlowDatas().getFlowData() != null && flowStruct.getFlowDatas().getFlowData().size() > 0) {
             for(FlowData flowData : flowStruct.getFlowDatas().getFlowData()) {
                 topoSort.addVertex(flowData.getId());
@@ -247,7 +244,22 @@ public class TopoSort {
                 dataMap.put(flowLinux.getId(), flowLinux);
                 sortMap.put(flowLinux.getId(), num++);
             }
-	    }	    
+	    }	
+	    if(flowStruct.getFlowWontons() != null && flowStruct.getFlowWontons().getFlowWonton() != null && flowStruct.getFlowWontons().getFlowWonton().size() > 0) {
+            for(FlowWonton flowWonton : flowStruct.getFlowWontons().getFlowWonton()) {
+                topoSort.addVertex(flowWonton.getId());
+                dataMap.put(flowWonton.getId(), flowWonton);
+                sortMap.put(flowWonton.getId(), num++);
+            }
+	    }
+	    if(flowStruct.getFlowProcesses() != null && flowStruct.getFlowProcesses().getFlowProcess() != null && flowStruct.getFlowProcesses().getFlowProcess().size() > 0) {
+            for(FlowProcess flowProcess : flowStruct.getFlowProcesses().getFlowProcess()) {
+                topoSort.addVertex(flowProcess.getId());
+                dataMap.put(flowProcess.getId(), flowProcess);
+                sortMap.put(flowProcess.getId(), num++);
+            }
+	    }
+	    
 	    if(flowStruct.getFlowTexts() != null && flowStruct.getFlowTexts().getFlowText() != null && flowStruct.getFlowTexts().getFlowText().size() > 0) {
             for(FlowText flowText : flowStruct.getFlowTexts().getFlowText()) {
                 topoSort.addVertex(flowText.getTextId());

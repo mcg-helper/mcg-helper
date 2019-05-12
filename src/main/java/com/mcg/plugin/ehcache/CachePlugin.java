@@ -31,8 +31,8 @@ public class CachePlugin {
         Cache cache = cacheManager.getCache(cacheName);
         cache.getCacheConfiguration().setEternal(true);
         return cache;
-    }    
-    
+    }
+       
     public static void put(String key, Object value) {
         Cache cache = cacheManager.getCache(Constants.CACHE_NAME);
         if (cache != null) {
@@ -49,6 +49,16 @@ public class CachePlugin {
         return element.getObjectValue();
     }
 
+    public static void putFlowEntity(String flowId, String entityId, Object value) {
+    	String key = String.format("%s#%s", flowId, entityId);
+    	put(key, value);
+    }
+    
+    public static Object getFlowEntity(String flowId, String entityId) {
+    	String key = String.format("%s#%s", flowId, entityId);
+        return get(key);
+    }
+    
     public static void removeCache() {
         cacheManager.removeCache(Constants.CACHE_NAME);
     }

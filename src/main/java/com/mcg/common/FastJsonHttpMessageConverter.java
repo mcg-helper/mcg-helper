@@ -23,7 +23,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -122,7 +122,7 @@ public class FastJsonHttpMessageConverter extends
     }
     
     private void readAfter(Object object) {
-        if (ArrayUtils.isNotEmpty(this.jsonProcessInterceptors)) {
+    	if (ArrayUtils.isNotEmpty(this.jsonProcessInterceptors)) {
             for (JsonProcessInterceptor interceptor : this.jsonProcessInterceptors) {
                 interceptor.readAfter(object);
             }

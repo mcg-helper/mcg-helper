@@ -43,5 +43,10 @@ public class PermissionCollection {
 	public UserCacheBean getUserCache(String sessionID) {
 		return mapSU.get(sessionID);
 	}
+
+	public Map<String, UserCacheBean> getMapSU() {
+		return mapSU;
+	}
+
 	
 }

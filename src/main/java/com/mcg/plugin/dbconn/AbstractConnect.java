@@ -24,8 +24,12 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.DbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractConnect {
+	
+	private static Logger logger = LoggerFactory.getLogger(AbstractConnect.class);
 	
 	public DbConnect dbConnect;
 
@@ -71,6 +75,7 @@ public abstract class AbstractConnect {
 	 * @return
 	 * @throws SQLException
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> List<T> executeQuery(T clazz, String sql, Object... para) throws SQLException {
 		return dbConnect.querySql(clazz, sql, para);
 	}
@@ -128,6 +133,7 @@ public abstract class AbstractConnect {
                 result = true;
             }            
         } catch (SQLException e) {
+        	logger.error("测试连接出错，异常信息：", e);
             return result;
         }	    
 	    
