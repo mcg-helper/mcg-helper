@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
 import com.mcg.entity.flow.start.FlowStart;
 import com.mcg.entity.flow.start.Var;
@@ -31,6 +34,8 @@ import com.mcg.plugin.execute.ProcessStrategy;
 
 public class FlowStartStrategy implements ProcessStrategy {
 
+	private static Logger logger = LoggerFactory.getLogger(FlowStartStrategy.class);
+	
 	@Override
 	public void prepare(ArrayList<String> sequence, McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
 		FlowStart flowStart = (FlowStart)mcgProduct;
@@ -50,6 +55,8 @@ public class FlowStartStrategy implements ProcessStrategy {
         }
         result.setJsonVar(JSON.toJSONString(dataMap, true));		
         executeStruct.getRunStatus().setCode("success");
+        
+        logger.debug("开始控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowStart), JSON.toJSONString(executeStruct.getRunStatus()));
 		return result;
 	}
 	

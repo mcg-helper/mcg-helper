@@ -47,7 +47,7 @@
 									<h4 class="panel-title">
 										<a data-toggle="collapse" data-parent="#accordion"
 											href="#collapseOne" aria-expanded="true"
-											aria-controls="collapseOne">拖拽控件区</a>
+											aria-controls="collapseOne">拖拽控件</a>
 									</h4>
 								</div>
 								<div id="collapseOne" class="panel-collapse collapse in"
@@ -110,6 +110,13 @@
 											</div>
 										</div>
 										
+										<div class="row">
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarLoop" class="toolbar_eletype" eletype="loop">循环</div>
+											</div>
+											
+										</div>
+										
 									</div>
 								</div>
 							</div>
@@ -133,7 +140,7 @@
 								<button id="flowClearBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-remove-sign"></span>&nbsp;清空</button>
 								<button id="flowDataSourceBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-copyright-mark"></span>&nbsp;数据源</button>
 								<button id="flowSaveBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-floppy-saved"></span>&nbsp;保存</button>
-								<button id="flowGenBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-registration-mark"></span>&nbsp;生成</button>
+								<button id="flowGenBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-registration-mark"></span>&nbsp;执行</button>
 								<button id="flowImpBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-upload"></span>&nbsp;导入</button>
 								<button id="flowExpBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-download"></span>&nbsp;导出</button>
 						</div>
@@ -145,19 +152,31 @@
 		    		</div>
 		    		<!-- 绘制流程区结束 -->
 		    		<!-- 控制台区开始 -->
-		    		<div class="row">
-						<nav class="navbar-default" >
+ 		    		<div class="row">
+				 		<nav class="navbar-default" id="console_header">
 							<div class="container-fluid">
-								<div class="navbar-header">
+								<div class="navbar-header" >
 									<span class="navbar-brand">控制台</span>
+								</div>
+
+								<div class="collapse navbar-collapse">
+									<form class="navbar-form navbar-right">
+										<div class="btn-group">
+										    <button id="flowStopBtn" type="button" class="btn btn-default remove_border"><span class="glyphicon glyphicon-stop text-muted"></span></button>
+										    <button id="flowLogCleanBtn" type="button" class="btn btn-default remove_border"><span class="glyphicon glyphicon-remove text-muted"></span></button>
+										</div>
+									</form>
+									<!-- 
+									<p class="navbar-text navbar-right">图标<a href="#" class="navbar-link">最大化</a></p>
+									 -->
 								</div>
 							</div>
 						</nav>
 		    		</div>
 		    		<div class="row">
-		    			
- 						<div id="console" style="width:100%;"></div>	    			
+ 						<div id="console" style="width:100%;" ></div>	    			
 		    		</div>
+		    		
 		    		<!-- 控制台区结束 -->
 				</div>
 				<!-- 流程工作区结束 -->

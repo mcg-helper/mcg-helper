@@ -25,6 +25,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
@@ -42,6 +45,8 @@ import com.mcg.util.DataConverter;
 
 public class FlowScriptStrategy implements ProcessStrategy {
 
+	private static Logger logger = LoggerFactory.getLogger(FlowScriptStrategy.class);
+	
 	@Override
 	public void prepare(ArrayList<String> sequence, McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
 		FlowScript flowScript = (FlowScript)mcgProduct;
@@ -81,6 +86,7 @@ public class FlowScriptStrategy implements ProcessStrategy {
 		runResult.setJsonVar(JSON.toJSONString(map, true));
 		executeStruct.getRunStatus().setCode("success");
 		
+		logger.debug("js脚本控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowScript), JSON.toJSONString(executeStruct.getRunStatus()));
 		return runResult;
 	}
 	

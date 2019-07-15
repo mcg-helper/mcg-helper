@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
@@ -39,6 +42,8 @@ import com.mcg.util.DataConverter;
 
 public class FlowDataStrategy implements ProcessStrategy {
 
+	private static Logger logger = LoggerFactory.getLogger(FlowDataStrategy.class);
+	
 	@Override
 	public void prepare(ArrayList<String> sequence, McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
 		FlowData flowData = (FlowData)mcgProduct;
@@ -81,6 +86,8 @@ public class FlowDataStrategy implements ProcessStrategy {
         
         result.setJsonVar(JSON.toJSONString(value, true));
         executeStruct.getRunStatus().setCode("success");
+        
+        logger.debug("data控件：{}，执行完毕！流程执行当前状态：{}", JSON.toJSONString(flowData), JSON.toJSONString(executeStruct.getRunStatus()));
 		return result;
 	}
 	

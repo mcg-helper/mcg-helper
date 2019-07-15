@@ -27,8 +27,8 @@
 				<li role="presentation" class="active"><a href="#${modalId }_wontonProperty" data-toggle="tab">属性</a></li>
 				<li role="presentation"><a href="#${modalId }_wontonNetRule" data-toggle="tab">网络</a></li>
 				<li role="presentation"><a href="#${modalId }_wontonCpuRule" data-toggle="tab">CPU</a></li>
-				<li role="presentation"><a href="#${modalId }_wontonMemRule" data-toggle="tab">IO</a></li>				
-				<li role="presentation"><a href="#${modalId }_wontonIoRule" data-toggle="tab">内存</a></li>
+				<li role="presentation"><a href="#${modalId }_wontonMemRule" data-toggle="tab">内存</a></li>				
+				<li role="presentation"><a href="#${modalId }_wontonIoRule" data-toggle="tab">IO</a></li>
 			  	<li role="presentation"><a href="#${modalId }_explain" data-toggle="tab">说明</a></li>
 			</ul>
 		</div>

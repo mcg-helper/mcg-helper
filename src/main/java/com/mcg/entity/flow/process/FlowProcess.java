@@ -48,7 +48,6 @@ public class FlowProcess extends FlowBase {
 	@XmlElement
     private ProcessProperty processProperty;
     
-	
 	@Override
 	public void prepare(ArrayList<String> sequence, ExecuteStruct executeStruct) {
         ProcessContext processContext = new ProcessContext();

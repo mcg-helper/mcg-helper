@@ -450,6 +450,15 @@ function initProcessModal(id, treeObj) {
 	});
 }
 
+function initLoopModal(id) {
+	getElementDataById(id, function(data) {
+		if(data != null && data != "" && data != undefined && data.loopProperty != undefined) {
+			
+			common.formUtils.setValues(id + "_loopForm", data);
+		} 
+	});
+}
+
 function initTextModal(id, editor) {
 	getElementDataById(id, function(data) {
 		if(data != null && data != "" && data != undefined && data.textProperty != undefined) {

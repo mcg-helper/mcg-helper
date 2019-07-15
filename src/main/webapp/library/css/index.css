@@ -200,3 +200,9 @@ a:focus,a:hover,a:active{
 	noOutline:expression_r(this.onFocus=this.blur());
 }    
     
+.btn:focus {
+	outline: none;
+}
+.remove_border {
+	border:none;
+}

@@ -19,6 +19,8 @@ package com.mcg.plugin.execute.strategy;
 import java.util.ArrayList;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -45,6 +47,8 @@ import com.mcg.util.SSHShellUtil;
 
 public class FlowLinuxStrategy implements ProcessStrategy {
 
+	private static Logger logger = LoggerFactory.getLogger(FlowLinuxStrategy.class);
+	
 	@Override
 	public void prepare(ArrayList<String> sequence, McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
 		FlowLinux flowLinux = (FlowLinux)mcgProduct;
@@ -101,6 +105,8 @@ public class FlowLinuxStrategy implements ProcessStrategy {
 		runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
 		
 		executeStruct.getRunStatus().setCode("success");
+		
+		logger.debug("Linux控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowLinux), JSON.toJSONString(executeStruct.getRunStatus()));
 		return runResult;
 	}
 	

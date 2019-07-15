@@ -17,7 +17,7 @@
 package com.mcg.entity.generate;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -35,16 +35,20 @@ public class ExecuteStruct implements Serializable {
     private static final long serialVersionUID = -677740433314925325L;
     @XmlElement
     private HttpSession session;
+    /* 正在执行的流程实例 */
     @XmlElement
     private Topology topology;
     @XmlElement
     private Orders orders;
     @XmlElement
-    private Map<String, McgProduct> dataMap;
+    private ConcurrentHashMap<String, McgProduct> dataMap;
     @XmlElement
     private RunStatus runStatus;
     @XmlElement
-    private Map<String, RunResult> runResultMap;
+    private ConcurrentHashMap<String, RunResult> runResultMap;
+    /* 正在执行的子流程的运行数据 */
+    @XmlElement
+    private ExecuteStruct childExecuteStruct;
     
     public Orders getOrders() {
         return orders;
@@ -58,18 +62,18 @@ public class ExecuteStruct implements Serializable {
     public void setRunStatus(RunStatus runStatus) {
         this.runStatus = runStatus;
     }
-    public Map<String, RunResult> getRunResultMap() {
+	public ConcurrentHashMap<String, McgProduct> getDataMap() {
+		return dataMap;
+	}
+	public void setDataMap(ConcurrentHashMap<String, McgProduct> dataMap) {
+		this.dataMap = dataMap;
+	}
+	public ConcurrentHashMap<String, RunResult> getRunResultMap() {
 		return runResultMap;
 	}
-	public void setRunResultMap(Map<String, RunResult> runResultMap) {
+	public void setRunResultMap(ConcurrentHashMap<String, RunResult> runResultMap) {
 		this.runResultMap = runResultMap;
 	}
-	public Map<String, McgProduct> getDataMap() {
-        return dataMap;
-    }
-    public void setDataMap(Map<String, McgProduct> dataMap) {
-        this.dataMap = dataMap;
-    }
 	public HttpSession getSession() {
 		return session;
 	}
@@ -81,6 +85,12 @@ public class ExecuteStruct implements Serializable {
 	}
 	public void setTopology(Topology topology) {
 		this.topology = topology;
+	}
+	public ExecuteStruct getChildExecuteStruct() {
+		return childExecuteStruct;
+	}
+	public void setChildExecuteStruct(ExecuteStruct childExecuteStruct) {
+		this.childExecuteStruct = childExecuteStruct;
 	}
 
 }

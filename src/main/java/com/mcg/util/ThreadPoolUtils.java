@@ -29,7 +29,7 @@ public class ThreadPoolUtils {
 	 * 执行流程线程池
 	 */
 	public static final ExecutorService FLOW_WORK_EXECUTOR = createExecutorService(10, "flow-execute-pool-%d", 50);
-
+	
 	public static ExecutorService createExecutorService(int size,String threadNamingPattern, int capacity){
         if (size < 1){
             throw new IllegalArgumentException("线程池最小数量不能小于1");

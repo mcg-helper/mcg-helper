@@ -81,6 +81,10 @@ function createHtmlModal(id, param) {
 			url = "/html/flowProcessModal";
 			option["title"] = "子流程控件";
 			option["width"] = 1100;
+		} else if($("#"+id).attr("eletype") == "loop") {
+			url = "/html/flowLoopModal";
+			option["title"] = "循环控件";
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "end") {
 			url = "/html/flowEndModal";
 			option["title"] = "结束控件";
@@ -881,6 +885,38 @@ function setDialogBtns(param) {
 				}
 			}
 		];			
+	} else if(param.eletype == "loop") {
+		buttons = [
+			{
+				class: "btn btn-primary",			
+				text: "保存",
+				click: function() {
+					var _this = this;
+					var data = $("#" + param.modalId + "_loopForm").serializeJSON();
+					var result = JSON.parse(data);
+					result["flowId"] = getCurrentFlowId();
+					common.ajax({
+						url : "/flow/saveLoop",
+						type : "POST",
+						data : JSON.stringify(result),
+						contentType : "application/json"
+					}, function(data) {
+						if(data.statusCode == 1) {
+							changeElementSign(param.modalId, result.loopProperty.name);
+							$( _this ).dialog( "destroy" );
+						}
+					});
+					
+				}
+			},
+			{
+				class: "btn btn-default",			
+				text: "关闭",
+				click: function() {
+					$( this ).dialog( "destroy" );
+				}
+			}
+		];			
 	}
 	
 	return buttons;
@@ -1074,7 +1110,9 @@ function createModalCallBack(param) {
 		    	var id = href.substring(href.indexOf("#") + 1);
 		    	$('#'+id + ' input[type=checkbox]').bootstrapSwitch({
 		    		animate:true
-		    	});
+		    	}).on('switchChange.bootstrapSwitch', function(event, state) {
+		    		$(this).val(state);
+		        });
 		    	if($('#'+id + ' input[type=checkbox]').val() == "true") {
 		    		$('#'+id + ' input[type=checkbox]').bootstrapSwitch('state', true);
 		    	}
@@ -1173,7 +1211,15 @@ function createModalCallBack(param) {
 	    	
 		});
 		
+	} else if(param.eletype == "loop") {
+		$(".selectpicker").selectpicker({
+			noneSelectedText: "请选择",
+			liveSearch: true,
+			width:"100%"
+		});
+	    initLoopModal(param.modalId);
 	} else if(param.eletype == "end") {
+		
 		initFlowEndModal(param.modalId);
 	}
 }

@@ -28,6 +28,7 @@ import com.mcg.entity.flow.end.FlowEnd;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
+import com.mcg.entity.flow.loop.FlowLoop;
 import com.mcg.entity.flow.model.FlowModel;
 import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
@@ -116,6 +117,11 @@ public class ExceptionProcess {
             flowBody.setEleType(EletypeEnum.PROCESS.getValue());
             flowBody.setEleTypeDesc(EletypeEnum.PROCESS.getName() + "--》" + flowProcess.getProcessProperty().getName());
             flowBody.setEleId(flowProcess.getId());
+		} else if(mcgProduct instanceof FlowLoop) {
+			FlowLoop flowLoop = (FlowLoop)mcgProduct;
+            flowBody.setEleType(EletypeEnum.LOOP.getValue());
+            flowBody.setEleTypeDesc(EletypeEnum.LOOP.getName() + "--》" + flowLoop.getLoopProperty().getName());
+            flowBody.setEleId(flowLoop.getId());
 		} else if(mcgProduct instanceof FlowEnd) {
             FlowEnd flowEnd = (FlowEnd)mcgProduct;
             flowBody.setEleType(EletypeEnum.END.getValue());

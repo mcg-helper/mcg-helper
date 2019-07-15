@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
+import com.mcg.entity.flow.loop.FlowLoop;
 import com.mcg.entity.flow.model.FlowModel;
 import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
@@ -113,8 +115,8 @@ public class FlowRunSort {
 		}
 	}
 
-	public Map<String, McgProduct> init(FlowStruct flowStruct) {
-		Map<String, McgProduct> dataMap = new HashMap<String, McgProduct>();
+	public ConcurrentHashMap<String, McgProduct> init(FlowStruct flowStruct) {
+		ConcurrentHashMap<String, McgProduct> dataMap = new ConcurrentHashMap<String, McgProduct>();
 		this.numOfNode = flowStruct.getTotalSize();
 		this.graph = new ArrayList<ArrayList<Integer>>();
 		for (int i = 0; i < numOfNode; i++) {
@@ -176,6 +178,13 @@ public class FlowRunSort {
 				sortMap.put(flowJava.getId(), num++);
 			}
 		}
+		if (flowStruct.getFlowTexts() != null && flowStruct.getFlowTexts().getFlowText() != null
+				&& flowStruct.getFlowTexts().getFlowText().size() > 0) {
+			for (FlowText flowText : flowStruct.getFlowTexts().getFlowText()) {
+				dataMap.put(flowText.getTextId(), flowText);
+				sortMap.put(flowText.getTextId(), num++);
+			}
+		}
 		if (flowStruct.getFlowPythons() != null && flowStruct.getFlowPythons().getFlowPython() != null
 				&& flowStruct.getFlowPythons().getFlowPython().size() > 0) {
 			for (FlowPython flowPython : flowStruct.getFlowPythons().getFlowPython()) {
@@ -204,14 +213,14 @@ public class FlowRunSort {
 				sortMap.put(flowProcess.getId(), num++);
 			}
 		}
-
-		if (flowStruct.getFlowTexts() != null && flowStruct.getFlowTexts().getFlowText() != null
-				&& flowStruct.getFlowTexts().getFlowText().size() > 0) {
-			for (FlowText flowText : flowStruct.getFlowTexts().getFlowText()) {
-				dataMap.put(flowText.getTextId(), flowText);
-				sortMap.put(flowText.getTextId(), num++);
+		if (flowStruct.getFlowLoops() != null && flowStruct.getFlowLoops().getFlowLoop() != null
+				&& flowStruct.getFlowLoops().getFlowLoop().size() > 0) {
+			for (FlowLoop flowLoop : flowStruct.getFlowLoops().getFlowLoop()) {
+				dataMap.put(flowLoop.getId(), flowLoop);
+				sortMap.put(flowLoop.getId(), num++);
 			}
 		}
+
 		if (flowStruct.getFlowEnd() != null) {
 			dataMap.put(flowStruct.getFlowEnd().getEndId(), flowStruct.getFlowEnd());
 			sortMap.put(flowStruct.getFlowEnd().getEndId(), num++);
@@ -230,7 +239,6 @@ public class FlowRunSort {
 		Orders tempOrders = new Orders();
 		List<List<Order>> orderList = new ArrayList<List<Order>>();
 		
-		logger.debug("正在执行流程：{}，排序完毕，执行顺序如下", JSON.toJSONString(flowStruct));
 		for (int i = (result.size() -1); i >= 0; i--) {
 			List<Order> orderLoopList = new ArrayList<Order>(); //list.size()大于1 则代表是流程图中的环，以及节点执行的顺序
 			for (int j = (result.get(i).size() -1); j >= 0 ; j--) {
@@ -246,11 +254,13 @@ public class FlowRunSort {
 					order.setPid(pidList);
 				}
 				orderLoopList.add(order);
-				logger.debug("控件id：{}, ", nodeMap.get(result.get(i).get(j)));
+
 			}
 			orderList.add(orderLoopList);
 		}
-
+		
+		logger.debug("正在执行流程：{}，排序完毕，执行顺序如下：{}", JSON.toJSONString(flowStruct), JSON.toJSONString(orderList));
+		
 		tempOrders.setOrder(orderList);
 		this.orders = tempOrders;
 		return dataMap;

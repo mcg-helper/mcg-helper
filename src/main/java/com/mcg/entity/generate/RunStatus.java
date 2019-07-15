@@ -24,18 +24,29 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.mcg.entity.common.LoopStatus;
+
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement
 public class RunStatus implements Serializable {
 
     private static final long serialVersionUID = -7093061150060549223L;
 
+    /* success:成功  exception:失败*/
     @XmlElement
     private String code;
+    /* 当前执行控件的ID */
     @XmlElement
     private String executeId;
+    /* 中断流程执行信号  true:是  false：否 */
+    @XmlElement
+    private boolean isInterrupt;
+    /* 当前流程实例的文本控件输出的文件路径，key为控件ID，value为文件路径 */
     @XmlElement
     private ConcurrentHashMap<String, String> availableFileMap = new ConcurrentHashMap<String, String>();
+    /* 当前执行流程实例的所有循环控件执行的剩余次数，key为控件ID，value为循环控件执行的状态 */
+    @XmlElement
+    private ConcurrentHashMap<String, LoopStatus> loopStatusMap = new ConcurrentHashMap<String, LoopStatus>();
     
     public String getCode() {
         return code;
@@ -54,6 +65,18 @@ public class RunStatus implements Serializable {
 	}
 	public void setAvailableFileMap(ConcurrentHashMap<String, String> availableFileMap) {
 		this.availableFileMap = availableFileMap;
+	}
+	public ConcurrentHashMap<String, LoopStatus> getLoopStatusMap() {
+		return loopStatusMap;
+	}
+	public void setLoopStatusMap(ConcurrentHashMap<String, LoopStatus> loopStatusMap) {
+		this.loopStatusMap = loopStatusMap;
+	}
+	public boolean isInterrupt() {
+		return isInterrupt;
+	}
+	public void setInterrupt(boolean isInterrupt) {
+		this.isInterrupt = isInterrupt;
 	}
 
     

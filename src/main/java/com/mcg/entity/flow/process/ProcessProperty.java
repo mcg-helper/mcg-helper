@@ -36,6 +36,9 @@ public class ProcessProperty implements Serializable {
 	@NotBlank(message = "{flowProcess.processProperty.name.notBlank}")
 	@XmlElement
 	private String name;
+	/**
+	 * 需要执行的子流程实例ID
+	 */
 	@NotBlank(message = "{flowProcess.processProperty.flowId.notBlank}")
 	@XmlElement
 	private String flowId;

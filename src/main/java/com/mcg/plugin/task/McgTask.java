@@ -127,16 +127,17 @@ public class McgTask {
             public void run() {
             	saveWontonInstance();
             }
-		}, 60L, 300L, TimeUnit.SECONDS);
+		}, 20L, 60L, TimeUnit.SECONDS);
     }	
 	
     private static void saveWontonInstance() {
         try {
         	WontonData wontonData = (WontonData)LevelDbUtil.getObject(Constants.WONTON_KEY, WontonData.class);
-        	if(wontonData != null) {
-	        	wontonData.setWontonHeartMap(wontonInstanceMap);
-	        	LevelDbUtil.putObject(Constants.WONTON_KEY, wontonData);
+        	if(wontonData == null) {
+        		wontonData = new WontonData();
         	}
+        	wontonData.setWontonHeartMap(wontonInstanceMap);
+        	LevelDbUtil.putObject(Constants.WONTON_KEY, wontonData);
         } catch (Exception e) {
 			logger.error("定时保存混沌客户端实例数据出错：{}", e.getMessage());
 		}

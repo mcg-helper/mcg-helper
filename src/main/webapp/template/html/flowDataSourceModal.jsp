@@ -36,14 +36,11 @@
 				<div class="form-body">
 					<div id="myTabContent" class="tab-content">
 						<div class="tab-pane fade in active" id="${modalId }_property">
-						<!-- data-height="390" -->
 					        <table id="${modalId }_flowDataSourceTable"
 					               data-toggle="table"
-					               data-show-refresh="true"
-					               data-show-toggle="true"
+					               data-height="390"
 					               data-show-columns="true"
 					               data-search="true" 
-					               data-show-pagination-switch="true" 
 						           data-pagination="true"
 						           data-page-size="5"
 						           data-page-list="[5,10,20,30]"
@@ -68,14 +65,10 @@
 					        </table>
 						</div>
 						<div class="tab-pane fade" id="${modalId }_serverProperty">
-						<!-- data-height="390" -->
 					        <table id="${modalId }_flowServerSourceTable"
 					               data-toggle="table"
-					               data-show-refresh="true"
-					               data-show-toggle="true"
 					               data-show-columns="true"
 					               data-search="true" 
-					               data-show-pagination-switch="true" 
 						           data-pagination="true"
 						           data-page-size="5"
 						           data-page-list="[5,10,20,30]"

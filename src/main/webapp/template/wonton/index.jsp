@@ -40,12 +40,9 @@
 			        <table id="wontonListTable"
 			               data-toggle="table"
 			               data-height="460"
-			               data-show-refresh="true"
-			               data-show-toggle="true"
 			               data-show-columns="true"
 			               data-search="true" 
-			               data-unique-id="host"
-	               		   data-show-pagination-switch="true"                
+			               data-unique-id="host"      
 				           data-pagination="true"
 				           data-page-size="5"
 				           data-page-list="[5,10,20,30]"
@@ -101,19 +98,144 @@ $(function () {
 });
 
 function wontonCommandsFormatter(value, row, index) {
-	var btns = '<button type="button" onClick="wontonPublish(\'' + row.host + '\');" class="btn btn-default">控制</button>'
-				+ '&nbsp;&nbsp;<button type="button" onClick="wontonRule(\'' + row.host + '\');" class="btn btn-default">规则</button>';
+	  	var btns = '<div class="btn-group">'
+	  			+ '<button type="button" onClick="wontonPublish(\'' + row.host + '\', \'' + row.state + '\');" class="btn btn-default">控制中心</button>'
+				+ '<button type="button" onClick="wontonRule(\'' + row.host + '\', \'' + row.state + '\');" class="btn btn-default">当前规则</button>'
+				+ '<button type="button" onClick="wontonRecoveryNet(\'' + row.instancecode + '\', \'' + row.state + '\');" class="btn btn-default">网络恢复</button>'
+				+ '<button type="button" onClick="wontonRecoveryHardware(\'' + row.instancecode + '\', \'' + row.state + '\');" class="btn btn-default">硬件恢复</button>'
+				+ '<button type="button" onClick="deleteWontonInstance(\'' + row.host + '\',\'' + row.instancecode + '\');" class="btn btn-default">删除</button>'
+				+ '</div>';
+
 	return btns;
 }
 
-function wontonPublish(host) {
+function wontonRecoveryNet(instanceCode, state) {
+	
+ 	if(state != "normal") {
+		Messenger().post({
+			message: "客户端" + instanceCode + "实例不存活，不能发送指令！",
+			type: "error",
+			hideAfter: 5,
+		 	showCloseButton: true
+		});
+		return;
+	}
+	
+	common.ajax({
+		url : "/wonton/recoveryNet",
+		type : "POST",
+		data : "instanceCode=" + instanceCode
+	}, function(data) {
+		if(data != null && data.statusCode == 1) {
+			Messenger().post({
+				message: data.statusMes,
+				type: "success",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});
+		} else {
+			Messenger().post({
+				message: data.statusMes,
+				type: "error",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});
+		}
+		
+	});
+}
+
+function wontonRecoveryHardware(instanceCode, state) {
+	
+ 	if(state != "normal") {
+		Messenger().post({
+			message: "客户端" + instanceCode + "实例不存活，不能发送指令！",
+			type: "error",
+			hideAfter: 5,
+		 	showCloseButton: true
+		});
+		return;
+	}
+	common.ajax({
+		url : "/wonton/recoveryHardware",
+		type : "POST",
+		data : "instanceCode=" + instanceCode
+	}, function(data) {
+		if(data != null && data.statusCode == 1) {
+			Messenger().post({
+				message: data.statusMes,
+				type: "success",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});
+		} else {
+			Messenger().post({
+				message: data.statusMes,
+				type: "error",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});
+		}
+		
+	});
+}
+
+function deleteWontonInstance(host, instanceCode) {
+	common.ajax({
+		url : "/wonton/deleteInstance",
+		type : "POST",
+		data : "instanceCode=" + instanceCode
+	}, function(data) {
+		if(data != null && data.statusCode == 1) {
+			$("#wontonListTable").bootstrapTable('remove', {
+                field: 'host',
+                values: [host]
+            });
+			Messenger().post({
+				message: data.statusMes,
+				type: "success",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});
+		} else {
+			Messenger().post({
+				message: data.statusMes,
+				type: "error",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});
+		}
+		
+	});
+}
+
+function wontonPublish(host, state) {
 	var row = $("#wontonListTable").bootstrapTable('getRowByUniqueId', host);
+	if(state != "normal") {
+		Messenger().post({
+			message: "客户端" + row.instancecode + "实例不存活，不能发送规则！",
+			type: "error",
+			hideAfter: 5,
+		 	showCloseButton: true
+		});
+		return;
+	}	
 	var param = {"modalId":Math.uuid() + "_wonton_publish_Modal", "wontonHeart":row, "option":{"title":("控制中心--" + row.instancecode + "--" + row.version), "width":1100} };
 	common.showAjaxDialog("/wonton/publishModal", setWontonPublishDialogBtns(param), createWontonPublishModalCallBack, null, param);
 }
 
-function wontonRule(host) {
+function wontonRule(host, state) {
 	var row = $("#wontonListTable").bootstrapTable('getRowByUniqueId', host);
+	if(state != "normal") {
+		Messenger().post({
+			message: "客户端" + row.instancecode + "实例不存活，不能获取当前规则！",
+			type: "error",
+			hideAfter: 5,
+		 	showCloseButton: true
+		});
+		return;
+	}
+	
 	var param = {"modalId":Math.uuid() + "_wonton_rule_Modal", "option":{"title":("当前规则--"  + row.instancecode + "--" + row.version), "width":1100} };
 	common.ajax({
 		url : "/wonton/getRule",
@@ -147,7 +269,9 @@ function createWontonPublishModalCallBack(param) {
 
 	$('#'+ param.modalId + '_wonton_publish_net_tab input[type=checkbox]').bootstrapSwitch({
 		animate:true
-	});
+	}).on('switchChange.bootstrapSwitch', function(event, state) {
+        $(this).val(state);
+    });
 	
  	$("#"+ param.modalId + "_tab a").each(function(){
 		$(this).on("shown.bs.tab", function (e) {
@@ -155,13 +279,15 @@ function createWontonPublishModalCallBack(param) {
 	    	var id = href.substring(href.indexOf("#") + 1);
 	    	$('#'+id + ' input[type=checkbox]').bootstrapSwitch({
 	    		animate:true
-	    	});
+	    	}).on('switchChange.bootstrapSwitch', function(event, state) {
+	            $(this).val(state);
+	        });
 	    	if("true" == $('#'+id + ' input[type=checkbox]').val() ) {
 	    		$('#'+id + ' input[type=checkbox]').bootstrapSwitch('state', true);
 	    	}
 	     });
 	});
-	
+ 	
 	common.ajax({
 		url : "/wonton/getWontonPublish",
 		type : "POST",
@@ -217,7 +343,7 @@ function setWontonPublishDialogBtns(param) {
 				data.netRule.TargetProtos = data.netRule.TargetProtos.split(",");
 				data["wontonHeart"] = param.wontonHeart;
 				var _this = this;
-				
+		
 				common.ajax({
 					url : "/wonton/publishRule",
 					type : "POST",

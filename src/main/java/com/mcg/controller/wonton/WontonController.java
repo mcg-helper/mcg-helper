@@ -39,6 +39,7 @@ import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.controller.base.BaseController;
 import com.mcg.entity.common.McgResult;
+import com.mcg.entity.global.wonton.WontonData;
 import com.mcg.entity.message.Message;
 import com.mcg.entity.message.NotifyBody;
 import com.mcg.entity.wonton.WontonHeart;
@@ -47,6 +48,7 @@ import com.mcg.plugin.task.McgTask;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.service.DbService;
 import com.mcg.service.WontonService;
+import com.mcg.util.LevelDbUtil;
 import com.mcg.util.PageData;
 
 /**
@@ -145,7 +147,8 @@ public class WontonController extends BaseController {
         	
         	if(wontonPublish.getNetRule() != null && wontonPublish.getNetRule() != null && wontonPublish.getNetRule().isSwitchState()) {
         		HttpRequest httpRequest = HttpRequest.put(resetUrl);
-        		String result = httpRequest.send(JSON.toJSONString(wontonPublish.getNetRule()).getBytes()).body();
+        		String result = httpRequest.send(JSON.toJSONString(wontonPublish.getNetRule()).getBytes())
+        					.connectTimeout(Constants.REQUEST_WONTON_TIME_OUT).body();
         		if(result.endsWith("successfully.")) {
 	        		flag = true;
 	        		sucessBuilder.append("网络规则，");
@@ -157,7 +160,8 @@ public class WontonController extends BaseController {
         	
         	if(wontonPublish.getCpuRule() != null && wontonPublish.getCpuRule() != null && wontonPublish.getCpuRule().isSwitchState()) {
         		HttpRequest httpRequest = HttpRequest.post(resourcesUrl);
-        		String result = httpRequest.send(JSON.toJSONString(wontonPublish.getCpuRule()).getBytes()).body();
+        		String result = httpRequest.send(JSON.toJSONString(wontonPublish.getCpuRule()).getBytes())
+        				.connectTimeout(Constants.REQUEST_WONTON_TIME_OUT).body();
         		if(200 == JSON.parseObject(result).getIntValue("State")) {
         			flag = true;
         			sucessBuilder.append("cpu规则，");
@@ -168,7 +172,8 @@ public class WontonController extends BaseController {
         	}
         	if(wontonPublish.getMemRule() != null && wontonPublish.getMemRule() != null && wontonPublish.getMemRule().isSwitchState()) {
         		HttpRequest httpRequest = HttpRequest.post(resourcesUrl);
-        		String result = httpRequest.send(JSON.toJSONString(wontonPublish.getMemRule()).getBytes()).body();
+        		String result = httpRequest.send(JSON.toJSONString(wontonPublish.getMemRule()).getBytes())
+        				.connectTimeout(Constants.REQUEST_WONTON_TIME_OUT).body();
         		if(200 == JSON.parseObject(result).getIntValue("State")) {
         			flag = true;
         			sucessBuilder.append("内存规则，");
@@ -179,7 +184,8 @@ public class WontonController extends BaseController {
         	}
         	if(wontonPublish.getIoRule() != null && wontonPublish.getIoRule()!= null && wontonPublish.getIoRule().isSwitchState()) {
         		HttpRequest httpRequest = HttpRequest.post(resourcesUrl);
-        		String result = httpRequest.send(JSON.toJSONString(wontonPublish.getIoRule()).getBytes()).body();
+        		String result = httpRequest.send(JSON.toJSONString(wontonPublish.getIoRule()).getBytes())
+        					.connectTimeout(Constants.REQUEST_WONTON_TIME_OUT).body();
         		if(200 == JSON.parseObject(result).getIntValue("State")) {
         			flag = true;
         			sucessBuilder.append("io规则，");
@@ -206,9 +212,13 @@ public class WontonController extends BaseController {
         	}
         	message.setBody(notifyBody);
         } catch (Exception e) {
-        	logger.error("请求混沌客户端异常，规则发布失败！异常信息：{}", e.getMessage());
-    		notifyBody.setContent("请求混沌客户端异常，规则发布失败！");
+        	
+        	String reason = wontonPublish.getWontonHeart().getInstancecode() + "请求混沌客户端异常，规则发布失败！";
+        	logger.error(reason + "异常信息：{}", e.getMessage());
+    		notifyBody.setContent(reason);
     		notifyBody.setType(LogTypeEnum.ERROR.getValue());
+    		mcgResult.setStatusCode(0);
+    		mcgResult.setStatusMes(reason);
 		} finally {
 			message.setBody(notifyBody);
 	        MessagePlugin.push(session.getId(), message);
@@ -217,20 +227,102 @@ public class WontonController extends BaseController {
         return mcgResult;
 	}
     
+    @RequestMapping(value="/recoveryNet")
+    @ResponseBody
+    public McgResult recoveryNet(String instanceCode, HttpSession session) throws Exception {
+
+        McgResult mcgResult = new McgResult();
+        
+    	try {
+    		
+    		String url = String.format("http://%s/muxy/networkshape/_disable", instanceCode);
+    		HttpRequest httpRequest = HttpRequest.put(url).connectTimeout(Constants.REQUEST_WONTON_TIME_OUT);
+    		String result = httpRequest.body();
+    		
+    		if(StringUtils.isNotEmpty(result) && result.endsWith("successfully")) {
+        		mcgResult.setStatusCode(1);
+        		mcgResult.setStatusMes(instanceCode + "网络恢复成功！");
+    		} else {
+        		mcgResult.setStatusCode(0);
+        		mcgResult.setStatusMes(instanceCode + "网络恢复失败！");
+    		}
+    	} catch (Exception e) {
+    		String reason = instanceCode + "网络恢复失败！";
+			logger.error(reason + "异常信息：{}", e.getMessage());
+    		mcgResult.setStatusCode(0);
+    		mcgResult.setStatusMes(reason);
+		}
+
+        return mcgResult;
+    }
+    
+    @RequestMapping(value="/recoveryHardware")
+    @ResponseBody
+    public McgResult recoveryHardware(String instanceCode, HttpSession session) throws Exception {
+        McgResult mcgResult = new McgResult();
+        
+    	try {
+    		
+    		String url = String.format("http://%s/stressng/stressors", instanceCode);
+    		HttpRequest httpRequest = HttpRequest.delete(url).connectTimeout(Constants.REQUEST_WONTON_TIME_OUT);
+    		String result = httpRequest.body();
+    		
+    		if(StringUtils.isNotEmpty(result) && result.endsWith("here\n")) {
+        		mcgResult.setStatusCode(1);
+        		mcgResult.setStatusMes(instanceCode + "没有启动cpu、io、内存规则，不用恢复！");
+    		} else {
+        		mcgResult.setStatusCode(0);
+        		mcgResult.setStatusMes(instanceCode + "硬件恢复失败！");
+    		}
+    	} catch (Exception e) {
+			
+    		String reason = instanceCode + "禁用cpu、io、内存规则，恢复硬件资源性能失败！";
+    		logger.error(reason + "异常信息：{}", e.getMessage());
+    		mcgResult.setStatusCode(0);
+    		mcgResult.setStatusMes(reason);
+		}
+
+        return mcgResult;
+    }
+    
+    
     @RequestMapping(value="getRule", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public McgResult getRule(@Valid @RequestBody WontonHeart wontonHeart, HttpSession session) {
         McgResult mcgResult = new McgResult();
         
         try {
-        	String rule = HttpRequest.get("http://" + wontonHeart.getInstancecode() + "/muxy/networkshapes").body();
+        	String rule = HttpRequest.get("http://" + wontonHeart.getInstancecode() + "/muxy/networkshapes")
+        				.connectTimeout(Constants.REQUEST_WONTON_TIME_OUT).body();
         	mcgResult.addAttribute("rule", rule);
         } catch (Exception e) {
-        	logger.error("获取混沌客户端规则异常！异常信息：{}", e.getMessage());
+        	logger.error("获取混沌客户端规则出错，异常信息：{}", e.getMessage());
         	mcgResult.setStatusCode(0);
         	mcgResult.setStatusMes("获取混沌客户端规则异常！");
 		}
     	return mcgResult;
 	}    
-
+    
+    
+    @RequestMapping(value="deleteInstance", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public McgResult deleteInstance(String instanceCode) {
+        McgResult mcgResult = new McgResult();
+        
+        try {
+        	WontonData wontonData = (WontonData)LevelDbUtil.getObject(Constants.WONTON_KEY, WontonData.class);
+        	if(wontonData != null) {
+        		McgTask.wontonInstanceMap.remove(instanceCode);
+        		wontonData.setWontonHeartMap(McgTask.wontonInstanceMap);
+        		LevelDbUtil.putObject(Constants.WONTON_KEY, wontonData);
+        		mcgResult.setStatusMes("删除混沌客户端" + instanceCode + "成功！");
+        	}
+        	
+        } catch (Exception e) {
+        	logger.error("删除混沌客户端{}出错，异常信息：{}", instanceCode, e.getMessage());
+        	mcgResult.setStatusCode(0);
+        	mcgResult.setStatusMes("删除混沌客户端" + instanceCode + "发生异常，请重试！");
+		}
+    	return mcgResult;
+	} 
 }

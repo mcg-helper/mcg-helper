@@ -98,7 +98,7 @@ public class FlowWontonStrategy implements ProcessStrategy {
             		HttpRequest httpRequest = HttpRequest.put(resetUrl);
             		
             		String command = tplEngine.generate(allParam, JSON.toJSONString(flowWonton.getWontonNetRule()));
-            		String result = httpRequest.send(command.getBytes()).body();
+            		String result = httpRequest.send(command.getBytes()).connectTimeout(Constants.REQUEST_WONTON_TIME_OUT).body();
             		if(result.endsWith("successfully.")) {
     	        		flag = true;
     	        		sucessBuilder.append("网络规则，");
@@ -111,7 +111,7 @@ public class FlowWontonStrategy implements ProcessStrategy {
             	if(flowWonton.getWontonCpuRule() != null && flowWonton.getWontonCpuRule() != null && flowWonton.getWontonCpuRule().isSwitchState()) {
             		HttpRequest httpRequest = HttpRequest.post(resourcesUrl);
             		String command = tplEngine.generate(allParam, JSON.toJSONString(flowWonton.getWontonCpuRule()));
-            		String result = httpRequest.send(command.getBytes()).body();
+            		String result = httpRequest.send(command.getBytes()).connectTimeout(Constants.REQUEST_WONTON_TIME_OUT).body();
             		if(200 == JSON.parseObject(result).getIntValue("State")) {
             			flag = true;
             			sucessBuilder.append("cpu规则，");
@@ -123,7 +123,7 @@ public class FlowWontonStrategy implements ProcessStrategy {
             	if(flowWonton.getWontonMemRule() != null && flowWonton.getWontonMemRule() != null && flowWonton.getWontonMemRule().isSwitchState()) {
             		HttpRequest httpRequest = HttpRequest.post(resourcesUrl);
             		String command = tplEngine.generate(allParam, JSON.toJSONString(flowWonton.getWontonMemRule()));
-            		String result = httpRequest.send(command.getBytes()).body();
+            		String result = httpRequest.send(command.getBytes()).connectTimeout(Constants.REQUEST_WONTON_TIME_OUT).body();
             		if(200 == JSON.parseObject(result).getIntValue("State")) {
             			flag = true;
             			sucessBuilder.append("内存规则，");
@@ -135,7 +135,7 @@ public class FlowWontonStrategy implements ProcessStrategy {
             	if(flowWonton.getWontonIoRule() != null && flowWonton.getWontonIoRule() != null && flowWonton.getWontonIoRule().isSwitchState()) {
             		HttpRequest httpRequest = HttpRequest.post(resourcesUrl);
             		String command = tplEngine.generate(allParam, JSON.toJSONString(flowWonton.getWontonIoRule()));
-            		String result = httpRequest.send(command.getBytes()).body();
+            		String result = httpRequest.send(command.getBytes()).connectTimeout(Constants.REQUEST_WONTON_TIME_OUT).body();
             		if(200 == JSON.parseObject(result).getIntValue("State")) {
             			flag = true;
             			sucessBuilder.append("io规则，");
@@ -146,7 +146,9 @@ public class FlowWontonStrategy implements ProcessStrategy {
             	}
             	
             	if(StringUtils.isEmpty(sucessBuilder.toString()) && StringUtils.isEmpty(faultBuilder.toString())) {
-            		runResult.setJsonVar("没有规则可发布！");
+            		JSONObject runResultJson = new JSONObject();
+            		runResultJson.put(flowWonton.getWontonProperty().getKey(), "没有规则可发布！");
+            		runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
             	} else {
             		JSONObject runResultJson = new JSONObject();
         	    	if(flag) {
@@ -162,12 +164,15 @@ public class FlowWontonStrategy implements ProcessStrategy {
         	    	
             	}
             } catch (Exception e) {
-        		runResult.setJsonVar("请求混沌客户端异常，规则发布失败！");
-        		logger.error("请求混沌客户端出错，异常信息：{}", e.getMessage());
+            	String reason = "请求混沌客户端" + wontonHeart.getInstancecode() + "异常，规则发布失败！";
+        		runResult.setJsonVar(reason);
+        		logger.error(reason + "异常信息：{}", e.getMessage());
     		}
         }
 		
 		executeStruct.getRunStatus().setCode("success");
+		
+		logger.debug("混沌控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowWonton), JSON.toJSONString(executeStruct.getRunStatus()));
 		return runResult;
 	}
 	

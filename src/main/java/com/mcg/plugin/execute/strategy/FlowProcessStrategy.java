@@ -82,10 +82,12 @@ public class FlowProcessStrategy implements ProcessStrategy {
         if (!StringUtils.isEmpty(flowProcess.getProcessProperty().getFlowId())) {
         	webStruct.setFlowId(flowProcess.getProcessProperty().getFlowId());
         	logger.debug("开始执行子流程，数据：{}", JSON.toJSONString(flowProcess));
-        	flowService.generate(webStruct, executeStruct.getSession(), true);
+        	flowService.generate(webStruct, executeStruct.getSession(), true, executeStruct.getTopology().getId());
 		}
         
 		executeStruct.getRunStatus().setCode("success");
+		
+		logger.debug("子流程控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowProcess), JSON.toJSONString(executeStruct.getRunStatus()));
 		return runResult;
 	}
 	

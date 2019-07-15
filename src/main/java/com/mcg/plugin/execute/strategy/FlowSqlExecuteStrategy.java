@@ -18,6 +18,9 @@ package com.mcg.plugin.execute.strategy;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
 import com.mcg.common.SpringContextHelper;
 import com.mcg.common.sysenum.EletypeEnum;
@@ -39,6 +42,8 @@ import com.mcg.util.DataConverter;
 
 public class FlowSqlExecuteStrategy implements ProcessStrategy {
 
+	private static Logger logger = LoggerFactory.getLogger(FlowSqlExecuteStrategy.class);
+	
 	@Override
 	public void prepare(ArrayList<String> sequence, McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
 	    FlowSqlExecute flowSqlExecute = (FlowSqlExecute)mcgProduct;
@@ -81,6 +86,8 @@ public class FlowSqlExecuteStrategy implements ProcessStrategy {
      
         runResult.setSourceCode("成功执行，影响行数【" + rows  + "】行");
 		executeStruct.getRunStatus().setCode("success");
+		
+		logger.debug("SQL执行控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowSqlExecute), JSON.toJSONString(executeStruct.getRunStatus()));
 		return runResult;
 	}
 	

@@ -67,14 +67,16 @@ public interface FlowService {
 	 * @Description: TODO(执行流程)   
 	 * @param webStruct 前端流程对象
 	 * @param session
-	 * @param subFlag 当前执行流程是否为子流程
+	 * @param subFlag 当前执行流程是否为子流程        true:是  flase:否
+	 * @param parentFlowId 父流程的ID(当subFlag为true时)
 	 * @return boolean      
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	boolean generate(WebStruct webStruct, HttpSession session, boolean subFlag) throws ClassNotFoundException, IOException, InterruptedException, ExecutionException;
+
+	boolean generate(WebStruct webStruct, HttpSession session, boolean subFlag, String parentFlowId) throws ClassNotFoundException, IOException, InterruptedException, ExecutionException;
 	
     /**
      * 清空文件的数据，但不删除文件

@@ -19,9 +19,8 @@ package com.mcg.service.impl;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -60,6 +59,7 @@ import com.mcg.service.DbService;
 import com.mcg.service.FlowService;
 import com.mcg.service.GlobalService;
 import com.mcg.util.DataConverter;
+import com.mcg.util.FlowInstancesUtils;
 import com.mcg.util.FlowRunSort;
 import com.mcg.util.McgFileUtils;
 import com.mcg.util.ThreadPoolUtils;
@@ -169,7 +169,7 @@ public class FlowServiceImpl implements FlowService {
     }
 
     @Override
-    public boolean generate(WebStruct webStruct, HttpSession session, boolean subFlag) throws ClassNotFoundException, IOException, InterruptedException, ExecutionException {
+    public boolean generate(WebStruct webStruct, HttpSession session, boolean subFlag, String parentFlowId) throws ClassNotFoundException, IOException, InterruptedException, ExecutionException {
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.NOTIFY); 
         NotifyBody notifyBody = new NotifyBody();
@@ -188,7 +188,7 @@ public class FlowServiceImpl implements FlowService {
         		}
         	}
         	
-            Map<String, RunResult> runResultMap = new HashMap<String, RunResult>();
+        	ConcurrentHashMap<String, RunResult> runResultMap = new ConcurrentHashMap<String, RunResult>();
             FlowRunSort flowRunSort = new FlowRunSort();
             ExecuteStruct executeStruct = new ExecuteStruct();
             executeStruct.setDataMap(flowRunSort.init(flowStruct));
@@ -204,9 +204,12 @@ public class FlowServiceImpl implements FlowService {
             message.setBody(notifyBody);
             MessagePlugin.push(session.getId(), message);
             
-            FlowTask flowTask = new FlowTask(session.getId(), flowStruct, this, executeStruct);
+            FlowTask flowTask = new FlowTask(session.getId(), flowStruct, executeStruct, subFlag);
             Future<RunStatus> future = ThreadPoolUtils.FLOW_WORK_EXECUTOR.submit(flowTask);
+             
             if(subFlag) {
+            	ExecuteStruct parentExecuteStruct = FlowInstancesUtils.executeStructMap.get(parentFlowId);
+            	parentExecuteStruct.setChildExecuteStruct(executeStruct);
             	RunStatus flowRunStatus = future.get();
             	logger.debug("子流程：{}， 执行结果：{}", JSON.toJSONString(curTopology), JSON.toJSONString(flowRunStatus));
             }

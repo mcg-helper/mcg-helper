@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class McgResult {
 
-    //状态码 1：成功 0：失败
+    //状态码     1：成功          0：失败
     private Integer statusCode = 1;
     //执行结果消息
     private String statusMes = "执行成功";

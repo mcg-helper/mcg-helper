@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.mcg.common.sysenum.FlowLoopTypeEnum;
 import com.mcg.controller.base.BaseController;
 import com.mcg.service.FlowService;
 import com.mcg.service.GlobalService;
@@ -199,6 +200,18 @@ public class HtmlController extends BaseController {
 		PageData pd = this.getPageData();
 		mv.addObject("modalId", pd.get("modalId"));
 		mv.setViewName("html/flowProcessModal");
+		return mv;
+	}
+	
+	/* 流程节点 Loop_Modal */
+	@RequestMapping(value="/flowLoopModal")
+	public ModelAndView getFlowLoopModal() throws Exception{
+		ModelAndView mv = this.getModelAndView();
+		PageData pd = this.getPageData();
+		mv.addObject("modalId", pd.get("modalId"));
+		mv.addObject("loopTypes", FlowLoopTypeEnum.values());
+		
+		mv.setViewName("html/flowLoopModal");
 		return mv;
 	}
 	

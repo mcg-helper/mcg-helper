@@ -49,6 +49,8 @@ import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.json.FlowJsons;
 import com.mcg.entity.flow.linux.FlowLinux;
 import com.mcg.entity.flow.linux.FlowLinuxs;
+import com.mcg.entity.flow.loop.FlowLoop;
+import com.mcg.entity.flow.loop.FlowLoops;
 import com.mcg.entity.flow.model.FlowModel;
 import com.mcg.entity.flow.model.FlowModels;
 import com.mcg.entity.flow.process.FlowProcess;
@@ -272,6 +274,20 @@ public class DataConverter {
                     CachePlugin.putFlowEntity(flowId, flowProcess.getId(), flowProcess);
                 }
             }
+            
+            if(flowStruct.getFlowLoops() != null && flowStruct.getFlowLoops().getFlowLoop() != null && flowStruct.getFlowLoops().getFlowLoop().size() > 0) {
+                List<FlowLoop> flowLoopList = flowStruct.getFlowLoops().getFlowLoop();
+                for(FlowLoop flowLoop : flowLoopList) {
+                    WebElement webElement = new WebElement();
+                    FlowBase flowBase = flowLoop;
+                    flowBase.setName(flowLoop.getLoopProperty().getName());
+                    webElement = setValue(flowBase, webElement);
+                    webElement.setId(flowLoop.getId());
+                    webElementList.add(webElement);
+                    CachePlugin.putFlowEntity(flowId, flowLoop.getId(), flowLoop);
+                }
+            }
+            
             if(flowStruct.getFlowEnd() != null) {
                 WebElement webElement = new WebElement();
                 FlowEnd flowEnd = flowStruct.getFlowEnd();
@@ -342,6 +358,8 @@ public class DataConverter {
             List<FlowWonton> flowWontonList = new ArrayList<FlowWonton>(); 
             FlowProcesses flowProcesses = new FlowProcesses();
             List<FlowProcess> flowProcessList = new ArrayList<FlowProcess>();
+            FlowLoops flowLoops = new FlowLoops();
+            List<FlowLoop> flowLoopList = new ArrayList<FlowLoop>();
             
             List<WebElement> webElementList = webStruct.getWebElement();
             for(WebElement webElement : webElementList) {
@@ -502,6 +520,18 @@ public class DataConverter {
                 	flowProcess.setTop(webElement.getTop());
                 	flowProcess.setSign(webElement.getSign());
                 	flowProcessList.add(flowProcess);
+                } else if(webElement.getEletype().equals(EletypeEnum.LOOP.getValue())) {
+                	FlowLoop flowLoop = (FlowLoop)obj;
+                	flowLoop.setLabel(webElement.getLabel());
+                	flowLoop.setWidth(webElement.getWidth());
+                	flowLoop.setHeight(webElement.getHeight());
+                	flowLoop.setClassname(webElement.getClassname());
+                	flowLoop.setEletype(webElement.getEletype());
+                	flowLoop.setClone(webElement.getClone());
+                	flowLoop.setLeft(webElement.getLeft());
+                	flowLoop.setTop(webElement.getTop());
+                	flowLoop.setSign(webElement.getSign());
+                	flowLoopList.add(flowLoop);
                 } else if(webElement.getEletype().equals(EletypeEnum.END.getValue())) {
                     FlowEnd flowEnd = (FlowEnd)obj;
                     flowEnd.setLabel(webElement.getLabel());
@@ -541,7 +571,10 @@ public class DataConverter {
             flowStruct.setFlowWontons(flowWontons);
             flowProcesses.setFlowProcess(flowProcessList);
             flowStruct.setFlowProcesses(flowProcesses);
-            
+
+            flowLoops.setFlowLoop(flowLoopList);
+            flowStruct.setFlowLoops(flowLoops);
+
             flowStruct.setTotalSize(webElementList.size());
             
             FlowSequences flowSequences = new FlowSequences();
@@ -701,6 +734,11 @@ public class DataConverter {
 	public static JSON addFlowStartRunResult(JSON param, ExecuteStruct executeStruct) {
 	    JSONObject newParam = (JSONObject)((JSONObject)param).clone();
         RunResult flowStartRunResult = (RunResult)executeStruct.getRunResultMap().get(executeStruct.getOrders().getOrder().get(0).get(0).getElementId());      
+        
+        if(flowStartRunResult == null) {
+        	return new JSONObject();
+        }
+        
         String flowStartValue = flowStartRunResult.getJsonVar();
         JSONObject flowStartJot = JSON.parseObject(flowStartValue);
           

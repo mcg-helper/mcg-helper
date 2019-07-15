@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import com.mcg.entity.generate.ExecuteStruct;
 import com.mcg.entity.generate.RunResult;
 
-public abstract class McgProduct implements Serializable{
+public abstract class McgProduct implements Serializable,Cloneable { 
 
     private static final long serialVersionUID = 8626194290037166978L;
     // 各个基本方法执行的顺序
@@ -33,7 +33,12 @@ public abstract class McgProduct implements Serializable{
     // 执行组件算法
     public abstract RunResult execute(ExecuteStruct executeStruct); 
     
-    final public RunResult build(ExecuteStruct executeStruct) {
+    @Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	final public RunResult build(ExecuteStruct executeStruct) {
         this.prepare(sequence, executeStruct);
         
         return this.execute(executeStruct);

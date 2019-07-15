@@ -19,6 +19,9 @@ package com.mcg.plugin.execute.strategy;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
@@ -39,6 +42,8 @@ import com.mcg.util.DataConverter;
 
 public class FlowTextStrategy implements ProcessStrategy {
 
+	private static Logger logger = LoggerFactory.getLogger(FlowTextStrategy.class);
+	
 	@Override
 	public void prepare(ArrayList<String> sequence, McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
 		FlowText flowText = (FlowText)mcgProduct;
@@ -86,6 +91,8 @@ public class FlowTextStrategy implements ProcessStrategy {
 		
 		executeStruct.getRunStatus().getAvailableFileMap().put(flowText.getTextId(), (outPath + flowText.getTextProperty().getFileName()));
 		executeStruct.getRunStatus().setCode("success");
+		
+		logger.debug("文本控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowText), JSON.toJSONString(executeStruct.getRunStatus()));
 		return result;
 	}
 	

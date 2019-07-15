@@ -108,8 +108,9 @@ Message.prototype.output = function() {
 		html = log[self.msg.body.logType].html;
 		$(self.continer).append(html);
 		
-		jsonEditor["make"].execute(self.msg.id, log[self.msg.body.logType].value);
-		
+		if(this.msg.body.eleType != "finish") {
+			jsonEditor["make"].execute(self.msg.id, log[self.msg.body.logType].value);
+		}
 		if(self.msg.body.logType == "error") {
 			baseMap.put("selector", self.msg.body.eleId);
 			baseMap.put("highlight", "highlight" + self.msg.body.eleId); //把当前被高亮标记div的id放入缓存
@@ -143,8 +144,10 @@ Message.prototype.build = function() {
 			html += '<div id="log' + this.msg.body.eleId + '" class="alert alert-info alert-dismissible" role="alert">';
 			html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><br/>';
 			html += '<ul style="margin-top:21px;background:#fff;" class="messenger messenger-theme-air"><li class="messenger-message-slot"><div class="messenger-message message alert alert-' + this.msg.body.logType + ' "><div id="highlight' + this.msg.body.eleId + '" class="messenger-message-inner">' + this.msg.body.logTypeDesc + '--》' + this.msg.body.eleTypeDesc + '--》' + this.msg.body.comment + '</div></div></li></ul>';
-			if(this.msg.body.eleType == "end") {
-				if(this.msg.body.content != null) {
+			
+			// 流程或子流程正常执行完毕，控制台最后追加“文件列表”以及“控制台停止按钮”更正状态颜色
+			if(this.msg.body.eleType == "finish" || this.msg.body.eleType == "subFinish") {
+				if(this.msg.body.content != null && this.msg.body.content != "none") {
 					html += '<div style="height:auto;background:#fff;">';
 					var filesData = JSON.parse(this.msg.body.content);
 					for (var key in filesData.availableFileMap) {
@@ -152,10 +155,14 @@ Message.prototype.build = function() {
 					}
 					html += '</div>';
 				}
-				
-			} else {
-				html += '<div style="height:auto;" id="' + this.msg.id + '"></div>';
+				if(this.msg.body.eleType == "finish") {
+					$("#flowStopBtn span").removeClass("text-danger");
+				}
+			} else if(this.msg.body.eleType == "interrupt") { //流程主动中断操作，且已停止后，“控制台停止按钮”更正状态颜色
+				$("#flowStopBtn span").removeClass("text-danger");
 			}
+			
+			html += '<div style="height:auto;" id="' + this.msg.id + '"></div>';
 			html += '</div>';
 			this.continer = "#console";
 		} else {  /*  同一控件第二次及后续产生的日志  */
@@ -214,7 +221,7 @@ function downFlowGenFile(obj) {
 	}
 }
 
-//提示框插件
+//消息通知提示框插件
 Messenger.options = {
 	    extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
 	    theme: 'air'
@@ -270,7 +277,6 @@ var common = function(){
 						hideAfter: 5,
 					 	showCloseButton: true
 					});	            	
-	            //	alert("抱歉，数据请求失败！<br/>url:" + option.url);
 	            }
 	        });
 		},
@@ -579,7 +585,7 @@ var common = function(){
 baseMap.remove("key");
 var array = map.keySet();
 for(var i in array) {
-	alert("key:(" + array[i] +") value: ("+map.get(array[i])+")");
+	console.log("key:(" + array[i] +") value: ("+map.get(array[i])+")");
 }	 
 =================================================*/
 function Map() {

@@ -84,7 +84,8 @@ public class CommonController extends BaseController {
         if(pd.get("flowId") == null || pd.get("id") == null) {
         	return null;    	
         }
-    	McgProduct mcgProduct = (McgProduct)CachePlugin.getFlowEntity(pd.getString("flowId"), pd.getString("id"));
+        
+        McgProduct mcgProduct = CachePlugin.getFlowEntity(pd.getString("flowId"), pd.getString("id"));
     	return mcgProduct;
     }
     

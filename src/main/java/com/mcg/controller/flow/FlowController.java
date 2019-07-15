@@ -24,6 +24,8 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -43,6 +45,7 @@ import com.mcg.entity.flow.end.FlowEnd;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
+import com.mcg.entity.flow.loop.FlowLoop;
 import com.mcg.entity.flow.model.FlowModel;
 import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
@@ -53,6 +56,7 @@ import com.mcg.entity.flow.start.FlowStart;
 import com.mcg.entity.flow.text.FlowText;
 import com.mcg.entity.flow.web.WebStruct;
 import com.mcg.entity.flow.wonton.FlowWonton;
+import com.mcg.entity.generate.ExecuteStruct;
 import com.mcg.entity.global.McgGlobal;
 import com.mcg.entity.global.datasource.McgDataSource;
 import com.mcg.entity.message.Message;
@@ -63,6 +67,7 @@ import com.mcg.service.DbService;
 import com.mcg.service.FlowService;
 import com.mcg.service.GlobalService;
 import com.mcg.util.DataConverter;
+import com.mcg.util.FlowInstancesUtils;
 import com.mcg.util.Tools;
 
 /**
@@ -76,6 +81,9 @@ import com.mcg.util.Tools;
 @Controller
 @RequestMapping(value="/flow")
 public class FlowController extends BaseController {
+	
+	private static Logger logger = LoggerFactory.getLogger(FlowController.class);
+	
 	@Autowired
     private FlowService flowService;
 	@Autowired
@@ -331,6 +339,26 @@ public class FlowController extends BaseController {
 		return mcgResult;
 	}
 	
+	@RequestMapping(value="saveLoop", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public McgResult saveLoop(@Valid @RequestBody FlowLoop flowLoop, BindingResult result, HttpSession session) {
+        Message message = MessagePlugin.getMessage();
+        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+        NotifyBody notifyBody = new NotifyBody();
+        McgResult mcgResult = new McgResult();
+        
+        if(Tools.validator(result, mcgResult, notifyBody)) {
+        	flowLoop.setName(flowLoop.getLoopProperty().getName());
+            CachePlugin.putFlowEntity(flowLoop.getFlowId(), flowLoop.getId(), flowLoop);
+            notifyBody.setContent("循环程控件保存成功！");
+            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+        }
+
+        message.setBody(notifyBody);
+        MessagePlugin.push(session.getId(), message);
+		return mcgResult;
+	}
+	
 	@RequestMapping(value="saveData", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public McgResult saveData(@Valid @RequestBody FlowData flowData, BindingResult result, HttpSession session) {
@@ -425,6 +453,33 @@ public class FlowController extends BaseController {
         MessagePlugin.push(session.getId(), message);          
         return mcgResult;
     }
+
+    @RequestMapping(value="stop", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public McgResult stop(String flowId, HttpSession session) {
+    	McgResult mcgResult = new McgResult();
+    	try {
+	    	ExecuteStruct executeStruct = FlowInstancesUtils.executeStructMap.get(flowId);
+	    	if(executeStruct != null && executeStruct.getRunStatus() != null) {
+	    		executeStruct.getRunStatus().setInterrupt(true);
+	    	}
+	    	stopFlow(executeStruct.getChildExecuteStruct());
+    	} catch (Exception e) {
+    		mcgResult.setStatusCode(0);
+		}
+    	return mcgResult;
+    }
+    
+    private boolean stopFlow(ExecuteStruct executeStruct) {
+    	if(executeStruct != null && executeStruct.getRunStatus() != null) {
+    		executeStruct.getRunStatus().setInterrupt(true);
+    		logger.debug("正在中断子流程：{}", executeStruct.getTopology().getName());    
+    	} else {
+    		logger.debug("中断所有子流程完毕！");    		
+    		return false;
+    	}
+    	return stopFlow(executeStruct.getChildExecuteStruct());
+    }
     
     @RequestMapping(value="generate", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -435,7 +490,7 @@ public class FlowController extends BaseController {
         
         if(Tools.validator(result, mcgResult, notifyBody)) {
             if(flowService.saveFlow(webStruct, session) ) {
-                flowService.generate(webStruct, session, false);
+                flowService.generate(webStruct, session, false, null);
             }            
         } else {
             Message message = MessagePlugin.getMessage();

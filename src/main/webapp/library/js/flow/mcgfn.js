@@ -55,15 +55,22 @@ var setting = {
     };
 
 $(function() {
-	setAutoHeight($("body"),500);
-	
+	setAutoHeight($("body"), 500);
+/*	
 	$('#mcg_toolbar').affix({
 	   offset: {
-		  top: 150, 
-		  bottom: function () {
-			 return (this.bottom = $('#mcg_footer').outerHeight(true))}
-		  }
+		   bottom: 0
+	  },
+	  target: $("#flowarea")
 	});
+	
+	$('#console_header').affix({
+		offset: {
+			bottom: 0
+		},
+		target: $("#flowarea")
+	});
+*/
 	
 	common.ajax({
 		url : "/flowTree/getDatas",
@@ -79,9 +86,50 @@ $(function() {
     	nodeSelected(rootNode);
     	//  系统初始化
     	initFlowSystem();
+    	initFlowConsole();
 	});
 
 });
+
+/*
+ * 初始化流程控制台，主要以下：
+ * 绑定按钮功能
+ */
+function initFlowConsole() {
+	
+	$("#flowStopBtn").click(function(){
+		
+		if($("#flowStopBtn span").is(".text-danger")) {
+			common.ajax({
+				url : "/flow/stop",
+				type : "POST",
+				data : "flowId=" + $("#flowSelect").attr("flowId") //JSON.stringify(webStruct),
+			}, function(data) {
+				if(data.statusCode == 1) {
+				//	$("#flowStopBtn span").removeClass("text-danger");
+				} else {
+					Messenger().post({
+						message: "停止流程失败！",
+						type: "error",
+						hideAfter: 5,
+					 	showCloseButton: true
+					});
+				}
+			});
+		} else {
+			Messenger().post({
+				message: "流程未执行，无法停止！",
+				type: "error",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});
+		}
+	});
+
+	$("#flowLogCleanBtn").click(function() {
+		$("#console").html("");
+	});
+}
 
 /*
  *  流程组件，拖拽事件绑定
@@ -101,7 +149,6 @@ function flowDropBind() {
 		    	var element = new $.DragWidget({ id:ui.draggable.attr("id")+Math.uuid(), label:$("#"+ui.draggable.attr("id")).text() ,name:$("#"+ui.draggable.attr("id")).text(), classname:"w eletype",eletype:ui.draggable.attr("eletype"), clone:'true',left:ui.offset.left,top:ui.offset.top,sign:"false" });
 		    	var divNode = $("<div data-toggle='popover' id=" + element.getId() + " name='' eletype=" + element.getEletype() + " class='" + element.getClassname() +"' clone='" + element.getClone() + "'>工具<div class='ep'></div></div>");
 		 		divNode.css("left", element.getLeft()+"px");
-		 	//	alert(elementMap.get(element.getId()).getLeft());
 		 		divNode.css("top", element.getTop()+"px");
 		 		$(this).append(divNode);
 		 		var xy = getXY(element.getId(),"false");
@@ -121,10 +168,8 @@ function flowDropBind() {
 				var element = elementMap.get(ui.draggable.attr("id"));
 				element.setLeft(xy.x);
 				element.setTop(xy.y);
-			//	alert("xy={"+xy.x+","+xy.y+"}" + "\n" +"element="+element.getLeft() + ","+element.getTop());
 				saveXY(ui.draggable.attr("id"), xy);
 				elementMap.put(ui.draggable.attr("id"), element);
-			//	alert(xy.x + "---" + elementMap.get(ui.draggable.attr("id")).getLeft());
 			}
 			$(".draggable").draggable({containment: "parent", zIndex: 100 }); //grid: [ 50, 20 ]
 		}
@@ -524,8 +569,13 @@ function initFunc() {
 			data : JSON.stringify(webStruct),
 			contentType : "application/json"
 		}, function(data) {
-			if(data.statusCode == 1) {
-			//	alert(data.statusMes);
+			if(data.statusCode != 1) {
+				Messenger().post({
+					message: "保存流程失败！",
+					type: "error",
+					hideAfter: 5,
+				 	showCloseButton: true
+				});
 			}
 		});
 	});
@@ -539,8 +589,15 @@ function initFunc() {
 			data : JSON.stringify(webStruct),
 			contentType : "application/json"
 		}, function(data) {
-			if(data.statusCode != 1) {
-				alert("清空流程失败");
+			if(data.statusCode == 1) {
+				$("#flowStopBtn span").addClass("text-danger");
+			} else {
+				Messenger().post({
+					message: "执行流程失败！",
+					type: "error",
+					hideAfter: 5,
+				 	showCloseButton: true
+				});
 			}
 		});
 	});
@@ -629,7 +686,12 @@ function initFunc() {
 			    				clearAll($("#flowarea"));
 			    				$( _this ).dialog( "destroy" );
 			    			} else {
-			    				alert("清空流程失败");
+			    				Messenger().post({
+			    					message: "清空流程失败！",
+			    					type: "error",
+			    					hideAfter: 5,
+			    				 	showCloseButton: true
+			    				});
 			    			}
 			    		});							
 					}
@@ -846,7 +908,13 @@ function initConnectLine() {
             connectorStyle: { strokeStyle: "#5c96bc", lineWidth: 2, outlineColor: "transparent", outlineWidth: 4 },
             maxConnections: 5,
             onMaxConnections: function (info, e) {
-                alert("Maximum connections (" + info.maxConnections + ") reached");
+    			Messenger().post({
+    				message: "达到连接数上限" + info.maxConnections + "！",
+    				type: "error",
+    				hideAfter: 5,
+    			 	showCloseButton: true
+    			});
+                console.log("Maximum connections (" + info.maxConnections + ") reached");
             }
         });
 
@@ -879,7 +947,13 @@ function uploadFlow() {
     		}
     	},
     	error : function(data) {  
-    		alert("error:" + data);  
+			Messenger().post({
+				message: "上传流程失败！",
+				type: "error",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});
+    		
     	}  
 	});  
 	return false;
@@ -943,20 +1017,78 @@ function setRemoveBtn(treeId, treeNode) {
 function beforeRemove(treeId, treeNode) {
 	var isParent = treeNode.isParent;
 	var ids = new Array();
-		ids = getChildren(ids,treeNode);
-	common.ajax({
-		url : "/flowTree/deleteNode",
-		type : "GET",
-		data : "ids=" + ids,  
-		contentType : "application/json"
-	}, function(data) {
-     	var treeObj = $.fn.zTree.getZTreeObj("flowTree");
-    	var rootNode = treeObj.getNodeByParam("id", "root", null);
-    	nodeSelected(rootNode);
-		return true;
-	});
+	ids = getChildren(ids,treeNode);
+
+    var parentdiv=$('<div abc="asdfasdf"></div>');       
+    parentdiv.attr('id', "flowDelete_" + treeId);
+    $(parentdiv).html("<div style='height:50px;line-height:50px;'>删除当前流程以及所有子流程，您确定需要删除吗？</div>");
+	$(parentdiv).dialog({
+		title: "删除当前流程？",
+		resizable: false,
+		autoOpen: false,
+		closeOnEscape: false,
+		modal: true,
+		width: 350,
+		height: "auto",
+		position: { my: "center", at: "center", of: window  },
+		buttons: [
+			{
+				class: "btn btn-primary",			
+				text: "确定",
+				click: function() {
+					var _this = this;
+					common.ajax({
+						url : "/flowTree/deleteNode",
+						type : "GET",
+						data : "ids=" + ids,
+						async: false,
+						contentType : "application/json"
+					}, function(data) {
+		    			if(data.statusCode == 1) {
+					     	var treeObj = $.fn.zTree.getZTreeObj("flowTree");
+					     	treeObj.removeNode(treeNode, false);
+					    	var rootNode = treeObj.getNodeByParam("id", "root", null);
+					    	nodeSelected(rootNode);
+					    	$( _this ).dialog( "destroy" );
+					    	
+		    				Messenger().post({
+		    					message: "删除流程成功！",
+		    					type: "success",
+		    					hideAfter: 5,
+		    				 	showCloseButton: true
+		    				});
+		    				
+		    			} else {
+		    				Messenger().post({
+		    					message: "清空流程失败！",
+		    					type: "error",
+		    					hideAfter: 5,
+		    				 	showCloseButton: true
+		    				});
+		    			}
+						
+
+					});
+		    								
+				}
+			},
+			{
+				class: "btn btn-default",			
+				text: "关闭",
+				click: function() {
+					$( this ).dialog( "destroy" );
+				}
+			}
+		]	    	
+	}).on( "dialogclose", function( event, ui ) {
+    	$(this).dialog( "destroy" );
+	});		            	
+	$(parentdiv).dialog("open");
+
+	return false;
 }
 
+/* 获取流程树选中的节点id及递归包含的所有子节点id */
 function getChildren(ids,treeNode){
 	ids.push(treeNode.id);
 	 if (treeNode.isParent){
