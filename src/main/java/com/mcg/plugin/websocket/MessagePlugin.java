@@ -29,9 +29,11 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSON;
 import com.mcg.entity.auth.PermissionCollection;
 import com.mcg.entity.auth.UserCacheBean;
+import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Header;
 import com.mcg.entity.message.Message;
 import com.mcg.util.DateUtils;
+import com.mcg.util.FlowInstancesUtils;
 
 public class MessagePlugin {
 
@@ -40,14 +42,22 @@ public class MessagePlugin {
 	public static boolean push(String httpSessionId, Message message) {
 		boolean result = false;
     	UserCacheBean ucb = PermissionCollection.getInstance().getUserCache(httpSessionId);
-    	try {
-    	    Session session = ucb.getUser().getSession();
-    	    if(session.isOpen()) {
-    	        session.getBasicRemote().sendText(JSON.toJSONString(message).replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
-    	    }
-		} catch (IOException e) {
-			logger.error("webscoket推送客户端消息出错，推送时间：{}，httpSessionId：{}，异常信息：{}", DateUtils.format(new Date()), httpSessionId, e.getMessage());
-		}
+    	if(ucb == null) {
+    		logger.error("websocket推送客户端时，获取用户缓存为null，无法推送消息，推送时间：{}，httpSessionId：{}，推送消息：{}", DateUtils.format(new Date()), httpSessionId, JSON.toJSONString(message));
+    	} else {
+	    	try {
+	    	    Session session = ucb.getUser().getSession();
+	    	    if(session.isOpen()) {
+	    	        session.getBasicRemote().sendText(JSON.toJSONString(message).replaceAll("<", "&lt;").replaceAll(">", "&gt;"), true);
+	    	    }
+			} catch (IOException e) {
+				if(message != null && message.getBody() != null && message.getBody() instanceof FlowBody) {
+					FlowBody flowBody = (FlowBody)message.getBody();
+					FlowInstancesUtils.executeStructMap.get(flowBody.getFlowId()).getRunStatus().setInterrupt(true);
+				}
+				logger.error("webscoket推送客户端消息出错，推送时间：{}，推送消息：{}，异常信息：", DateUtils.format(new Date()), JSON.toJSONString(message), e);
+			}
+    	}
 		return result;
 	}
 	

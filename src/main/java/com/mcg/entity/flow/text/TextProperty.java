@@ -38,6 +38,9 @@ public class TextProperty implements Serializable {
 	@NotBlank(message = "{flowText.textProperty.fileName.notBlank}")
 	@XmlElement
 	private String fileName;
+	@NotBlank(message = "{flowText.textProperty.outMode.notBlank}")
+	@XmlElement
+	private String outMode;
 	@NotBlank(message = "{flowText.textProperty.outPutPath.notBlank}")
 	@XmlElement
 	private String outPutPath;
@@ -47,6 +50,12 @@ public class TextProperty implements Serializable {
 	}
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+	public String getOutMode() {
+		return outMode;
+	}
+	public void setOutMode(String outMode) {
+		this.outMode = outMode;
 	}
 	public String getOutPutPath() {
 		return outPutPath;

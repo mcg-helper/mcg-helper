@@ -63,58 +63,51 @@
 										</div>
 										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarModel" class="toolbar_eletype" eletype="model">model</div>
-											</div>
-											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarJson" class="toolbar_eletype" eletype="json">json</div>
-											</div>										
-										</div>
-										<div class="row">
+											</div>	
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarData" class="toolbar_eletype" eletype="data">data</div>
-											</div>
+											</div>									
+										</div>
+										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarText" class="toolbar_eletype" eletype="text">文本</div>
 											</div>	
-										</div>
-										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarSqlQuery" class="toolbar_eletype" eletype="sqlQuery">sql查询</div>
 											</div>
+										</div>
+										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarSqlExecute" class="toolbar_eletype" eletype="sqlExecute">sql执行</div>
-											</div>										
-										</div>										
-										<div class="row">
+											</div>	
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarScript" class="toolbar_eletype" eletype="script">JS脚本</div>
 											</div>
+										</div>										
+										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarJava" class="toolbar_eletype" eletype="java">JAVA</div>
-											</div>										
-										</div>
-										<div class="row">
+											</div>	
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarPython" class="toolbar_eletype" eletype="python">Python</div>
-											</div>
-											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarLinux" class="toolbar_eletype" eletype="linux">Linux</div>
-											</div>											
+											</div>								
 										</div>
 										<div class="row">
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarLinux" class="toolbar_eletype" eletype="linux">Linux</div>
+											</div>	
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarWonton" class="toolbar_eletype" eletype="wonton">混沌</div>
 											</div>
+										</div>
+										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarProcess" class="toolbar_eletype" eletype="process">子流程</div>
 											</div>
-										</div>
-										
-										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarLoop" class="toolbar_eletype" eletype="loop">循环</div>
 											</div>
-											
 										</div>
 										
 									</div>

@@ -28,11 +28,12 @@ public interface TplLan {
      * @param:       @param ftl    模板的源代码
      * @param:       @param outFileName   输出文件名
      * @param:       @param outFilePath   输出路径
+     * @param:       @param outMode   输出方式（覆盖、追加）
      * @param:       @return      
      * @return:      String      
      * @throws
      */
-	String generate(JSON json, String ftl, String outFileName, String outFilePath) throws Exception;
+	String generate(JSON json, String ftl, String outFileName, String outFilePath, String outMode) throws Exception;
 	
 	/**
 	 * 

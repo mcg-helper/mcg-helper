@@ -25,6 +25,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,6 @@ import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.execute.ProcessStrategy;
-import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.util.DataConverter;
 
@@ -60,9 +60,13 @@ public class FlowScriptStrategy implements ProcessStrategy {
 		JSON parentParam = DataConverter.getParentRunResult(flowScript.getScriptId(), executeStruct);
 		flowScript = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct) ,flowScript);		
 		RunResult runResult = new RunResult();
+		
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);
         FlowBody flowBody = new FlowBody();
+        flowBody.setFlowId(flowScript.getFlowId());
+        flowBody.setSubFlag(executeStruct.getSubFlag());
+        flowBody.setOrderNum(flowScript.getOrderNum());
         flowBody.setEleType(EletypeEnum.SCRIPT.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.SCRIPT.getName() + "--》" + flowScript.getScriptProperty().getScriptName());
         flowBody.setEleId(flowScript.getScriptId());
@@ -75,10 +79,9 @@ public class FlowScriptStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        FlowTask flowTask = FlowTask.executeLocal.get();    
-        MessagePlugin.push(flowTask.getHttpSessionId(), message); 		
+        MessagePlugin.push(executeStruct.getSession().getId(), message); 		
 		
-		String dataJson = resolve(flowScript.getScriptCore().getSource(), parentParam);
+		String dataJson = resolve(executeStruct.getSession().getId(), flowScript.getFlowId(), flowScript.getScriptCore().getSource(), parentParam);
 		runResult.setElementId(flowScript.getScriptId());
 		
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -90,7 +93,12 @@ public class FlowScriptStrategy implements ProcessStrategy {
 		return runResult;
 	}
 	
-	public String resolve(String script, JSON param) throws ScriptException, NoSuchMethodException {
+	public String resolve(String httpSessionId, String flowId, String script, JSON param) throws ScriptException, NoSuchMethodException {
+		if(StringUtils.isNotEmpty(script)) {
+			script = script.replace("console.info(", "console.info(\"" + httpSessionId + "\", \"" + flowId + "\", ")
+					.replace("console.success(", "console.success(\"" + httpSessionId + "\", \"" + flowId + "\", ")
+					.replace("console.error(", "console.error(\"" + httpSessionId + "\", \"" + flowId + "\", ");
+		}
 		String dataJson = null;
 	    ScriptEngineManager scriptEngineManager = new ScriptEngineManager();  
 	    ScriptEngine engine = scriptEngineManager.getEngineByName("nashorn");

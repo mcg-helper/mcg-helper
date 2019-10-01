@@ -19,6 +19,7 @@ package com.mcg.controller.flow;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -46,7 +47,6 @@ import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
 import com.mcg.entity.flow.loop.FlowLoop;
-import com.mcg.entity.flow.model.FlowModel;
 import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
@@ -57,6 +57,7 @@ import com.mcg.entity.flow.text.FlowText;
 import com.mcg.entity.flow.web.WebStruct;
 import com.mcg.entity.flow.wonton.FlowWonton;
 import com.mcg.entity.generate.ExecuteStruct;
+import com.mcg.entity.generate.RunStatus;
 import com.mcg.entity.global.McgGlobal;
 import com.mcg.entity.global.datasource.McgDataSource;
 import com.mcg.entity.message.Message;
@@ -118,27 +119,6 @@ public class FlowController extends BaseController {
         MessagePlugin.push(session.getId(), message);        
         return mcgResult;
     }	
-	
-	@RequestMapping(value="saveModel", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public McgResult saveModel(@Valid @RequestBody FlowModel flowModel, BindingResult result, HttpSession session) {
-        
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
-        NotifyBody notifyBody = new NotifyBody();       
-        McgResult mcgResult = new McgResult();
-        
-        if(Tools.validator(result, mcgResult, notifyBody)) {
-            flowModel.setName(flowModel.getModelProperty().getModelName());
-            CachePlugin.putFlowEntity(flowModel.getFlowId(), flowModel.getModelId(), flowModel);
-            notifyBody.setContent("Model控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());            
-        }
-        
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
-		return mcgResult;
-	}
 	
     @RequestMapping(value="saveSqlQuery", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -459,11 +439,25 @@ public class FlowController extends BaseController {
     public McgResult stop(String flowId, HttpSession session) {
     	McgResult mcgResult = new McgResult();
     	try {
-	    	ExecuteStruct executeStruct = FlowInstancesUtils.executeStructMap.get(flowId);
+    		
+    		String flowInstanceId = Tools.genFlowInstanceId(session.getId(), flowId);
+	    	ExecuteStruct executeStruct = FlowInstancesUtils.executeStructMap.get(flowInstanceId);
 	    	if(executeStruct != null && executeStruct.getRunStatus() != null) {
 	    		executeStruct.getRunStatus().setInterrupt(true);
 	    	}
 	    	stopFlow(executeStruct.getChildExecuteStruct());
+	    	
+	    	Thread.sleep(2000L);
+	    	
+	    	if(executeStruct.getFlowTaskFutureList().size() > 0 ) {
+		    	for(int i=executeStruct.getFlowTaskFutureList().size() -1 ; i>=0; i--) {
+		    		Future<RunStatus> flowFuture = executeStruct.getFlowTaskFutureList().get(i);
+		    		if(!flowFuture.isDone() ) {
+		    			flowFuture.cancel(true);
+		    		}
+		    	}
+	    	}
+
     	} catch (Exception e) {
     		mcgResult.setStatusCode(0);
 		}

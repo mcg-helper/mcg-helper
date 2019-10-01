@@ -35,7 +35,6 @@ import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
 import com.mcg.entity.flow.loop.FlowLoop;
-import com.mcg.entity.flow.model.FlowModel;
 import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
@@ -128,13 +127,6 @@ public class FlowRunSort {
 		if (flowStruct.getFlowStart() != null) {
 			dataMap.put(flowStruct.getFlowStart().getStartId(), flowStruct.getFlowStart());
 			sortMap.put(flowStruct.getFlowStart().getStartId(), num++);
-		}
-		if (flowStruct.getFlowModels() != null && flowStruct.getFlowModels().getFlowModel() != null
-				&& flowStruct.getFlowModels().getFlowModel().size() > 0) {
-			for (FlowModel flowModel : flowStruct.getFlowModels().getFlowModel()) {
-				dataMap.put(flowModel.getModelId(), flowModel);
-				sortMap.put(flowModel.getModelId(), num++);
-			}
 		}
 		if (flowStruct.getFlowSqlQuerys() != null && flowStruct.getFlowSqlQuerys().getFlowSqlQuery() != null
 				&& flowStruct.getFlowSqlQuerys().getFlowSqlQuery().size() > 0) {

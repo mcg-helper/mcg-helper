@@ -36,9 +36,10 @@
     	</div>
        	<div class="row">
 	   		<div class="col-md-4">
-	   			<h3>QQ群</h3>
+	   			<h3>QQ交流群</h3>
 	   			<p>
-	   				群号：619815829，学习交流沟通，分享彼此经验，这里畅所欲言，欢迎大家提出宝贵建议与意见！
+	   				群号：619815829，学习交流沟通，分享彼此经验，这里畅所欲言，欢迎大家提出宝贵建议与意见！<br/>
+	   				反馈邮箱：mcg-helper@qq.com
 	   			</p>
 	   		</div>
 	   		
@@ -54,7 +55,7 @@
 	   			<h3>视频教程</h3>
 	   			<p>
 	   				可快速学习与掌握工具的使用，教程以工作中实际需求为主题进行实战演练，逐步将日常工作进行流程自动化，达到减少简化工作量，显著性提升效率！------
-	   				<a href="https://edu.csdn.net/course/detail/5954" target="_blank">观看请点击这里</a>
+	   				<a href="https://edu.csdn.net/course/play/5954" target="_blank">观看请点击这里</a>
 	   			</p>
 	   		</div>   		
 		</div>
@@ -71,14 +72,20 @@
 	   			<h3>版本信息</h3>
 	   			<p>
 	   				浏览器：建议使用chrome、firefox、IE10（+）<br/>
-	   				版本号：${version }<br/>
-	   				email：mcg-helper@qq.com
+	   				运行环境：jdk1.8（+）、tomcat8（+）<br/>
+	   				版本号：${version }
+	   				
 	   			</p>
 	   		</div>
 	   		  
 		</div>
 
-   </div>
+   	</div>
  
+	<div class="mcg_footer navbar-fixed-bottom">
+		<div class="row">
+		   	Copyright © 2018, mcg-helper@qq.com, All Rights Reserved
+		</div>
+	</div>
 </body>
 </html>

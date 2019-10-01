@@ -21,6 +21,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpSession;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
@@ -43,7 +44,7 @@ public class McgWebSocket {
 
     	logger.debug("接收数据：{}, sessionId:{}", message, session.getId());
         if (session.isOpen()) {
-            session.getBasicRemote().sendText(message);
+            session.getBasicRemote().sendText(message, true);
         }
 
     }
@@ -60,8 +61,11 @@ public class McgWebSocket {
 
     @OnClose
     public void onClose() {
-    	logger.debug("关闭通道成功");
+    	logger.debug("关闭一个websocket通道成功");
     }
     
-    
+    @OnError 
+    public void onerror(Session session, Throwable throwable) { 
+    	logger.error("非法关闭一个websocket通道成功", throwable);
+    }
 }

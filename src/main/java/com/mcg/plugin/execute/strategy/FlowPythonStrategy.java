@@ -40,7 +40,6 @@ import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.execute.ProcessStrategy;
-import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.util.DataConverter;
 import com.mcg.util.JythonEnvironment;
@@ -62,9 +61,13 @@ public class FlowPythonStrategy implements ProcessStrategy {
 		JSON parentParam = DataConverter.getParentRunResult(flowPython.getId(), executeStruct);
 		flowPython = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowPython);		
 		RunResult runResult = new RunResult();
+		
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);
         FlowBody flowBody = new FlowBody();
+        flowBody.setFlowId(flowPython.getFlowId());
+        flowBody.setSubFlag(executeStruct.getSubFlag());
+        flowBody.setOrderNum(flowPython.getOrderNum());
         flowBody.setEleType(EletypeEnum.PYTHON.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.PYTHON.getName() + "--》" + flowPython.getPythonProperty().getName());
         flowBody.setEleId(flowPython.getId());
@@ -77,8 +80,7 @@ public class FlowPythonStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        FlowTask flowTask = FlowTask.executeLocal.get();    
-        MessagePlugin.push(flowTask.getHttpSessionId(), message); 		
+        MessagePlugin.push(executeStruct.getSession().getId(), message); 		
 		
 		String dataJson = resolve(flowPython.getPythonCore().getSource(), parentParam);
 		runResult.setElementId(flowPython.getId());

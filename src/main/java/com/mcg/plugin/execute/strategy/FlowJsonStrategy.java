@@ -34,7 +34,6 @@ import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.execute.ProcessStrategy;
-import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.util.DataConverter;
 
@@ -57,6 +56,9 @@ public class FlowJsonStrategy implements ProcessStrategy {
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);		
         FlowBody flowBody = new FlowBody();
+        flowBody.setSubFlag(executeStruct.getSubFlag());
+        flowBody.setFlowId(flowJson.getFlowId());
+        flowBody.setOrderNum(flowJson.getOrderNum());
         flowBody.setEleType(EletypeEnum.JSON.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.JSON.getName() + "--》" + flowJson.getJsonProperty().getName());
         flowBody.setEleId(flowJson.getId());
@@ -69,8 +71,7 @@ public class FlowJsonStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        FlowTask flowTask = FlowTask.executeLocal.get();    
-        MessagePlugin.push(flowTask.getHttpSessionId(), message);		
+        MessagePlugin.push(executeStruct.getSession().getId(), message);		
 		
 		flowJson = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowJson);		
 		RunResult runResult = new RunResult();

@@ -21,7 +21,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.mcg.common.sysenum.FlowLinuxConnModeEnum;
 import com.mcg.common.sysenum.FlowLoopTypeEnum;
+import com.mcg.common.sysenum.FlowTextOutModeEnum;
 import com.mcg.controller.base.BaseController;
 import com.mcg.service.FlowService;
 import com.mcg.service.GlobalService;
@@ -102,6 +104,7 @@ public class HtmlController extends BaseController {
 		ModelAndView mv = this.getModelAndView();
 		PageData pd = this.getPageData();
 		mv.addObject("modalId", pd.get("modalId"));
+		mv.addObject("outModes", FlowTextOutModeEnum.values());
 		mv.setViewName("html/flowTextModal");
 		return mv;
 	}
@@ -132,7 +135,7 @@ public class HtmlController extends BaseController {
 		ModelAndView mv = this.getModelAndView();
 		PageData pd = this.getPageData();
 		mv.addObject("modalId", pd.get("modalId"));
-
+		mv.addObject("connMode", FlowLinuxConnModeEnum.values());
 		mv.addObject("serverSources", globalService.getServerSources());		
 		
 		mv.setViewName("html/flowLinuxModal");

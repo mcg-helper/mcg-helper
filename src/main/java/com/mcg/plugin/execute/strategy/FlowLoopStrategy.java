@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.FlowLoopTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.common.LoopStatus;
@@ -34,7 +35,8 @@ import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.execute.ProcessStrategy;
-import com.mcg.plugin.generate.FlowTask;
+import com.mcg.plugin.tplengine.FreeMakerTpLan;
+import com.mcg.plugin.tplengine.TplEngine;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.util.DataConverter;
 
@@ -59,6 +61,9 @@ public class FlowLoopStrategy implements ProcessStrategy {
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);
         FlowBody flowBody = new FlowBody();
+        flowBody.setFlowId(flowLoop.getFlowId());
+        flowBody.setSubFlag(executeStruct.getSubFlag());
+        flowBody.setOrderNum(flowLoop.getOrderNum());
         flowBody.setEleType(EletypeEnum.LOOP.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.LOOP.getName() + "--》" + flowLoop.getLoopProperty().getName());
         flowBody.setEleId(flowLoop.getId());
@@ -71,30 +76,45 @@ public class FlowLoopStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        FlowTask flowTask = FlowTask.executeLocal.get();
-        MessagePlugin.push(flowTask.getHttpSessionId(), message);
+        MessagePlugin.push(executeStruct.getSession().getId(), message);
         
-        JSONObject jsonObject = new JSONObject();
+        JSONObject jsonObject = (JSONObject)parentParam;
         LoopStatus loopStatusLast = executeStruct.getRunStatus().getLoopStatusMap().get(flowLoop.getId());
-        if(loopStatusLast == null) {
-        	int count = Integer.valueOf(flowLoop.getLoopProperty().getCount());
+        
+        if(FlowLoopTypeEnum.COUNT.getValue().equals(flowLoop.getLoopProperty().getType()) ) {
+	        if(loopStatusLast == null) {
+	        	int count = Integer.valueOf(flowLoop.getLoopProperty().getValue());
+	        	LoopStatus loopStatus = new LoopStatus();
+	        	loopStatus.setSwicth(--count <= 0 ? false : true);
+	        	loopStatus.setCount(count);
+	        	executeStruct.getRunStatus().getLoopStatusMap().put(flowLoop.getId(), loopStatus);
+	        	
+	        	jsonObject.put("count", count + 1);
+	        } else {
+	        	LoopStatus loopStatus = executeStruct.getRunStatus().getLoopStatusMap().get(flowLoop.getId());
+	        	loopStatus.setCount(loopStatus.getCount() - 1); 
+	        	loopStatus.setSwicth(loopStatus.getCount() <= 0 ? false : true);
+	        	executeStruct.getRunStatus().getLoopStatusMap().put(flowLoop.getId(), loopStatus);
+	        	
+	        	jsonObject.put("count", loopStatus.getCount() + 1);
+	        }
+        } else if(FlowLoopTypeEnum.EXPRES.getValue().equals(flowLoop.getLoopProperty().getType()) ) {
+        	jsonObject.put("expres", flowLoop.getLoopProperty().getValue());
+        	TplEngine tplEngine = new TplEngine(new FreeMakerTpLan());
+        	String flag = tplEngine.generate(null, "${(" + flowLoop.getLoopProperty().getValue() + ")?c}");
         	LoopStatus loopStatus = new LoopStatus();
-        	loopStatus.setSwicth(--count <= 0 ? false : true);
-        	loopStatus.setCount(count);
+        	loopStatus.setSwicth(Boolean.valueOf(flag));
         	executeStruct.getRunStatus().getLoopStatusMap().put(flowLoop.getId(), loopStatus);
         	
-        	jsonObject.put("count", count + 1);
         } else {
-        	LoopStatus loopStatus = executeStruct.getRunStatus().getLoopStatusMap().get(flowLoop.getId());
-        	loopStatus.setCount(loopStatus.getCount() - 1); 
-        	loopStatus.setSwicth(loopStatus.getCount() <= 0 ? false : true);
-        	executeStruct.getRunStatus().getLoopStatusMap().put(flowLoop.getId(), loopStatus);
-        	
-        	jsonObject.put("count", loopStatus.getCount() + 1);
+        	logger.error("循环规则非法！");
         }
         
         runResult.setElementId(flowLoop.getId());
-        runResult.setJsonVar(JSON.toJSONString(jsonObject));
+        
+		JSONObject runResultJson = new JSONObject();
+		runResultJson.put(flowLoop.getLoopProperty().getKey(), jsonObject);
+        runResult.setJsonVar(JSON.toJSONString(runResultJson));
         
         executeStruct.getRunStatus().setCode("success");
 		

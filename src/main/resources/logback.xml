@@ -12,7 +12,7 @@
         <file>${LOG_HOME}/mcg.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
              <FileNamePattern>${LOG_HOME}/mcg.log.%d{yyyy-MM-dd}</FileNamePattern>
-             <MaxHistory>15</MaxHistory>
+             <MaxHistory>7</MaxHistory>
         </rollingPolicy>   
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder" charset="UTF-8">
             <pattern>[%-5p] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%C:%L] - %m %n</pattern>
@@ -21,8 +21,8 @@
 
     </appender>
 
-      <root level="debug">
+    <root level="debug">
        <appender-ref ref="console" />   
        <appender-ref ref="FILE"></appender-ref>
-     </root>
+    </root>
   </configuration> 

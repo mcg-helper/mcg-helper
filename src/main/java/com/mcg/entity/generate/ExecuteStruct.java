@@ -18,6 +18,8 @@ package com.mcg.entity.generate;
 
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -35,6 +37,15 @@ public class ExecuteStruct implements Serializable {
     private static final long serialVersionUID = -677740433314925325L;
     @XmlElement
     private HttpSession session;
+    /* 流程id */
+    @XmlElement
+    private String flowId;
+    /* 流程实例id */
+    @XmlElement
+    private String flowInstanceId;
+    /* 当前执行流程是否为子流程 */
+    @XmlElement
+    private Boolean subFlag;
     /* 正在执行的流程实例 */
     @XmlElement
     private Topology topology;
@@ -44,13 +55,34 @@ public class ExecuteStruct implements Serializable {
     private ConcurrentHashMap<String, McgProduct> dataMap;
     @XmlElement
     private RunStatus runStatus;
+    /* 正在执行流程的future列表，包含当前流程与所有嵌套子流程的future */
+    @XmlElement
+    private CopyOnWriteArrayList<Future<RunStatus>> flowTaskFutureList = new CopyOnWriteArrayList<>();
     @XmlElement
     private ConcurrentHashMap<String, RunResult> runResultMap;
     /* 正在执行的子流程的运行数据 */
     @XmlElement
     private ExecuteStruct childExecuteStruct;
     
-    public Orders getOrders() {
+    public String getFlowId() {
+		return flowId;
+	}
+	public void setFlowId(String flowId) {
+		this.flowId = flowId;
+	}
+	public String getFlowInstanceId() {
+		return flowInstanceId;
+	}
+	public void setFlowInstanceId(String flowInstanceId) {
+		this.flowInstanceId = flowInstanceId;
+	}
+	public Boolean getSubFlag() {
+		return subFlag;
+	}
+	public void setSubFlag(Boolean subFlag) {
+		this.subFlag = subFlag;
+	}
+	public Orders getOrders() {
         return orders;
     }
     public void setOrders(Orders orders) {
@@ -91,6 +123,12 @@ public class ExecuteStruct implements Serializable {
 	}
 	public void setChildExecuteStruct(ExecuteStruct childExecuteStruct) {
 		this.childExecuteStruct = childExecuteStruct;
+	}
+	public CopyOnWriteArrayList<Future<RunStatus>> getFlowTaskFutureList() {
+		return flowTaskFutureList;
+	}
+	public void setFlowTaskFutureList(CopyOnWriteArrayList<Future<RunStatus>> flowTaskFutureList) {
+		this.flowTaskFutureList = flowTaskFutureList;
 	}
 
 }

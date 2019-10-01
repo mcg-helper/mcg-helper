@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.mcg.entity.flow.model;
+package com.mcg.entity.global.var;
 
 import java.io.Serializable;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -26,18 +24,51 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement
-public class FlowModels implements Serializable {
+public class FlowVar implements Serializable {
 
-    private static final long serialVersionUID = 7591327144890175833L;
+	private static final long serialVersionUID = 1L;
+
+	//全局变量类型，系统类型：system  流程类型：flow
+	@XmlElement
+	private String type;
+	@XmlElement
+	private String id;
+	@XmlElement
+	private String key;
     @XmlElement
-    private List<FlowModel> flowModel;
-
-    public List<FlowModel> getFlowModel() {
-        return flowModel;
-    }
-
-    public void setFlowModel(List<FlowModel> flowModel) {
-        this.flowModel = flowModel;
-    }
+    private String value;
+    @XmlElement
+    private String note;
+    
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getKey() {
+		return key;
+	}
+	public void setKey(String key) {
+		this.key = key;
+	}
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
     
 }

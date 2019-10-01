@@ -28,17 +28,17 @@ public abstract class McgProduct implements Serializable,Cloneable {
     private ArrayList<String> sequence = new ArrayList<String>();
     
     // 准备工作
-    public abstract void prepare(ArrayList<String> sequence, ExecuteStruct executeStruct);
+    public abstract void prepare(ArrayList<String> sequence, ExecuteStruct executeStruct) throws Exception;
 
     // 执行组件算法
-    public abstract RunResult execute(ExecuteStruct executeStruct); 
+    public abstract RunResult execute(ExecuteStruct executeStruct) throws Exception; 
     
     @Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	final public RunResult build(ExecuteStruct executeStruct) {
+	final public RunResult build(ExecuteStruct executeStruct) throws Exception {
         this.prepare(sequence, executeStruct);
         
         return this.execute(executeStruct);

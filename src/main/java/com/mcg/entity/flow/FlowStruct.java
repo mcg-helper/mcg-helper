@@ -30,7 +30,6 @@ import com.mcg.entity.flow.java.FlowJavas;
 import com.mcg.entity.flow.json.FlowJsons;
 import com.mcg.entity.flow.linux.FlowLinuxs;
 import com.mcg.entity.flow.loop.FlowLoops;
-import com.mcg.entity.flow.model.FlowModels;
 import com.mcg.entity.flow.process.FlowProcesses;
 import com.mcg.entity.flow.python.FlowPythons;
 import com.mcg.entity.flow.script.FlowScripts;
@@ -53,8 +52,6 @@ public class FlowStruct implements Serializable {
     private String mcgId;
     @XmlElement
     private FlowStart flowStart;
-    @XmlElement
-    private FlowModels flowModels;
     @XmlElement
     private FlowJsons flowJsons;
     @XmlElement
@@ -89,12 +86,6 @@ public class FlowStruct implements Serializable {
     }
     public void setMcgId(String mcgId) {
         this.mcgId = mcgId;
-    }
-    public FlowModels getFlowModels() {
-        return flowModels;
-    }
-    public void setFlowModels(FlowModels flowModels) {
-        this.flowModels = flowModels;
     }
     public FlowSequences getFlowSequences() {
         return flowSequences;

@@ -54,6 +54,7 @@ public class GlobalController {
         
         if(Tools.validator(result, mcgResult, notifyBody)) {
             McgGlobal lastMcgGlobal = (McgGlobal)dbService.query(Constants.GLOBAL_KEY, McgGlobal.class);
+            lastMcgGlobal.setFlowVars(mcgGlobal.getFlowVars());
             lastMcgGlobal.setFlowDataSources(mcgGlobal.getFlowDataSources());
             lastMcgGlobal.setServerSources(mcgGlobal.getServerSources());
             globalService.updateGlobal(lastMcgGlobal);

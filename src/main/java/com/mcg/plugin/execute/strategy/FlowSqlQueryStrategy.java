@@ -39,7 +39,6 @@ import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.dbconn.FlowDataAdapterImpl;
 import com.mcg.plugin.dbconn.McgBizAdapter;
 import com.mcg.plugin.execute.ProcessStrategy;
-import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.service.FlowService;
 import com.mcg.util.DataConverter;
@@ -63,6 +62,9 @@ public class FlowSqlQueryStrategy implements ProcessStrategy {
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);		
         FlowBody flowBody = new FlowBody();
+        flowBody.setFlowId(flowSqlQuery.getFlowId());
+        flowBody.setSubFlag(executeStruct.getSubFlag());
+        flowBody.setOrderNum(flowSqlQuery.getOrderNum());
         flowBody.setEleType(EletypeEnum.SQLQUERY.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.SQLQUERY.getName() + "--》" + flowSqlQuery.getSqlQueryProperty().getName());
         flowBody.setEleId(flowSqlQuery.getId());
@@ -76,8 +78,7 @@ public class FlowSqlQueryStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        FlowTask flowTask = FlowTask.executeLocal.get();    
-        MessagePlugin.push(flowTask.getHttpSessionId(), message);		
+        MessagePlugin.push(executeStruct.getSession().getId(), message);		
 		
         flowSqlQuery = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowSqlQuery);		
 		RunResult runResult = new RunResult();
@@ -85,6 +86,21 @@ public class FlowSqlQueryStrategy implements ProcessStrategy {
 		
 		FlowService flowService = SpringContextHelper.getSpringBean(FlowService.class);
         McgBizAdapter mcgBizAdapter = new FlowDataAdapterImpl(flowService.getMcgDataSourceById(flowSqlQuery.getSqlQueryCore().getDataSourceId()));
+        
+        Message sqlMessage = MessagePlugin.getMessage();
+        sqlMessage.getHeader().setMesType(MessageTypeEnum.FLOW);		
+        FlowBody sqlFlowBody = new FlowBody();
+        sqlFlowBody.setFlowId(flowSqlQuery.getFlowId());
+        sqlFlowBody.setSubFlag(executeStruct.getSubFlag());
+        sqlFlowBody.setEleType(EletypeEnum.SQLQUERY.getValue());
+        sqlFlowBody.setEleTypeDesc(EletypeEnum.SQLQUERY.getName() + "--》" + flowSqlQuery.getSqlQueryProperty().getName());
+        sqlFlowBody.setEleId(flowSqlQuery.getId());
+        sqlFlowBody.setComment("查询SQL语句");
+        sqlFlowBody.setContent(flowSqlQuery.getSqlQueryCore().getSource());
+        sqlFlowBody.setLogType(LogTypeEnum.INFO.getValue());
+        sqlFlowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
+        sqlMessage.setBody(sqlFlowBody);
+        MessagePlugin.push(executeStruct.getSession().getId(), sqlMessage);
         
         List<Map<String, Object>> result = null;
         result = mcgBizAdapter.tableQuery(flowSqlQuery.getSqlQueryCore().getSource(), null);

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -63,6 +64,7 @@ import com.mcg.util.FlowInstancesUtils;
 import com.mcg.util.FlowRunSort;
 import com.mcg.util.McgFileUtils;
 import com.mcg.util.ThreadPoolUtils;
+import com.mcg.util.Tools;
 
 @Service
 public class FlowServiceImpl implements FlowService {
@@ -169,7 +171,7 @@ public class FlowServiceImpl implements FlowService {
     }
 
     @Override
-    public boolean generate(WebStruct webStruct, HttpSession session, boolean subFlag, String parentFlowId) throws ClassNotFoundException, IOException, InterruptedException, ExecutionException {
+    public boolean generate(WebStruct webStruct, HttpSession session, boolean subFlag, String parentFlowId) throws ClassNotFoundException, IOException, ExecutionException {
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.NOTIFY); 
         NotifyBody notifyBody = new NotifyBody();
@@ -188,38 +190,57 @@ public class FlowServiceImpl implements FlowService {
         		}
         	}
         	
+        	String flowInstanceId = Tools.genFlowInstanceId(session.getId(), flowStruct.getMcgId());
+        	
         	ConcurrentHashMap<String, RunResult> runResultMap = new ConcurrentHashMap<String, RunResult>();
             FlowRunSort flowRunSort = new FlowRunSort();
             ExecuteStruct executeStruct = new ExecuteStruct();
+            executeStruct.setFlowId(flowStruct.getMcgId());
+            executeStruct.setFlowInstanceId(flowInstanceId);
             executeStruct.setDataMap(flowRunSort.init(flowStruct));
             executeStruct.setOrders(flowRunSort.getFlowSort());
             executeStruct.setRunResultMap(runResultMap);
             executeStruct.setSession(session);
             executeStruct.setTopology(curTopology);
+            executeStruct.setSubFlag(subFlag);
             RunStatus runStatus = new RunStatus();
-            executeStruct.setRunStatus(runStatus);          
+            executeStruct.setRunStatus(runStatus);
         
             notifyBody.setContent("【" + curTopology.getName() + "】流程执行开始！");
             notifyBody.setType(LogTypeEnum.INFO.getValue());
             message.setBody(notifyBody);
             MessagePlugin.push(session.getId(), message);
             
-            FlowTask flowTask = new FlowTask(session.getId(), flowStruct, executeStruct, subFlag);
-            Future<RunStatus> future = ThreadPoolUtils.FLOW_WORK_EXECUTOR.submit(flowTask);
-             
-            if(subFlag) {
-            	ExecuteStruct parentExecuteStruct = FlowInstancesUtils.executeStructMap.get(parentFlowId);
-            	parentExecuteStruct.setChildExecuteStruct(executeStruct);
+            try {
+	            FlowTask flowTask = new FlowTask(session.getId(), flowStruct, executeStruct, subFlag);
+	            
+	            FlowInstancesUtils.executeStructMap.put(flowInstanceId, executeStruct);
+	            Future<RunStatus> future = ThreadPoolUtils.FLOW_WORK_EXECUTOR.submit(flowTask);
+	            
+	            FlowInstancesUtils.executeStructMap.get(flowInstanceId).getFlowTaskFutureList().add(future);
+	            if(subFlag) {
+	            	
+	            	String subFlowInstanceId = Tools.genFlowInstanceId(session.getId(), parentFlowId);
+	            	ExecuteStruct parentExecuteStruct = FlowInstancesUtils.executeStructMap.get(subFlowInstanceId);
+	            	parentExecuteStruct.setChildExecuteStruct(executeStruct);
+	            }
             	RunStatus flowRunStatus = future.get();
-            	logger.debug("子流程：{}， 执行结果：{}", JSON.toJSONString(curTopology), JSON.toJSONString(flowRunStatus));
-            }
+            	logger.debug("流程：{}， 执行结果：{}", JSON.toJSONString(curTopology), JSON.toJSONString(flowRunStatus));
+            	
+            } catch(CancellationException e) {
+    			executeStruct.getRunStatus().setInterrupt(true);
+            	logger.error("流程执行中断，抛出CancellationException，异常信息：", e);
+            } catch (InterruptedException e) {
+    			executeStruct.getRunStatus().setInterrupt(true);
+            	logger.error("流程执行中断，抛出InterruptedException，异常信息：", e);
+			}
             
         } else {
             notifyBody.setContent("请先绘制流程！");
             notifyBody.setType(LogTypeEnum.ERROR.getValue());
             message.setBody(notifyBody);
-            MessagePlugin.push(session.getId(), message);             
-        }        
+            MessagePlugin.push(session.getId(), message);
+        }
         return false;
     }
 

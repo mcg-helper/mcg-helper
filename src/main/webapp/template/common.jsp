@@ -54,6 +54,7 @@
 	<script type="text/javascript" src="<%=basePath %>/library/js/jsoneditor/jsoneditor-minimalist.min.js?_v=${version}"></script>
 	<script type="text/javascript" src="<%=basePath %>/library/js/jquery.serialize-object.min.js?_v=${version}"></script>
 	<script type="text/javascript" src="<%=basePath %>/library/js/jquery.form.js?_v=${version}"></script>
+	<script type="text/javascript" src="<%=basePath %>/library/js/reconnecting-websocket.min.js?_v=${version}"></script>
 	<script type="text/javascript" src="<%=basePath %>/library/js/common.js?_v=${version}"></script>
 	<script type="text/javascript" src="<%=basePath %>/library/js/jquery.jsPlumb-1.7.5-min.js?_v=${version}"></script>
 
@@ -64,26 +65,34 @@
 	<script type="text/javascript">
 		var baseUrl = '<%=basePath %>';
 		var websocketUrl = "ws:" + baseUrl.replace("http:", "") + "/message";
-	    var webSocket = new WebSocket(websocketUrl);
-	    webSocket.onerror = function(event) {
-	      console.log(event);
-	    };
-	 
-	    webSocket.onopen = function(event) {
+		
+		var mcgWebSocket = {
+			open : function () {
+				ws = new ReconnectingWebSocket(websocketUrl);
 
-	    };
-	 
-	    webSocket.onmessage = function(event) {
-	    	
-  			var message = new Message({
-				msg : JSON.parse(event.data)
-			});
-			message.output();
-	    };
-	    
-	    webSocket.onclose = function(event) {
-	    
-	    };
-	    
-	 //   webSocket.send('hello');
+				ws.onmessage = function (e) {
+		  			var message = new Message({
+						msg : JSON.parse(event.data)
+					});
+					message.output();
+				};
+
+				ws.onopen = function (e) {
+					
+				};
+
+				ws.onclose = function (e) {
+					
+				};
+
+				ws.onerror = function (e) {
+					
+				};
+			},
+			send : function (x) {
+				ws.send(x);
+			}
+		}
+		mcgWebSocket.open();
+		 
 	</script>

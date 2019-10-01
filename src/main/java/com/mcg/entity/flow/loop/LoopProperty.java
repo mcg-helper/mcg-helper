@@ -36,13 +36,13 @@ public class LoopProperty implements Serializable {
 	@NotBlank(message = "{flowLoop.loopProperty.name.notBlank}")
 	@XmlElement
 	private String name;
-	@NotBlank(message = "{flowLoop.loopProperty.count.notBlank}")
-	@XmlElement
-	private String count;
 	/* 循环类型   FlowLoopTypeEnum取值*/
 	@NotBlank(message = "{flowLoop.loopProperty.type.notBlank}")
 	@XmlElement
 	private String type;
+	@NotBlank(message = "{flowLoop.loopProperty.value.notBlank}")
+	@XmlElement
+	private String value;
 	@XmlElement
 	private String desc;
 	
@@ -64,17 +64,17 @@ public class LoopProperty implements Serializable {
 	public void setDesc(String desc) {
 		this.desc = desc;
 	}
-	public String getCount() {
-		return count;
-	}
-	public void setCount(String count) {
-		this.count = count;
-	}
 	public String getType() {
 		return type;
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
 	}
 	
 }

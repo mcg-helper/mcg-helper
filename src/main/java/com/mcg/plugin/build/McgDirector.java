@@ -24,7 +24,6 @@ import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
 import com.mcg.entity.flow.loop.FlowLoop;
-import com.mcg.entity.flow.model.FlowModel;
 import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
@@ -40,12 +39,6 @@ public class McgDirector {
     public FlowStart getFlowStartProduct(FlowStart flowStart) {
         this.sequence.clear();
         return (FlowStart) new McgConcreteBuilder(flowStart, this.sequence).getMcgProduct();
-    }
-    
-    public FlowModel getFlowModelProduct(FlowModel flowModel) {
-        this.sequence.clear();
-        
-        return (FlowModel) new McgConcreteBuilder(flowModel, this.sequence).getMcgProduct();
     }
     
     public FlowJson getFlowJsonProduct(FlowJson flowJson) {

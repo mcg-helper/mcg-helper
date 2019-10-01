@@ -65,7 +65,7 @@
 								<label class="col-sm-1 control-label">循环次数</label>
 								<div class="col-sm-4">
 									<div class="fg-line">
-										<input type="text" id="${modalId }_count" name="loopProperty[count]" class="form-control" />
+										<input type="text" id="${modalId }_value" name="loopProperty[value]" class="form-control" />
 									</div>
 								</div>	
 							</div>
@@ -82,7 +82,8 @@
 							<div class="form-group">
 								<div class="col-sm-12">
 									<div class="fg-line">
-										循环控件根据条件控制循环时间或次数。
+										<p>循环类型为“指定次数”时，例：\${count }，则循环count次后结束。<p/>
+										<p>循环类型为“条件表达式”时，例：\${count } > 5</pre>，则变量count的值大于5后结束循环。<p/>
 									</div>
 								</div>
 							</div>

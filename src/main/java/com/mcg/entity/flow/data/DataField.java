@@ -25,17 +25,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement
 public class DataField implements Serializable {
 
     private static final long serialVersionUID = 2978897440879391218L;
-    @NotBlank(message = "{flowData.dataField.dataSourceId.notBlank}")
+//    @NotBlank(message = "{flowData.dataField.dataSourceId.notBlank}")
     @XmlElement
     private String dataSourceId;
-    @NotBlank(message = "{flowData.dataField.tableName.notBlank}")
+//    @NotBlank(message = "{flowData.dataField.tableName.notBlank}")
     @XmlElement
     private String tableName;
     @Valid

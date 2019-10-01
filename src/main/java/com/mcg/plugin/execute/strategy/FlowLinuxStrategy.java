@@ -26,6 +26,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.Constants;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.FlowLinuxConnModeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.linux.FlowLinux;
@@ -37,7 +38,6 @@ import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.execute.ProcessStrategy;
-import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.tplengine.FreeMakerTpLan;
 import com.mcg.plugin.tplengine.TplEngine;
 import com.mcg.plugin.websocket.MessagePlugin;
@@ -63,9 +63,13 @@ public class FlowLinuxStrategy implements ProcessStrategy {
 		JSON allParam = DataConverter.addFlowStartRunResult(parentParam, executeStruct);
 		flowLinux = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowLinux);		
 		RunResult runResult = new RunResult();
-        Message message = MessagePlugin.getMessage();
+       
+		Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);
         FlowBody flowBody = new FlowBody();
+        flowBody.setSubFlag(executeStruct.getSubFlag());
+        flowBody.setFlowId(flowLinux.getFlowId());
+        flowBody.setOrderNum(flowLinux.getOrderNum());
         flowBody.setEleType(EletypeEnum.LINUX.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.LINUX.getName() + "--》" + flowLinux.getLinuxProperty().getName());
         flowBody.setEleId(flowLinux.getId());
@@ -78,30 +82,52 @@ public class FlowLinuxStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        FlowTask flowTask = FlowTask.executeLocal.get();
-        MessagePlugin.push(flowTask.getHttpSessionId(), message);
+        MessagePlugin.push(executeStruct.getSession().getId(), message);
         
-        McgGlobal mcgGlobal = (McgGlobal)LevelDbUtil.getObject(Constants.GLOBAL_KEY, McgGlobal.class);
         ServerSource serverSource = null;
-        
-        if(mcgGlobal != null && CollectionUtils.isNotEmpty(mcgGlobal.getServerSources())) {
-        	for(ServerSource source : mcgGlobal.getServerSources()) {
-        		if(flowLinux.getLinuxCore().getServerSourceId().equals(source.getId())) {
-        			serverSource = source;
-        			break;
-        		}
-        	}
+        if(FlowLinuxConnModeEnum.DEPENDENCY.getValue().equals(flowLinux.getLinuxCore().getConnMode())) {
+            McgGlobal mcgGlobal = (McgGlobal)LevelDbUtil.getObject(Constants.GLOBAL_KEY, McgGlobal.class);
+            
+            if(mcgGlobal != null && CollectionUtils.isNotEmpty(mcgGlobal.getServerSources())) {
+            	for(ServerSource source : mcgGlobal.getServerSources()) {
+            		if(flowLinux.getLinuxCore().getServerSourceId().equals(source.getId())) {
+            			serverSource = source;
+            			break;
+            		}
+            	}
+            }
+        } else if(FlowLinuxConnModeEnum.ASSIGN.getValue().equals(flowLinux.getLinuxCore().getConnMode())) {
+        	serverSource = new ServerSource();
+        	serverSource.setIp(flowLinux.getLinuxCore().getIp());
+        	serverSource.setPort(Integer.valueOf(flowLinux.getLinuxCore().getPort()));
+        	serverSource.setUserName(flowLinux.getLinuxCore().getUser());
+        	serverSource.setPwd(flowLinux.getLinuxCore().getPwd());
         }
+        
+
         
         TplEngine tplEngine = new TplEngine(new FreeMakerTpLan());
         String command = tplEngine.generate(allParam, flowLinux.getLinuxCore().getSource());
         
 		String text = resolve(command, serverSource);
+		
+        Message shellMessage = MessagePlugin.getMessage();
+        shellMessage.getHeader().setMesType(MessageTypeEnum.FLOW);
+        FlowBody shellFlowBody = new FlowBody();
+        shellFlowBody.setEleType(EletypeEnum.LINUX.getValue());
+        shellFlowBody.setEleTypeDesc(EletypeEnum.LINUX.getName() + "--》" + flowLinux.getLinuxProperty().getName());
+        shellFlowBody.setEleId(flowLinux.getId());
+        shellFlowBody.setComment("shell执行");
+        shellFlowBody.setContent(text);
+        shellFlowBody.setLogType(LogTypeEnum.INFO.getValue());
+        shellFlowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
+        shellMessage.setBody(shellFlowBody);
+        MessagePlugin.push(executeStruct.getSession().getId(), shellMessage);
+		
 		runResult.setElementId(flowLinux.getId());
 		
-		runResult.setSourceCode(text);
 		JSONObject runResultJson = new JSONObject();
-		runResultJson.put(flowLinux.getLinuxProperty().getKey(), text);
+		runResultJson.put(flowLinux.getLinuxProperty().getKey(), parentParam);
 		runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
 		
 		executeStruct.getRunStatus().setCode("success");

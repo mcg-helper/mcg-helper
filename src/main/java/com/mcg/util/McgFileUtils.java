@@ -116,13 +116,36 @@ public class McgFileUtils {
      * @return:      boolean      
      * @throws
      */
-    public static boolean writeByteArrayToFile(String target, String fileName, String content, String encoding) {
+    public static boolean writeStringToFile(String target, String fileName, String content, String encoding) {
         boolean result = false;
         try {  
             FileUtils.writeStringToFile(new File(target + fileName), content, encoding);
             result = true;
         } catch (IOException e) {  
             logger.error("将字符串写入指定文件出错，路径：{}，encoding：{}， 数据：{}，异常信息：{}", (target + fileName), encoding, content, e.getMessage());
+        }  
+        
+        return result;
+    }
+    
+    /**
+     * 
+     * @Title:       writeByteArrayAppendToFile   
+     * @Description: TODO(将字符串写入指定文件)   
+     * @param:       @param target
+     * @param:       @param fileName
+     * @param:       @param content
+     * @param:       @return      
+     * @return:      boolean      
+     * @throws
+     */
+    public static boolean writeStringAppendToFile(String target, String fileName, String content, String encoding) {
+        boolean result = false;
+        try {  
+            FileUtils.writeStringToFile(new File(target + fileName), content, encoding, true);
+            result = true;
+        } catch (IOException e) {  
+            logger.error("将字符串追加写入指定文件出错，路径：{}，encoding：{}， 数据：{}，异常信息：{}", (target + fileName), encoding, content, e.getMessage());
         }  
         
         return result;

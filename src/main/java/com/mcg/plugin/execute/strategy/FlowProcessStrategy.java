@@ -35,7 +35,6 @@ import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.execute.ProcessStrategy;
-import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.service.FlowService;
 import com.mcg.util.DataConverter;
@@ -57,9 +56,13 @@ public class FlowProcessStrategy implements ProcessStrategy {
 		JSON parentParam = DataConverter.getParentRunResult(flowProcess.getId(), executeStruct);
 		flowProcess = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowProcess);		
 		RunResult runResult = new RunResult();
+		
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);
         FlowBody flowBody = new FlowBody();
+        flowBody.setFlowId(flowProcess.getFlowId());
+        flowBody.setSubFlag(executeStruct.getSubFlag());
+        flowBody.setOrderNum(flowProcess.getOrderNum());
         flowBody.setEleType(EletypeEnum.PROCESS.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.PROCESS.getName() + "--》" + flowProcess.getProcessProperty().getName());
         flowBody.setEleId(flowProcess.getId());
@@ -72,8 +75,8 @@ public class FlowProcessStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        FlowTask flowTask = FlowTask.executeLocal.get();
-        MessagePlugin.push(flowTask.getHttpSessionId(), message);
+        
+        MessagePlugin.push(executeStruct.getSession().getId(), message);
         
         
         FlowService flowService = SpringContextHelper.getSpringBean(FlowService.class);

@@ -38,7 +38,6 @@ import com.mcg.entity.message.Message;
 import com.mcg.entity.wonton.WontonHeart;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.execute.ProcessStrategy;
-import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.tplengine.FreeMakerTpLan;
 import com.mcg.plugin.tplengine.TplEngine;
 import com.mcg.plugin.websocket.MessagePlugin;
@@ -63,9 +62,13 @@ public class FlowWontonStrategy implements ProcessStrategy {
 		JSON allParam = DataConverter.addFlowStartRunResult(parentParam, executeStruct);
 		flowWonton = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowWonton);		
 		RunResult runResult = new RunResult();
+		
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);
         FlowBody flowBody = new FlowBody();
+        flowBody.setFlowId(flowWonton.getFlowId());
+        flowBody.setSubFlag(executeStruct.getSubFlag());
+        flowBody.setOrderNum(flowWonton.getOrderNum());
         flowBody.setEleType(EletypeEnum.WONTON.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.WONTON.getName() + "--》" + flowWonton.getWontonProperty().getName());
         flowBody.setEleId(flowWonton.getId());
@@ -78,8 +81,7 @@ public class FlowWontonStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        FlowTask flowTask = FlowTask.executeLocal.get();
-        MessagePlugin.push(flowTask.getHttpSessionId(), message);
+        MessagePlugin.push(executeStruct.getSession().getId(), message);
         
         WontonData wontonData = (WontonData)LevelDbUtil.getObject(Constants.WONTON_KEY, WontonData.class);
         if(wontonData != null && wontonData.getWontonHeartMap() != null) {

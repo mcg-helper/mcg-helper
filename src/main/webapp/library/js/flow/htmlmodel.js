@@ -29,11 +29,7 @@ function createHtmlModal(id, param) {
 		param = {};
 	var option = {};
 	if($("#"+id).attr("eletype") != null && $("#"+id).attr("eletype") != undefined) {
-		if($("#"+id).attr("eletype") == "model") {
-			url = "/html/flowModelModal";
-			option["title"] = "model控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "json") {
+		if($("#"+id).attr("eletype") == "json") {
 			url = "/html/flowJsonModal";
 			option["title"] = "json控件";
 			option["width"] = 1100;
@@ -100,13 +96,19 @@ function createHtmlModal(id, param) {
 }
 
 /**
- * 控件div的sign设置为"true"，代码该控件已保存且成功
+ * 拖拽出的控件保存时，
+ * 1、将name(控件名称),sign(控件是否保存)字段，同步到elementMap中对应的控件基本数据
+ * 2、将拖拽控件下面的显示名称同步
+ * @param elementId
+ * @param name
+ * @returns
  */
-function changeElementSign(id, name) {
-	elementMap.get(id).setSign("true");
-	$("#name_" + id).html(name);
+function saveElementUpdateCache(elementId, name) {
+	var element = elementMap.get(elementId);
+	element.setName(name);
+	element.setSign("true");
+	$("#name_" + elementId).html(name);
 }
-
 /**
  * 设置控件弹出框按钮及功能绑定
  * @param param
@@ -176,7 +178,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, "流程开始");
+							saveElementUpdateCache(param.modalId, "流程开始");
 							$( _this ).dialog( "destroy" );
 						}
 					});
@@ -207,7 +209,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, "流程结束");
+							saveElementUpdateCache(param.modalId, "流程结束");
 							$( _this ).dialog( "destroy" );
 						}
 					});					
@@ -221,104 +223,6 @@ function setDialogBtns(param) {
 				}
 			}			
 		];
-	} else if(param.eletype == "model") {
-		buttons = [
-			{
-				class: "btn btn-default",			
-				text: "增加",
-				click: function() {
-					var tableData = $("#" + param.modalId + "_flowModelTable").bootstrapTable('getData');
-					for(var i=0; i<tableData.length; i++) {
-						var row={};
-						row["classField"] = tableData[i].classField;
-						row["tableField"] = tableData[i].tableField;
-						row["comment"] = tableData[i].comment;
-						row["tableFieldType"] = tableData[i].tableFieldType;
-						row["dataType"] = tableData[i].dataType;
-						row["length"] = tableData[i].length;
-						row["precision"] = tableData[i].precision;
-						row["primary"] = tableData[i].primary;
-						row["autoincrement"] = tableData[i].autoincrement;
-						row["mandatory"] = tableData[i].mandatory;
-						row["show"] = tableData[i].show;
-						row["include"] = tableData[i].include;
-						$("#" + param.modalId + "_flowModelTable").bootstrapTable('updateRow', {"index":i, "row":row  });
-					} 			
-		 			
-		 			$("#" + param.modalId + "_flowModelTable").bootstrapTable('append',
-		 					{ "id":Math.uuid(), "name":"", "classField":"", "tableField":"", "comment":"","tableFieldType":"", "dataType":"", "length":0, 
-		 				    "precision":0, "primary":false, "autoincrement":false, "mandatory":false, "show":false, "include":"" });					
-				}
-			},
-			{
-				class: "btn btn-default",			
-				text: "删除",
-				click: function() {
-		            var ids = $.map($("#" + param.modalId + "_flowModelTable").bootstrapTable('getSelections'), function (row) {
-		                return row.id;
-		            });
-		            $("#" + param.modalId + "_flowModelTable").bootstrapTable('remove', {
-		                field: 'id',
-		                values: ids
-		            });					
-				}
-			},
-			{
-				class: "btn btn-default",			
-				text: "清空",
-				click: function() {
-					$("#" + param.modalId + "_flowModelTable").bootstrapTable('removeAll');		 			
-				}
-			},
-			{
-				class: "btn btn-primary",			
-				text: "保存",
-				click: function() {
-					var _this = this;
-					var tableData = $("#" + param.modalId + "_flowModelTable").bootstrapTable('getData');
-					var rowsData = {modelRecord:[]};
-					for(var i=0; i<tableData.length; i++) {
-						var row={};
-						row["classField"] = tableData[i].classField;
-						row["tableField"] = tableData[i].tableField;
-						row["comment"] = tableData[i].comment;
-						row["tableFieldType"] = tableData[i].tableFieldType;
-						row["dataType"] = tableData[i].dataType;
-						row["length"] = tableData[i].length;
-						row["precision"] = tableData[i].precision;
-						row["primary"] = tableData[i].primary;
-						row["autoincrement"] = tableData[i].autoincrement;
-						row["mandatory"] = tableData[i].mandatory;
-						row["show"] = tableData[i].show;
-						row["include"] = tableData[i].include;
-						rowsData.modelRecord.push(row);
-					}
-					var data = $("#" + param.modalId + "_modelForm").serializeJSON();
-					var result = JSON.parse(data);
-					result["modelField"] = rowsData;
-					result["flowId"] = getCurrentFlowId();
-					common.ajax({
-						url : "/flow/saveModel",
-						type : "POST",
-						data : JSON.stringify(result),
-						contentType : "application/json"
-					}, function(data) {
-						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.modelProperty.modelName);
-							$( _this ).dialog( "destroy" );
-						}
-					});					
-					
-				}
-			},
-			{
-				class: "btn btn-default",			
-				text: "关闭",
-				click: function() {
-					$( this ).dialog( "destroy" );
-				}
-			}
-		];		
 	} else if(param.eletype == "json") {
 		buttons = [
 			{
@@ -339,7 +243,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.jsonProperty.name);
+							saveElementUpdateCache(param.modalId, result.jsonProperty.name);
 							$( _this ).dialog( "destroy" );
 						}
 					});					
@@ -371,7 +275,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.sqlQueryProperty.name);
+							saveElementUpdateCache(param.modalId, result.sqlQueryProperty.name);
 							$( _this ).dialog( "destroy" );
 						}
 					});					
@@ -403,7 +307,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.sqlExecuteProperty.name);
+							saveElementUpdateCache(param.modalId, result.sqlExecuteProperty.name);
 							$( _this ).dialog( "destroy" );
 						}
 					});					
@@ -499,7 +403,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.dataProperty.name);
+							saveElementUpdateCache(param.modalId, result.dataProperty.name);
 							$( _this ).dialog( "destroy" );
 						}
 					});					
@@ -534,7 +438,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.scriptProperty.scriptName);
+							saveElementUpdateCache(param.modalId, result.scriptProperty.scriptName);
 							$( _this ).dialog( "destroy" );
 						}
 					});					
@@ -570,7 +474,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.javaProperty.name);
+							saveElementUpdateCache(param.modalId, result.javaProperty.name);
 							$( _this ).dialog( "destroy" );
 						}
 					});
@@ -606,7 +510,7 @@ function setDialogBtns(param) {
 								contentType : "application/json"
 							}, function(data) {
 								if(data.statusCode == 1) {
-									changeElementSign(param.modalId, result.pythonProperty.name);
+									saveElementUpdateCache(param.modalId, result.pythonProperty.name);
 									$( _this ).dialog( "destroy" );
 								}
 							});
@@ -630,10 +534,9 @@ function setDialogBtns(param) {
 							var _this = this;
 							var data = $("#" + param.modalId + "_linuxForm").serializeJSON();
 							var result = JSON.parse(data);
-							var linuxCore = {};
-							linuxCore["source"] = param.editor.getValue();
-							linuxCore["serverSourceId"] = $("#" + param.modalId + "_serverSourceId").val();
-							result["linuxCore"] = linuxCore; 
+							result.linuxCore["source"] = param.editor.getValue();
+							result.linuxCore["connMode"] = $("#" + param.modalId + "_connMode").val();
+							result.linuxCore["serverSourceId"] = $("#" + param.modalId + "_serverSourceId").val();
 							result["flowId"] = getCurrentFlowId();
 							common.ajax({
 								url : "/flow/saveLinux",
@@ -642,7 +545,7 @@ function setDialogBtns(param) {
 								contentType : "application/json"
 							}, function(data) {
 								if(data.statusCode == 1) {
-									changeElementSign(param.modalId, result.linuxProperty.name);
+									saveElementUpdateCache(param.modalId, result.linuxProperty.name);
 									$( _this ).dialog( "destroy" );
 								}
 							});
@@ -679,7 +582,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.wontonProperty.name);
+							saveElementUpdateCache(param.modalId, result.wontonProperty.name);
 							$( _this ).dialog( "destroy" );
 						}
 					});
@@ -713,7 +616,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.textProperty.name);
+							saveElementUpdateCache(param.modalId, result.textProperty.name);
 							$( _this ).dialog( "destroy" );
 						}
 					});					
@@ -736,8 +639,11 @@ function setDialogBtns(param) {
 				click: function() {
 					
 					$("#"+ param.modalId + "_tab").children("li").each(function() {
-						if($(this).hasClass("active") == true){
-							if($(this).attr("id") == "dbType") {
+						if($(this).hasClass("active") == true) {
+							if($(this).attr("id") == "varType") {
+					 			$("#" + param.modalId + "_flowVarTable").bootstrapTable('append',
+				 					{ "id":Math.uuid(), "key":"", "value":"", "note":"", "type":"flow" });	
+							} else if($(this).attr("id") == "dbType") {
 					 			$("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('append',
 				 					{ "id":Math.uuid(), "name":"", "dbType":"MYSQL", "dbServer":"", 
 				 				    "dbPort":"", "dbName":"", "dbUserName":"",  "dbPwd":"", "note":"" });								
@@ -745,7 +651,6 @@ function setDialogBtns(param) {
 					 			$("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('append',
 	                          			{"id":Math.uuid(), "_bTableName_":param.modalId  + "_flowServerSourceTable", "name":"", "type":"LINUX",  
                       				"ip":"", "port":"", "userName":"", "pwd":"", "note":""});
-					 			
 							}
 						}
 					});
@@ -758,7 +663,16 @@ function setDialogBtns(param) {
 				click: function() {
 					$("#"+ param.modalId + "_tab").children("li").each(function() {
 						if($(this).hasClass("active") == true){
-							if($(this).attr("id") == "dbType") {
+							
+							if($(this).attr("id") == "varType") {
+					            var ids = $.map($("#" + param.modalId + "_flowVarTable").bootstrapTable('getSelections'), function (row) {
+					                return row.id;
+					            });
+					            $("#" + param.modalId + "_flowVarTable").bootstrapTable('remove', {
+					                field: 'id',
+					                values: ids
+					            });									
+							} else if($(this).attr("id") == "dbType") {
 					            var ids = $.map($("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('getSelections'), function (row) {
 					                return row.id;
 					            });
@@ -786,7 +700,9 @@ function setDialogBtns(param) {
 				click: function() {
 					$("#"+ param.modalId + "_tab").children("li").each(function() {
 						if($(this).hasClass("active") == true){
-							if($(this).attr("id") == "dbType") {
+							if($(this).attr("id") == "varType") {
+								$("#" + param.modalId + "_flowVarTable").bootstrapTable('removeAll');
+							} else if($(this).attr("id") == "dbType") {
 								$("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('removeAll');
 							} else if($(this).attr("id") == "serverType") {
 								$("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('removeAll');
@@ -801,7 +717,21 @@ function setDialogBtns(param) {
 				text: "保存",
 				click: function() {
 					var _this = this;
-					var global = {"flowDataSources":[], "serverSources":[]};
+					var global = {"flowVars":[], "flowDataSources":[], "serverSources":[]};
+					
+					var tableData = $("#" + param.modalId + "_flowVarTable").bootstrapTable('getData');
+					for(var i=0; i<tableData.length; i++) {
+						if(tableData[i].type != "system") {
+							var row={};
+							row["type"] = tableData[i].type;
+							row["id"] = tableData[i].id;
+							row["key"] =tableData[i].key;
+							row["value"] = tableData[i].value;
+							row["note"] = tableData[i].note;
+							global.flowVars.push(row);
+						}
+					}
+					
 					var tableData = $("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('getData');
 					for(var i=0; i<tableData.length; i++) {
 						var row={};
@@ -870,7 +800,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.processProperty.name);
+							saveElementUpdateCache(param.modalId, result.processProperty.name);
 							$( _this ).dialog( "destroy" );
 						}
 					});					
@@ -902,7 +832,7 @@ function setDialogBtns(param) {
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
-							changeElementSign(param.modalId, result.loopProperty.name);
+							saveElementUpdateCache(param.modalId, result.loopProperty.name);
 							$( _this ).dialog( "destroy" );
 						}
 					});
@@ -927,14 +857,7 @@ function setDialogBtns(param) {
  *  */
 function createModalCallBack(param) {
 	
-	if(param.eletype == "model") {
-
-		$("#" + param.modalId + "_flowModelTable").on('click-cell.bs.table', function ($element, field, value, row) {
-			_fieldName_ = field;
-			_tableName_ = param.modalId + "_flowModelTable";
-		});
-		initFlowModelModal(param.modalId);
-	} else if(param.eletype == "json") {
+	if(param.eletype == "json") {
 		var editor = ace.edit(param.modalId + "_editor");
 		editor.setTheme("ace/theme/eclipse");
 		editor.session.setMode("ace/mode/json");		 
@@ -1011,6 +934,11 @@ function createModalCallBack(param) {
  		initFlowStartModal(param.modalId);
  		
 	} else if(param.eletype == "text") {
+		$("#" + param.modalId + "_outMode").selectpicker({
+			noneSelectedText: "请选择",
+			width:"100%"
+		});
+		
 		var editor = ace.edit(param.modalId + "_editor");
 		editor.setTheme("ace/theme/eclipse");
 		editor.session.setMode("ace/mode/java");		 
@@ -1082,11 +1010,30 @@ function createModalCallBack(param) {
 		
 		initPythonModal(param.modalId, editor);
 	} else if(param.eletype == "linux") {
-		$(".selectpicker").selectpicker({
+		$("#" + param.modalId + "_connMode").selectpicker({
 			noneSelectedText: "请选择",
-			liveSearch: true,
 			width:"100%"
 		});
+		$("#" + param.modalId + "_serverSourceId").selectpicker({
+			noneSelectedText: "请选择",
+			width:"100%"
+		});
+		
+		$("#" + param.modalId + "_connMode").change(function(){
+			if($(this).val() == "dependency") {
+				$("#" + param.modalId + "_serverSourceId").prop("disabled", false);
+				$("#" + param.modalId + "_serverSourceId").selectpicker('refresh');
+				$("#" + param.modalId + "_ip_port").css("display", "none");
+				$("#" + param.modalId + "_user_pwd").css("display", "none");
+			} else if($(this).val() == "assign") {
+				$("#" + param.modalId + "_serverSourceId").prop("disabled", true);
+				$("#" + param.modalId + "_serverSourceId").selectpicker('refresh');
+				$("#" + param.modalId + "_ip_port").css("display", "block");
+				$("#" + param.modalId + "_user_pwd").css("display", "block");
+			}
+		});
+		
+		
 		var editor = ace.edit(param.modalId + "_editor");
 		editor.setTheme("ace/theme/eclipse");
 		editor.session.setMode("ace/mode/sh");		 
@@ -1101,6 +1048,10 @@ function createModalCallBack(param) {
 		});		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
 		param["editor"] = editor;
+		
+		$("#" + param.modalId + "_connMode").change(function(){
+			
+		});
 		initLinuxModal(param.modalId, editor);
 	} else if(param.eletype == "wonton") {
 
@@ -1212,9 +1163,8 @@ function createModalCallBack(param) {
 		});
 		
 	} else if(param.eletype == "loop") {
-		$(".selectpicker").selectpicker({
+		$("#" + param.modalId + "_type").selectpicker({
 			noneSelectedText: "请选择",
-			liveSearch: true,
 			width:"100%"
 		});
 	    initLoopModal(param.modalId);
@@ -1297,7 +1247,6 @@ function editorScreen(id, editor) {
 				
 				editor.resize();
 				editor.isFullScreen = true;
-				
 				
 			}
 			

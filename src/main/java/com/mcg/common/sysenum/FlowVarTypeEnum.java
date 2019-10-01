@@ -16,20 +16,20 @@
 
 package com.mcg.common.sysenum;
 
-public enum FlowLoopTypeEnum {
+public enum FlowVarTypeEnum {
 
-	COUNT("指定次数", "count"), EXPRES("条件表达式", "expres");
+	SYSTEM("系统类型", "system"), FLOW("流程类型", "flow");
 	
     private String name;
     private String value;
     
-    private FlowLoopTypeEnum(String name, String value) {
+    private FlowVarTypeEnum(String name, String value) {
         this.name = name;
         this.value = value;
     }
     
     public static String getValueByName(String name) {
-        for (FlowLoopTypeEnum c : FlowLoopTypeEnum.values()) {
+        for (FlowVarTypeEnum c : FlowVarTypeEnum.values()) {
             if (c.getName().equals(name)) {
                 return c.value;
             }
@@ -38,7 +38,7 @@ public enum FlowLoopTypeEnum {
     }
     
     public static String getNameByValue(String value) {
-        for (FlowLoopTypeEnum c : FlowLoopTypeEnum.values()) {
+        for (FlowVarTypeEnum c : FlowVarTypeEnum.values()) {
             if (c.getValue().equals(value)) {
                 return c.name;
             }

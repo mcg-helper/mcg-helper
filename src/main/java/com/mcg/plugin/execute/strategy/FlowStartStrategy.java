@@ -25,12 +25,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.mcg.common.SpringContextHelper;
 import com.mcg.entity.flow.start.FlowStart;
 import com.mcg.entity.flow.start.Var;
 import com.mcg.entity.generate.ExecuteStruct;
 import com.mcg.entity.generate.RunResult;
+import com.mcg.entity.global.var.FlowVar;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.execute.ProcessStrategy;
+import com.mcg.service.GlobalService;
 
 public class FlowStartStrategy implements ProcessStrategy {
 
@@ -44,16 +47,33 @@ public class FlowStartStrategy implements ProcessStrategy {
 
 	@Override
 	public RunResult run(McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
+
 		FlowStart flowStart = (FlowStart)mcgProduct;
         
         RunResult result = new RunResult();
         result.setElementId(flowStart.getStartId());
         Map<String, String> dataMap = new HashMap<String, String>();
+        
+		GlobalService globalService = SpringContextHelper.getSpringBean(GlobalService.class);
+		List<FlowVar> sysVarList = globalService.getMcgGlobal().getSysVars();
+		if(sysVarList != null && sysVarList.size() > 0) {
+	        for(FlowVar sysVar : sysVarList) {
+	            dataMap.put(sysVar.getKey(), sysVar.getValue());
+	        }
+		}
+		
+		List<FlowVar> flowVarList = globalService.getMcgGlobal().getFlowVars();
+		if(flowVarList != null && flowVarList.size() > 0) {
+	        for(FlowVar flowVar : flowVarList) {
+	            dataMap.put(flowVar.getKey(), flowVar.getValue());
+	        }
+		}
+		
         List<Var> varList = flowStart.getStartProperty().getVar();
         for(Var var : varList) {
             dataMap.put(var.getKey(), var.getValue());
         }
-        result.setJsonVar(JSON.toJSONString(dataMap, true));		
+        result.setJsonVar(JSON.toJSONString(dataMap, true));
         executeStruct.getRunStatus().setCode("success");
         
         logger.debug("开始控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowStart), JSON.toJSONString(executeStruct.getRunStatus()));

@@ -34,6 +34,10 @@ import com.mcg.entity.message.NotifyBody;
  *
  */
 public class Tools {
+	
+	public static String genFlowInstanceId(String httpSessionId, String flowId) {
+		return httpSessionId + "##" + flowId;
+	}
 
 	/*
 	 * 分割字符串"."，截取最后一段（如导入类型:java.utils.Date）截取最后的Date

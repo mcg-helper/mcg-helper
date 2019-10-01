@@ -102,7 +102,32 @@ Message.prototype.output = function() {
 	};
 	
 	if(self.msg.header.mesType == "FLOW") {
-		
+		/* 
+		 * 将子流程中的控件日志过滤，不在当流程图中显示次序号
+		 * 每个控件第一次输出日志时，因为第一次才会有次序号orderNum 
+		 * */
+		if(!self.msg.body.subFlag && self.msg.body.orderNum != undefined && self.msg.body.orderNum > 0) {
+			if(baseMap.get("runnerFlowElementId") == null) {
+				baseMap.put("runnerFlowElementId", self.msg.body.eleId);
+			} else {
+				$("#name_" + baseMap.get("runnerFlowElementId")).removeClass("run_flicker");
+				baseMap.put("runnerFlowElementId", self.msg.body.eleId);
+			}
+			var elementName = elementMap.get(self.msg.body.eleId).getName();
+			var nameHtml = $("#name_" + self.msg.body.eleId).html();
+			var orderNumLength = $("#name_" + self.msg.body.eleId).children("span").length; //当前控件上显示次序号的个数
+			// 当由于循环功能，一个控件上的次序号显示超出5个后，就显示“...”，不再追加次序号
+			if(orderNumLength < 5) {
+				var appendHtml = '<span class="badge" style="background-color:green">' + self.msg.body.orderNum + '</span>';
+				$("#name_" + self.msg.body.eleId).html(nameHtml.substring(0, nameHtml.length - elementName.length) + appendHtml + elementName);
+			} else if(orderNumLength == 5){
+				var appendHtml = '<span class="badge" style="background-color:green">...</span>';
+				$("#name_" + self.msg.body.eleId).html(nameHtml.substring(0, nameHtml.length - elementName.length) + appendHtml + elementName);
+			}
+			
+			$("#name_" + self.msg.body.eleId).addClass("run_flicker");
+		}
+
 		log[self.msg.body.logType].execute();
 		var html = '';
 		html = log[self.msg.body.logType].html;
@@ -115,8 +140,9 @@ Message.prototype.output = function() {
 			baseMap.put("selector", self.msg.body.eleId);
 			baseMap.put("highlight", "highlight" + self.msg.body.eleId); //把当前被高亮标记div的id放入缓存
 			$("#highlight" + baseMap.get("selector")).addClass("highlight");
+			$("#flowStopBtn span").removeClass("text-danger");   //控制台执行状态去掉红色，变为默认灰色
 		    var pos = $("#log" + baseMap.get("selector")).offset().top;
-		    $("html,body").animate({scrollTop: pos}, 100);
+		    $("#mcg_flow").animate({scrollTop: pos - 10}, 100);
 		}
 	} else if(self.msg.header.mesType == "NOTIFY") {
 		notify.execute();
@@ -157,6 +183,9 @@ Message.prototype.build = function() {
 				}
 				if(this.msg.body.eleType == "finish") {
 					$("#flowStopBtn span").removeClass("text-danger");
+					if(!this.msg.body.subFlag) {
+						$("#name_" + baseMap.get("runnerFlowElementId")).removeClass("run_flicker");
+					}
 				}
 			} else if(this.msg.body.eleType == "interrupt") { //流程主动中断操作，且已停止后，“控制台停止按钮”更正状态颜色
 				$("#flowStopBtn span").removeClass("text-danger");
@@ -270,13 +299,19 @@ var common = function(){
 	                var result = doResult(data, option.url, option.failureCallBack || function () { });
 	                if(ajaxCallBack)
 	                	ajaxCallBack(result); 
-	            }, error: function (a, b, c) {
+	            }, 
+	            error: function (a, b, c) {
 					Messenger().post({
 						message: "非常抱歉, 发生异常!",
 						type: "error",
 						hideAfter: 5,
 					 	showCloseButton: true
 					});	            	
+	            },
+	            beforeSend: function() {
+	            	if(option.isLoading) {
+	            		$.bootstrapLoading.end();
+	            	}
 	            }
 	        });
 		},
@@ -294,6 +329,11 @@ var common = function(){
 	                if(ajaxCallBack)
 	                	ajaxCallBack(result); 
 	            }, 
+	            beforeSend: function() {
+	            	if(option.isLoading) {
+	            		$.bootstrapLoading.end();
+	            	}
+	            },
 	            error: errorCallBack
 	        });
 		},		
@@ -712,6 +752,7 @@ $(document).ajaxStart(function(){
 $(document).ajaxStop(function(){
     $.bootstrapLoading.end();
 });
+
 
 $(document).ajaxError(function(){
 	Messenger().post({

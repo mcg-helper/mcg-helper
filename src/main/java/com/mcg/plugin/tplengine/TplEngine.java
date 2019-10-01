@@ -26,8 +26,8 @@ public class TplEngine {
 		this.tplLan = tplLan;
 	}
 
-	public String generate(JSON json, String ftl, String outFileName, String outFilePath) throws Exception  {
-		return this.tplLan.generate(json, ftl, outFileName, outFilePath);
+	public String generate(JSON json, String ftl, String outFileName, String outFilePath, String outMode) throws Exception  {
+		return this.tplLan.generate(json, ftl, outFileName, outFilePath, outMode);
 	}
 	
 	public String generate(JSON json, String source) throws Exception {

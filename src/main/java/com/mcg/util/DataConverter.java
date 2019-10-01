@@ -51,8 +51,6 @@ import com.mcg.entity.flow.linux.FlowLinux;
 import com.mcg.entity.flow.linux.FlowLinuxs;
 import com.mcg.entity.flow.loop.FlowLoop;
 import com.mcg.entity.flow.loop.FlowLoops;
-import com.mcg.entity.flow.model.FlowModel;
-import com.mcg.entity.flow.model.FlowModels;
 import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.process.FlowProcesses;
 import com.mcg.entity.flow.python.FlowPython;
@@ -128,18 +126,6 @@ public class DataConverter {
                 webElement.setId(flowStart.getStartId());
                 webElementList.add(webElement);
                 CachePlugin.putFlowEntity(flowId, flowStart.getStartId(), flowStart);
-            }
-            if(flowStruct.getFlowModels() != null && flowStruct.getFlowModels().getFlowModel() != null && flowStruct.getFlowModels().getFlowModel().size() >0) {
-                List<FlowModel> flowModelList = flowStruct.getFlowModels().getFlowModel();
-                for(FlowModel flowModel : flowModelList) {
-                    WebElement webElement = new WebElement();
-                    FlowBase flowBase = flowModel;
-                    flowBase.setName(flowModel.getModelProperty().getModelName());
-                    webElement = setValue(flowBase, webElement);
-                    webElement.setId(flowModel.getModelId());
-                    webElementList.add(webElement);
-                    CachePlugin.putFlowEntity(flowId, flowModel.getModelId(), flowModel);
-                }
             }
             if(flowStruct.getFlowJsons() != null && flowStruct.getFlowJsons().getFlowJson() != null && flowStruct.getFlowJsons().getFlowJson().size() >0) {
                 List<FlowJson> flowJsonList = flowStruct.getFlowJsons().getFlowJson();
@@ -334,8 +320,6 @@ public class DataConverter {
         FlowStruct flowStruct = null;
         if(webStruct != null && webStruct.getWebElement() != null && webStruct.getWebElement().size() > 0 && webStruct.getWebConnector() != null && webStruct.getWebConnector().size() > 0) {
             flowStruct = new FlowStruct();
-            FlowModels flowModels = new FlowModels();
-            List<FlowModel> flowModelList = new ArrayList<FlowModel>();
             FlowJsons flowJsons = new FlowJsons();
             List<FlowJson> flowJsonList = new ArrayList<FlowJson>();     
             FlowSqlQuerys flowSqlQuerys = new FlowSqlQuerys();
@@ -376,18 +360,6 @@ public class DataConverter {
                     flowStart.setTop(webElement.getTop());
                     flowStart.setSign(webElement.getSign());
                     flowStruct.setFlowStart(flowStart);
-                } else if(webElement.getEletype().equals(EletypeEnum.MODEL.getValue())) {
-                    FlowModel flowModel = (FlowModel)obj;
-                    flowModel.setLabel(webElement.getLabel());
-                    flowModel.setWidth(webElement.getWidth());
-                    flowModel.setHeight(webElement.getHeight());
-                    flowModel.setClassname(webElement.getClassname());
-                    flowModel.setEletype(webElement.getEletype());
-                    flowModel.setClone(webElement.getClone());
-                    flowModel.setLeft(webElement.getLeft());
-                    flowModel.setTop(webElement.getTop());
-                    flowModel.setSign(webElement.getSign());
-                    flowModelList.add(flowModel);
                 } else if(webElement.getEletype().equals(EletypeEnum.JSON.getValue())) {
                     FlowJson flowJson = (FlowJson)obj;
                     flowJson.setLabel(webElement.getLabel());
@@ -547,8 +519,6 @@ public class DataConverter {
                 } 
             }
             
-            flowModels.setFlowModel(flowModelList);
-            flowStruct.setFlowModels(flowModels);
             flowJsons.setFlowJson(flowJsonList);
             flowStruct.setFlowJsons(flowJsons);   
             flowSqlQuerys.setFlowSqlQuery(flowSqlQueryList);

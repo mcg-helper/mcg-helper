@@ -50,8 +50,8 @@
 					            <thead>
 					            <tr>
 					            	<th data-field="state" data-checkbox="true"></th>
-					                <th data-field="key" data-formatter="inputFormatter">KEY</th>
-					                <th data-field="value" data-formatter="inputFormatter">值</th>
+					                <th data-field="key" data-formatter="inputFormatter">变量名</th>
+					                <th data-field="value" data-formatter="inputFormatter">变更值</th>
 					                <th data-field="desc" data-formatter="inputFormatter">说明</th>
 					            </tr>
 					            </thead>
@@ -61,12 +61,13 @@
 							<div class="form-group">
 								<div class="col-sm-12">
 									<div class="fg-line">
-										作为流程的开始标志外，拥有自定义流程中的全局变量作用，可在任何流程控件中采用${key}替换成value，其运行值如下：
+										作为流程的开始标志外，赋有当前流程中全局变量的作用，它首先会获取数据源中“全局变量”的值，并在此基础上覆盖添加本身自定义的键值对，<br/>
+										可在任何流程控件中采用${变量名}替换成变量值，其运行值如下：
 														<pre>
 {
-	key:value,
-	key:value,
-	key:value, 
+	变量名:变量值,
+	变量名一:变量值一,
+	变量名二:变量值二,
 	......
 }											
 										</pre>

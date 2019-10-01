@@ -94,3 +94,40 @@
 path, ._jsPlumb_endpoint { 
 	cursor:pointer;
 }
+
+.run_flicker{ 
+	color:green; 
+	animation: changeshadow 1s  ease-in  infinite ;
+	/* 其它浏览器兼容性前缀 */
+ 	-webkit-animation: changeshadow 1s linear infinite;
+ 	-moz-animation: changeshadow 1s linear infinite;
+ 	-ms-animation: changeshadow 1s linear infinite;
+ 	-o-animation: changeshadow 1s linear infinite;
+}  
+
+@keyframes changeshadow {  
+    0%{ text-shadow: 0 0 4px green}  
+    50%{ text-shadow: 0 0 40px green}  
+    100%{ text-shadow: 0 0 4px green}  
+}
+/* 添加兼容性前缀 */
+@-webkit-keyframes changeshadow {
+  0%{ text-shadow: 0 0 4px green}  
+  50%{ text-shadow: 0 0 40px green}  
+  100%{ text-shadow: 0 0 4px green}  
+}
+@-moz-keyframes changeshadow {
+    0%{ text-shadow: 0 0 4px green}  
+    50%{ text-shadow: 0 0 40px green}  
+    100%{ text-shadow: 0 0 4px green}  
+}
+@-ms-keyframes changeshadow {
+    0%{ text-shadow: 0 0 4px green}  
+    50%{ text-shadow: 0 0 40px green}  
+    100%{ text-shadow: 0 0 4px green}  
+}
+@-o-keyframes changeshadow {
+    0%{ text-shadow: 0 0 4px green}  
+    50%{ text-shadow: 0 0 40px green}  
+    100%{ text-shadow: 0 0 4px green}  
+}

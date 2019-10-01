@@ -53,18 +53,63 @@
 								</div>									
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">服务器数据源</label>
-								<div class="col-sm-9">
+								<label class="col-sm-2 control-label">连接方式</label>
+								<div class="col-sm-4">
+									<div class="fg-line">
+										<select id="${modalId }_connMode" name="linuxCore[connMode]" class="selectpicker">
+											<c:forEach items="${connMode}" var="item" varStatus="status">
+												<c:choose>
+													<c:when test="${status.count == 1}">
+														<option value="${item.value }" selected="selected">${item.name }</option>
+													</c:when>
+													<c:otherwise>
+														<option value="${item.value }">${item.name }</option>
+													</c:otherwise>
+												</c:choose>
+											</c:forEach>
+										</select>
+									</div>
+								</div>
+								<label class="col-sm-1 control-label">数据源</label>
+								<div class="col-sm-4">
 									<div class="fg-line">
 							          	<select id="${modalId }_serverSourceId" name="linuxCore[serverSourceId]" class="selectpicker">
-							          		<option value="">请选择</option>
 						                	<c:forEach items="${serverSources}" var="item">
 							              		<option value="${item.id }">${item.name } : ${item.ip }</option>
 							              	</c:forEach>
 							          	</select>										
 									</div>
 								</div>
-							</div>							
+							</div>		
+							<div class="form-group" id="${modalId }_ip_port" style="display: none;">
+								<label class="col-sm-2 control-label">IP</label>
+								<div class="col-sm-4">
+									<div class="fg-line">
+										<input type="text" id="${modalId }_sshIp" name="linuxCore[ip]" class="form-control" />
+									</div>
+								</div>
+								<label class="col-sm-1 control-label">端口</label>
+								<div class="col-sm-4">
+									<div class="fg-line">
+										<input type="text" id="${modalId }_sshPort" name="linuxCore[port]" class="form-control" />
+									</div>
+								</div>
+							</div>
+							<div class="form-group" id="${modalId }_user_pwd" style="display: none;">
+								<label class="col-sm-2 control-label">用户名</label>
+								<div class="col-sm-4">
+									<div class="fg-line">
+										<input type="text" id="${modalId }_sshUser" name="linuxCore[user]" class="form-control" />
+									</div>
+								</div>
+								<label class="col-sm-1 control-label">密码</label>
+								<div class="col-sm-4">
+									<div class="fg-line">
+										<input type="text" id="${modalId }_sshPwd" name="linuxCore[pwd]" class="form-control" />
+									</div>
+								</div>
+							</div>
+							
 							<div class="form-group">
 								<label class="col-sm-2 control-label">脚本描述</label>
 								<div class="col-sm-9">
@@ -85,8 +130,8 @@
 							<div class="form-group">
 								<div class="col-sm-12">
 									<div class="fg-line">
-										业务数据处理控件，流程执行时会自动执行源代码中的shell命令，其param参数为所有父级控件的运行值，
-										通过freemaker模板语言，获取父级传递的参数，该控件中可执行Linux Shell命令，
+										Linux SSH连接，可执行Linux Shell命令，亮点在于实现交互等待命令（interact 时间毫秒），<br/>
+										比如：执行下一句命令前等待2秒钟：interact 2000，适用于交互性场景，比如：用户切换时要求密码，软件安装再次确认等场景<br/>
 										可在源代码编辑器中按下ctrl+enter键切换全屏。
 									</div>
 								</div>

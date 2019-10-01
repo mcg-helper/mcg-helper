@@ -17,7 +17,9 @@
 
 
 /* 基本数据Map
- * selector: 当前拖拽元素id
+ * selector: 当前拖拽控件id
+ * runnerFlowId: 当前执行的流程id
+ * runnerFlowElementId: 当前执行流程正在执行控件id
  * status: 0:流程区正常操作  1:重绘流程区时
  * highlight: 当前控制台日志高亮显示的id
  * flowDataSourceModalId 数据源弹出框的id，点击数据源时触发保存id
@@ -71,7 +73,6 @@ $(function() {
 		target: $("#flowarea")
 	});
 */
-	
 	common.ajax({
 		url : "/flowTree/getDatas",
 		type : "GET",
@@ -86,7 +87,6 @@ $(function() {
     	nodeSelected(rootNode);
     	//  系统初始化
     	initFlowSystem();
-    	initFlowConsole();
 	});
 
 });
@@ -103,10 +103,10 @@ function initFlowConsole() {
 			common.ajax({
 				url : "/flow/stop",
 				type : "POST",
-				data : "flowId=" + $("#flowSelect").attr("flowId") //JSON.stringify(webStruct),
+				data : "flowId=" + $("#flowSelect").attr("flowId")
 			}, function(data) {
 				if(data.statusCode == 1) {
-				//	$("#flowStopBtn span").removeClass("text-danger");
+					$("#flowStopBtn span").removeClass("text-danger");
 				} else {
 					Messenger().post({
 						message: "停止流程失败！",
@@ -132,11 +132,11 @@ function initFlowConsole() {
 }
 
 /*
- *  流程组件，拖拽事件绑定
+ *  绑定流程控件拖拽事件
  */
 function flowDropBind() {
 	baseMap.put("selector", "");
-	baseMap.put("status",0);
+	baseMap.put("status", 0);
 	$("#flowarea").droppable({
 		drop: function( event, ui ) {
 			//排除流程区中，非流程控件的html对象拖拽事件
@@ -209,32 +209,23 @@ function bindEvent(id) {
 		removePopover(); //删除所有流程节点悬浮工具层
 		$("#"+id).popover('show'); //显示流程节点悬浮工具层
 	});
-	/*
-	$("#"+id).hover(
-		//当鼠标放上去的时触发	
-		function(){
-		},
-		//当鼠标离开的时触发
-		function(){
-		}
-	);
-*/
+
 }
 //删除所有流程节点县浮工具层
 function removePopover() {
-	$("div.popover").each(function() {
-		$(this).remove();
+	$("#flowarea").children("div[data-toggle='popover']").each(function() {
+		$(this).popover('hide');
 	});
 }
 //初始化流程节点工具层
 function initPopover() {
-	$("[data-toggle='popover']").popover({
+	$("#flowarea").children("[data-toggle='popover']").popover({
 //		delay:{ show: 0, hide: 1000 },
-		trigger:"manual",//manual,focus
+		trigger:"manual",//manual,focus,click
 		placement:"bottom",
 //		title:"流程节点工具层",
 		html:true,
-		container: 'body',
+		container: $("#flowarea"),
 		animation: false,
 		content:baseMap.get("popoverContent")
 	}).on("mouseenter", function () {
@@ -255,20 +246,6 @@ function initPopover() {
     	var _this = this;
     	baseMap.put("selector", $(_this).attr("id"));
     });
-/*	
-	.on("mouseup", function () {
-        $(this).popover("show");
-        $(this).siblings(".popover").on("mouseleave", function () {
-            $(this).popover('hide');
-        });
-    }).on("show.bs.popover", function() {
-    	
-    }).on("hide.bs.popover", function() {
-    //	$(this).remove();
-    }).on("mouseenter", function () {
-        
-    });
-	*/
 }
 
 /**
@@ -339,7 +316,7 @@ function repaint(object) {
 	//重新创建当前所有节点
  	for(var i=0; i<array.length; i++) {
  		var name = elementMap.get(array[i]).getSign() == "true" || elementMap.get(array[i]).getSign() == undefined ? elementMap.get(array[i]).getName() : "";
- 		var divNode = $("<div data-toggle='popover' id=" + elementMap.get(array[i]).getId() + " name='' eletype=" + elementMap.get(array[i]).getEletype() + " class='" + elementMap.get(array[i]).getClassname() +"' clone='" + elementMap.get(array[i]).getClone() + "'>" + elementMap.get(array[i]).getLabel() + "<div class='ep'></div><div id='name_" + elementMap.get(array[i]).getId() + "' style='position:absolute;top:55px;left:0px;width:100px;'>" + name + "</div></div>");
+ 		var divNode = $("<div data-toggle='popover' id=" + elementMap.get(array[i]).getId() + " name='' eletype=" + elementMap.get(array[i]).getEletype() + " class='" + elementMap.get(array[i]).getClassname() +"' clone='" + elementMap.get(array[i]).getClone() + "'>" + elementMap.get(array[i]).getLabel() + "<div class='ep'></div><div id='name_" + elementMap.get(array[i]).getId() + "' style='position:absolute;top:55px;left:0px;width:135px;'>" + name + "</div></div>");
  		divNode.css("left", elementMap.get(array[i]).getLeft()+"px");
  		divNode.css("top", elementMap.get(array[i]).getTop()+"px");
  		$(object).append(divNode);
@@ -451,12 +428,16 @@ function removeConnectorElement(instance, info) {
 		}
 	}
 }
-/* 流程节点A已连接流程节点B, 当B去连接A时, 删除该连接线 */
+/* 流程节点A已连接流程节点B, 当B去连接A时, 删除该连接线 , 当B为循环控件时除外*/
 function removeReverse(instance, info) {
 	var connectors = getConnectors(elementMap);
 	for(var i=0; i<connectors.length; i++) {
 		if(connectors[i].getConnectorId() == (info.targetId+info.sourceId)) {
-			instance.detach(info);
+			if("loop" == $("#" + info.sourceId).attr("eletype")) {
+				return true;
+			} else {
+				instance.detach(info);
+			}
 			return false;
 		}
 	}
@@ -519,6 +500,7 @@ function initFlowSystem() {
 	initFunc();
 	initHtmlTools();
 	flowDropBind();
+	initFlowConsole();
 }
 
 /* 初始化流程数据,从后台读取数据装配到elementMap中 */
@@ -582,16 +564,21 @@ function initFunc() {
 	$('#flowGenBtn').click(function(){
 		//清空控制台
 		$("#console").html("");
+		var array = elementMap.keySet();
+		for(var i in array) {
+			$("#name_" + array[i]).children("span").remove();
+			$("#name_" + array[i]).removeClass("run_state");
+		}	 
 		var webStruct = convertFlowObject();
+		$("#flowStopBtn span").addClass("text-danger");
 		common.ajax({
+			isLoading : true,
 			url : "/flow/generate",
 			type : "POST",
 			data : JSON.stringify(webStruct),
 			contentType : "application/json"
 		}, function(data) {
-			if(data.statusCode == 1) {
-				$("#flowStopBtn span").addClass("text-danger");
-			} else {
+			if(data.statusCode != 1) {
 				Messenger().post({
 					message: "执行流程失败！",
 					type: "error",
@@ -636,26 +623,7 @@ function initFunc() {
 		$("body").append(form);
 		
 		form.submit();
-		form.remove();
-		webSocket = new WebSocket(websocketUrl);
-	    webSocket.onerror = function(event) { 
-	    	
-	    };
-		 
-	    webSocket.onopen = function(event) { 
-	    	
-	    };
-	 
-	    webSocket.onmessage = function(event) {
-  			var message = new Message({
-				msg : JSON.parse(event.data)
-			});
-			message.output();
-	    };
-	    
-	    webSocket.onclose = function(event) { 
-	    	
-	    };		
+		form.remove();		
 
 	});
 	$('#flowClearBtn').click(function(){
@@ -714,7 +682,7 @@ function initFunc() {
 		var modalId = createModalId("dataSource");
 		var param = {};
 		var option = {};
-		option["title"] = "数据源控件";
+		option["title"] = "数据源管理";
 		option["width"] = 1100;
 		param["modalId"] = modalId.replace(/_Modal/g, "");
 		param["eletype"] = "dataSource";
@@ -881,7 +849,7 @@ function initConnectLine() {
     	//流程节点连接自己时删除该连接线
         if(info.sourceId == info.targetId) {      
         	instance.detach(info); 
-        } else{      
+        } else {      
         	/* 流程节点连接节点只能有一条，否则删除第二条连接线 
         	 * baseMap.get("status")=1 属于流程区重绘时,不用删除连接线
         	 * */
@@ -890,6 +858,7 @@ function initConnectLine() {
         		if(!removeReverse(instance, info))
         			return ;
         	} 
+        	
         	var connector = new $.Connector({
         		connectorId:info.sourceId+info.targetId,
         		sourceId:info.sourceId,
@@ -1019,7 +988,7 @@ function beforeRemove(treeId, treeNode) {
 	var ids = new Array();
 	ids = getChildren(ids,treeNode);
 
-    var parentdiv=$('<div abc="asdfasdf"></div>');       
+    var parentdiv=$('<div></div>');       
     parentdiv.attr('id', "flowDelete_" + treeId);
     $(parentdiv).html("<div style='height:50px;line-height:50px;'>删除当前流程以及所有子流程，您确定需要删除吗？</div>");
 	$(parentdiv).dialog({

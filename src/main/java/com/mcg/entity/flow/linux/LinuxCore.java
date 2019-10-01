@@ -35,9 +35,21 @@ public class LinuxCore implements Serializable {
     @XmlElement
     private String serverSourceId;
 	
-	@NotBlank(message = "{flowLinux.linuxCore.source.notBlank}")
-	@XmlElement		   
+	@NotBlank(message = "{flowLinux.linuxCore.connMode.notBlank}")
+    @XmlElement
+	private String connMode;
+	
+//	@NotBlank(message = "{flowLinux.linuxCore.source.notBlank}")
+	@XmlElement
 	private String source;
+	@XmlElement
+	private String ip;
+	@XmlElement
+	private String port;
+	@XmlElement
+	private String user;
+	@XmlElement
+	private String pwd;
 
 	public String getSource() {
 		return source;
@@ -53,6 +65,46 @@ public class LinuxCore implements Serializable {
 
 	public void setServerSourceId(String serverSourceId) {
 		this.serverSourceId = serverSourceId;
+	}
+
+	public String getConnMode() {
+		return connMode;
+	}
+
+	public void setConnMode(String connMode) {
+		this.connMode = connMode;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public String getPort() {
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPwd() {
+		return pwd;
+	}
+
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
 	}
 
 }

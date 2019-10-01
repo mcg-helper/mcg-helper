@@ -22,37 +22,39 @@ import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.script.FlowScript;
+import com.mcg.entity.generate.ExecuteStruct;
 import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
 import com.mcg.plugin.build.McgProduct;
-import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.websocket.MessagePlugin;
+import com.mcg.util.FlowInstancesUtils;
+import com.mcg.util.Tools;
 
 public class Console {
 
-    public String info(Object content) {
-        pushMessage(content, LogTypeEnum.INFO);
+    public String info(String httpSessionId, String flowId, Object content) {
+        pushMessage(httpSessionId, flowId, content, LogTypeEnum.INFO);
         return "";
     }
     
-    public String success(Object content) {
-        pushMessage(content, LogTypeEnum.SUCCESS);
+    public String success(String httpSessionId, String flowId, Object content) {
+        pushMessage(httpSessionId, flowId, content, LogTypeEnum.SUCCESS);
         return "";
     }
     
-    public String error(Object content) {
-        pushMessage(content, LogTypeEnum.ERROR);
+    public String error(String httpSessionId, String flowId, Object content) {
+        pushMessage(httpSessionId, flowId, content, LogTypeEnum.ERROR);
         return "";
     }
     
-    public static void pushMessage(Object content, LogTypeEnum logType) {
-        FlowTask flowTask = FlowTask.executeLocal.get();
+    public static void pushMessage(String httpSessionId, String flowId, Object content, LogTypeEnum logType) {
+    	String flowInstanceId = Tools.genFlowInstanceId(httpSessionId, flowId);
+    	ExecuteStruct executeStruct = FlowInstancesUtils.executeStructMap.get(flowInstanceId);
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW); 
         FlowBody flowBody = new FlowBody();
-        
-        String flowId = flowTask.getExecuteStruct().getRunStatus().getExecuteId();
-        McgProduct mcgProduct = flowTask.getExecuteStruct().getDataMap().get(flowId);
+        String executeId = executeStruct.getRunStatus().getExecuteId();
+        McgProduct mcgProduct = executeStruct.getDataMap().get(executeId);
         if(mcgProduct instanceof FlowScript) {
             flowBody.setEleType(EletypeEnum.SCRIPT.getValue());
             flowBody.setEleTypeDesc(EletypeEnum.SCRIPT.getName());
@@ -61,6 +63,8 @@ public class Console {
             flowBody.setEleTypeDesc(EletypeEnum.JAVA.getName());
         }
         
+        flowBody.setFlowId(flowId);
+        flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setLogType(logType.getValue());
         flowBody.setLogTypeDesc(logType.getName());
         flowBody.setComment("自定义输出");
@@ -69,8 +73,8 @@ public class Console {
         } else {
         	flowBody.setContent("");
         }    
-        flowBody.setEleId(flowTask.getExecuteStruct().getRunStatus().getExecuteId());
+        flowBody.setEleId(executeId);
         message.setBody(flowBody);
-        MessagePlugin.push(flowTask.getHttpSessionId(), message);
+        MessagePlugin.push(executeStruct.getSession().getId(), message);
     }
 }

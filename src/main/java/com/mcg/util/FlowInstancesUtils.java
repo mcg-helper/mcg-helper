@@ -22,5 +22,10 @@ import com.mcg.entity.generate.ExecuteStruct;
 
 public class FlowInstancesUtils {
 
+	/**
+	 * 正在执行的所有流程实例
+	 * key：流程实例id 
+	 * value：流程执行的 
+	 */
 	public static ConcurrentHashMap<String, ExecuteStruct> executeStructMap = new ConcurrentHashMap<String, ExecuteStruct>();
 }

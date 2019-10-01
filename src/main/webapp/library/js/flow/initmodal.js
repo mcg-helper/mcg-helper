@@ -38,6 +38,14 @@ function inputFormatter(value, row, index) {
 	return '<input class="form-control input-sm" type="text" value="' + value + '" onfocus="inputFocus(this)" onChange="inputBlur(this, ' + index+ ')"/>';
 }
 
+function inputDataSourceFormatter(value, row, index) {
+	
+	if(row.type == "system") {
+		return '<input class="form-control input-sm" readonly="readonly" type="text" value="' + value + '"/>';
+	}
+	return '<input class="form-control input-sm" type="text" value="' + value + '" onfocus="inputFocus(this)" onChange="inputBlur(this, ' + index+ ')"/>';
+}
+
 function dsCommandsFormatter(value, row, index) {
 	return '<button type="button" onClick="dbTest(' + index + ');" class="btn btn-default">测试</button>';
 }
@@ -162,13 +170,40 @@ function initFlowDataSourceModal(modalId) {
 		type : "POST",
 		data : null
 	}, function(data){
+		var flowVarRows = [];
+		for(var i=0; i<data.sysVars.length; i++){
+			var sysVar = data.sysVars[i];
+			flowVarRows.push({
+					"id":sysVar.id, "_bTableName_":modalId + "_flowVarTable", "type":sysVar.type,
+					"key":sysVar.key, "value":sysVar.value, "note":sysVar.note
+				});
+		}
+		
+		if(data != null && data != undefined && data.flowVars != null && data.flowVars.length > 0) {
+			for(var i=0; i<data.flowVars.length; i++){
+				var flowVar = data.flowVars[i];
+				flowVarRows.push({
+						"id":flowVar.id, "_bTableName_":modalId + "_flowVarTable", "type":flowVar.type,
+						"key":flowVar.key, "value":flowVar.value, "note":flowVar.note
+					});
+			}
+			
+		}
+		
+		$("#" + modalId + "_flowVarTable").bootstrapTable({"data":flowVarRows});
+		$("#" + modalId + "_flowVarTable").on('click-cell.bs.table', function ($element, field, value, row) {
+			_fieldName_ = field;
+			_tableName_ = modalId + "_flowVarTable";
+		});
+		
 		if(data != null && data != undefined && data.flowDataSources != null && data.flowDataSources.length > 0) {
 			var rows = [];
 			for(var i=0; i<data.flowDataSources.length; i++){
 				var dataSource = data.flowDataSources[i];
+				var port = dataSource.dbPort == "" || dataSource.dbPort == undefined ? "": dataSource.dbPort;
 				rows.push({
 						"id":dataSource.dataSourceId, "_bTableName_":modalId + "_flowDataSourceTable", "name":dataSource.name, "dbType":dataSource.dbType,  
-						"dbServer":dataSource.dbServer, "dbPort":dataSource.dbPort, "dbName":dataSource.dbName, "dbUserName":dataSource.dbUserName, 
+						"dbServer":dataSource.dbServer, "dbPort":port, "dbName":dataSource.dbName, "dbUserName":dataSource.dbUserName, 
 						"dbPwd":dataSource.dbPwd, "note":dataSource.note 
 					});
 			}
@@ -192,21 +227,21 @@ function initFlowDataSourceModal(modalId) {
 			var rows = [];
 			for(var i=0; i<data.serverSources.length; i++){
 				var serverSource = data.serverSources[i];
+				var port = serverSource.port == "" || serverSource.port == undefined ? "": serverSource.port;
 				rows.push({
 						"id":serverSource.id, "_bTableName_":modalId + "_flowServerSourceTable", "name":serverSource.name, "type":serverSource.type,  
-						"ip":serverSource.ip, "port":serverSource.port, "userName":serverSource.userName, 
+						"ip":serverSource.ip, "port":port, "userName":serverSource.userName, 
 						"pwd":serverSource.pwd, "note":serverSource.note 
 					});
 			}
 			$("#" + modalId + "_flowServerSourceTable").bootstrapTable({"data":rows});
 		} else {
-
 			$("#" + modalId + "_flowServerSourceTable").bootstrapTable({data: [
        			{
        				"id":Math.uuid(), "_bTableName_":modalId + "_flowServerSourceTable", "name":"", "type":"LINUX",  
        				"ip":"", "port":"", "userName":"", "pwd":"", "note":""
        			}
-       		]});			
+       		]});		
 		}		
 		
 		$("#" + modalId + "_flowServerSourceTable").on('click-cell.bs.table', function ($element, field, value, row) {
@@ -232,39 +267,21 @@ function initFlowStartModal(id) {
 	});
 }
 
-function initFlowModelModal(id) {
-	getElementDataById(id, function(data) {
-		if(data != null && data != "" && data != undefined && data.modelField != undefined && data.modelField.modelRecord.length > 0) {
-			var rows = [];
-			for(var i=0; i<data.modelField.modelRecord.length; i++){
-				rows.push({
-					"id":Math.uuid(), "classField":data.modelField.modelRecord[i].classField, "tableField":data.modelField.modelRecord[i].tableField, "comment":data.modelField.modelRecord[i].comment, "tableFieldType":data.modelField.modelRecord[i].tableFieldType, 
-					"dataType":data.modelField.modelRecord[i].dataType, "length":data.modelField.modelRecord[i].length, "precision":data.modelField.modelRecord[i].precision, "primary":data.modelField.modelRecord[i].primary, 
-					"autoincrement":data.modelField.modelRecord[i].autoincrement, "mandatory":data.modelField.modelRecord[i].mandatory, "show":data.modelField.modelRecord[i].show, "include":data.modelField.modelRecord[i].include 
-				});
-			}
-			$("#" + id + "_flowModelTable").bootstrapTable({"data":rows});
-			$("#" + id + "_key").val(data.modelProperty.key);
-			$("#" + id + "_modelName").val(data.modelProperty.modelName);
-			$("#" + id + "_className").val(data.modelProperty.className);
-			$("#" + id + "_tableName").val(data.modelProperty.tableName);
-			$("#" + id + "_packageName").val(data.modelProperty.packageName);
-			$("#" + id + "_modelDesc").val(data.modelProperty.modelDesc);
-		} else {
-			$("#" + id + "_flowModelTable").bootstrapTable({data: [{
-				"id":Math.uuid(), "classField":"", "tableField":"", "comment":"","tableFieldType":"",
-				"dataType":"", "length":0, "precision":0, "primary":false, "autoincrement":false, "mandatory":false, "show":false, "include":"" 
-			}]});
-		}		
-		
-	});	
-	
-}
-
 function initDataModal(id) {
 	getElementDataById(id, function(data) {
-		if(data != null && data != "" && data != undefined && data.dataField != undefined && data.dataField.dataRecord.length > 0) {
+		if(data != null && data != "" && data != undefined) {
 			
+			$("#" + id + "_key").val(data.dataProperty.key);
+			$("#" + id + "_name").val(data.dataProperty.name);
+			$("#" + id + "_className").val(data.dataProperty.className);
+			$("#" + id + "_tableName").val(data.dataProperty.tableName);
+			$("#" + id + "_packageName").val(data.dataProperty.packageName);
+			$("#" + id + "_dataDesc").val(data.dataProperty.dataDesc);		
+			$("#" + id + "_dataSourceId").selectpicker('val', data.dataField.dataSourceId);
+			
+		}
+		
+		if(data.dataField != undefined && data.dataField.dataRecord.length > 0) {
 			var rows = [];
 			for(var i=0; i<data.dataField.dataRecord.length; i++){
 				rows.push({
@@ -274,13 +291,6 @@ function initDataModal(id) {
 				});
 			}			
 			$("#" + id + "_flowDataTable").bootstrapTable({"data":rows});
-			$("#" + id + "_key").val(data.dataProperty.key);
-			$("#" + id + "_name").val(data.dataProperty.name);
-			$("#" + id + "_className").val(data.dataProperty.className);
-			$("#" + id + "_tableName").val(data.dataProperty.tableName);
-			$("#" + id + "_packageName").val(data.dataProperty.packageName);
-			$("#" + id + "_dataDesc").val(data.dataProperty.dataDesc);		
-			$("#" + id + "_dataSourceId").selectpicker('val', data.dataField.dataSourceId);
 			
 			if(data.dataField.dataSourceId != null && data.dataField.dataSourceId != "" && data.dataField.tableName != null && data.dataField.tableName != "" ) {
 				common.ajax({
@@ -296,7 +306,7 @@ function initDataModal(id) {
 					$("#" + id + "_tableNameSelect").selectpicker('refresh');
 					$("#" + id + "_tableNameSelect").selectpicker('val', data.dataField.tableName);
 				});
-			}			
+			}
 		} else {
 			$("#" + id + "_flowDataTable").bootstrapTable();
 		}
@@ -361,7 +371,7 @@ function initScriptModal(id, editor) {
 		if(data != "" && data != undefined && data.scriptCore != null) {
 			editor.setValue(data.scriptCore.source);
 		} else {
-			editor.setValue("var Console = Java.type('com.mcg.plugin.assist.Console');\r\nvar console = new Console();\r\n\r\nfunction main(param) {\r\n    var result = {};\r\n    console.success({'myName':'mcg-helper', 'desc':'欢迎使用MCG小助手'});\r\n    \r\n    result = param;\r\n    return result;\r\n}");
+			editor.setValue("var Console = Java.type('com.mcg.plugin.assist.Console');\r\nvar console = new Console();\r\n\r\nfunction main(param) {\r\n    var result = {};\r\n    console.success({'name':'mcg-helper', 'desc':'欢迎使用mcg-helper研发助手'});\r\n    \r\n    result = param;\r\n    return result;\r\n}");
 		}
 	});
 }
@@ -399,18 +409,33 @@ function initPythonModal(id, editor) {
 function initLinuxModal(id, editor) {
 	
 	getElementDataById(id, function(data) {
-		if(data != null && data != "" && data != undefined && data.linuxProperty != undefined) {
-			$("#" + id + "_key").val(data.linuxProperty.key);
-			$("#" + id + "_name").val(data.linuxProperty.name);
-			$("#" + id + "_desc").val(data.linuxProperty.desc);
-		} 
-		if(data != "" && data != undefined && data.linuxCore != null) {
-			editor.setValue(data.linuxCore.source);
+		
+		if(data != "" && data != undefined) {
+			common.formUtils.setValues(id + "_linuxForm", data);
+			
+			$("#" + id + "_connMode").selectpicker('refresh');
+			$("#" + id + "_connMode").selectpicker('val', data.linuxCore.connMode);
 			$("#" + id + "_serverSourceId").selectpicker('refresh');
 			$("#" + id + "_serverSourceId").selectpicker('val', data.linuxCore.serverSourceId);
+			
+			if(data.linuxCore != null) {
+				if(data.linuxCore.connMode == "dependency") {
+					$("#" + id + "_serverSourceId").prop("disabled", false);
+					$("#" + id + "_serverSourceId").selectpicker('refresh');
+					$("#" + id + "_ip_port").css("display", "none");
+					$("#" + id + "_user_pwd").css("display", "none");
+				} else if(data.linuxCore.connMode == "assign") {
+					$("#" + id + "_serverSourceId").prop("disabled", true);
+					$("#" + id + "_serverSourceId").selectpicker('refresh');
+					$("#" + id + "_ip_port").css("display", "block");
+					$("#" + id + "_user_pwd").css("display", "block");
+				}
+			}
+			editor.setValue(data.linuxCore.source);
 		} else {
 			editor.setValue("");
 		}
+		
 	});
 }
 
@@ -462,10 +487,7 @@ function initLoopModal(id) {
 function initTextModal(id, editor) {
 	getElementDataById(id, function(data) {
 		if(data != null && data != "" && data != undefined && data.textProperty != undefined) {
-			$("#" + id + "_name").val(data.textProperty.name);
-			$("#" + id + "_key").val(data.textProperty.key);
-			$("#" + id + "_fileName").val(data.textProperty.fileName);
-			$("#" + id + "_outPutPath").val(data.textProperty.outPutPath);
+			common.formUtils.setValues(id + "_textForm", data);
 		} 
 		if(data != null && data != undefined && data.textCore != undefined) {
 			editor.setValue(data.textCore.source);
