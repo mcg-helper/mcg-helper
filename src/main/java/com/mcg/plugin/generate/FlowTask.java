@@ -110,6 +110,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                if(mcgProduct instanceof FlowStart) {
 		                    FlowStart flowStart = (FlowStart)mcgProduct.clone();
 		                    flowStart.setOrderNum(orderNum);
+		                    flowStart.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowStartProduct(flowStart).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.START.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.START.getName());
@@ -119,15 +120,16 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowJson) {
 		                    FlowJson flowJson =(FlowJson)mcgProduct.clone();
 		                    flowJson.setOrderNum(orderNum);
+		                    flowJson.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowJsonProduct(flowJson).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.JSON.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.JSON.getName() + "--》" + flowJson.getJsonProperty().getName());
 		                    flowBody.setEleId(flowJson.getId());
 		                    flowBody.setComment("运行值");
-		                    
 		                } else if(mcgProduct instanceof FlowSqlQuery) {
 		                    FlowSqlQuery flowSqlQuery =(FlowSqlQuery)mcgProduct.clone();
 		                    flowSqlQuery.setOrderNum(orderNum);
+		                    flowSqlQuery.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowSqlQueryProduct(flowSqlQuery).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.SQLQUERY.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.SQLQUERY.getName() + "--》" + flowSqlQuery.getSqlQueryProperty().getName());
@@ -136,6 +138,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowSqlExecute) {
 		                    FlowSqlExecute flowSqlExecute =(FlowSqlExecute)mcgProduct.clone();
 		                    flowSqlExecute.setOrderNum(orderNum);
+		                    flowSqlExecute.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowSqlExecuteProduct(flowSqlExecute).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.SQLEXECUTE.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.SQLEXECUTE.getName() + "--》" + flowSqlExecute.getSqlExecuteProperty().getName());
@@ -144,6 +147,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowData) {
 		                    FlowData flowData = (FlowData)mcgProduct.clone();
 		                    flowData.setOrderNum(orderNum);
+		                    flowData.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowDataProduct(flowData).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.DATA.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.DATA.getName() + "--》" + flowData.getDataProperty().getName());
@@ -152,6 +156,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowText) {
 		                    FlowText flowText = (FlowText) mcgProduct.clone();
 		                    flowText.setOrderNum(orderNum);
+		                    flowText.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowTextProduct(flowText).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.TEXT.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.TEXT.getName() + "--》" + flowText.getTextProperty().getName());
@@ -160,6 +165,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowScript) {
 		                    FlowScript flowScript = (FlowScript)mcgProduct.clone();
 		                    flowScript.setOrderNum(orderNum);
+		                    flowScript.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowScriptProduct(flowScript).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.SCRIPT.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.SCRIPT.getName() + "--》" + flowScript.getScriptProperty().getScriptName());
@@ -168,6 +174,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowJava) {
 		                    FlowJava flowJava = (FlowJava)mcgProduct.clone();
 		                    flowJava.setOrderNum(orderNum);
+		                    flowJava.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowJavaProduct(flowJava).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.JAVA.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.JAVA.getName() + "--》" + flowJava.getJavaProperty().getName());
@@ -176,6 +183,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowPython) {
 		                    FlowPython flowPython = (FlowPython)mcgProduct.clone();
 		                    flowPython.setOrderNum(orderNum);
+		                    flowPython.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowPythonProduct(flowPython).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.PYTHON.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.PYTHON.getName() + "--》" + flowPython.getPythonProperty().getName());
@@ -184,6 +192,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowLinux) {
 		                	FlowLinux flowLinux = (FlowLinux)mcgProduct.clone();
 		                	flowLinux.setOrderNum(orderNum);
+		                	flowLinux.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowLinuxProduct(flowLinux).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.LINUX.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.LINUX.getName() + "--》" + flowLinux.getLinuxProperty().getName());
@@ -192,6 +201,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowWonton) {
 		                	FlowWonton flowWonton = (FlowWonton)mcgProduct.clone();
 		                	flowWonton.setOrderNum(orderNum);
+		                	flowWonton.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowWontonProduct(flowWonton).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.WONTON.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.WONTON.getName() + "--》" + flowWonton.getWontonProperty().getName());
@@ -200,6 +210,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowProcess) {
 		                	FlowProcess flowProcess = (FlowProcess)mcgProduct.clone();
 		                	flowProcess.setOrderNum(orderNum);
+		                	flowProcess.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowProcessProduct(flowProcess).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.PROCESS.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.PROCESS.getName() + "--》" + flowProcess.getProcessProperty().getName());
@@ -208,6 +219,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowLoop) {
 		                	FlowLoop flowLoop = (FlowLoop)mcgProduct.clone();
 		                	flowLoop.setOrderNum(orderNum);
+		                	flowLoop.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowLoopProduct(flowLoop).build(executeStruct);
 		                    swicth = executeStruct.getRunStatus().getLoopStatusMap().get(flowLoop.getId()).getSwicth();
 		                    flowBody.setEleType(EletypeEnum.LOOP.getValue());
@@ -217,6 +229,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                } else if(mcgProduct instanceof FlowEnd) {
 		                    FlowEnd flowEnd = (FlowEnd)mcgProduct.clone();
 		                    flowEnd.setOrderNum(orderNum);
+		                    flowEnd.setFlowId(flowStruct.getMcgId());
 		                    result = director.getFlowEndProduct(flowEnd).build(executeStruct);
 		                    flowBody.setOrderNum(orderNum);
 		                    flowBody.setEleType(EletypeEnum.END.getValue());
@@ -315,7 +328,8 @@ public class FlowTask implements Callable<RunStatus> {
 	                fileMessage.setBody(fileFlowBody);
 	                MessagePlugin.push(httpSessionId, fileMessage);
 	            }
-	            String flowInstanceId = httpSessionId + "##" + flowStruct.getMcgId();
+	            
+	            String flowInstanceId = Tools.genFlowInstanceId(httpSessionId, flowStruct.getMcgId());
 	            FlowInstancesUtils.executeStructMap.remove(flowInstanceId);
 	        }
 		} catch (InterruptedException e) {
@@ -324,8 +338,7 @@ public class FlowTask implements Callable<RunStatus> {
 		} catch(CancellationException e) {
  			executeStruct.getRunStatus().setInterrupt(true);
          	logger.error("流程中断，抛出CancellationException，异常信息：", e);
-         }
-		catch (Exception e) {
+        } catch (Exception e) {
         	ByteArrayOutputStream baos = new ByteArrayOutputStream();
         	e.printStackTrace(new PrintStream(baos));  
         	String exception = baos.toString();  
