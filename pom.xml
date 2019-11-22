@@ -26,10 +26,16 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.b></project.b>
 	</properties>
+	<repositories>
+		<repository>
+			<id>clojars</id>
+			<url>http://clojars.org/repo/</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
-	
 		<dependency>
 		    <groupId>com.jcraft</groupId>
 		    <artifactId>jsch</artifactId>
@@ -54,12 +60,12 @@
 		    <groupId>com.microsoft.sqlserver</groupId>
 		    <artifactId>sqljdbc4</artifactId>
 		    <version>4.0</version>
-		</dependency>		
-		<dependency>
-		    <groupId>com.oracle</groupId>
-		    <artifactId>ojdbc14</artifactId>
-		    <version>10.2.0.4.0</version>
-		</dependency>	
+		</dependency>
+<!--		<dependency>-->
+<!--		    <groupId>com.oracle</groupId>-->
+<!--		    <artifactId>ojdbc14</artifactId>-->
+<!--		    <version>10.2.0.3.0</version>-->
+<!--		</dependency>-->
 		<dependency>
 		    <groupId>com.github.kevinsawicki</groupId>
 		    <artifactId>http-request</artifactId>

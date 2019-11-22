@@ -26,10 +26,7 @@ import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.end.FlowEnd;
 import com.mcg.entity.flow.java.FlowJava;
-import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
-import com.mcg.entity.flow.loop.FlowLoop;
-import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
@@ -60,12 +57,6 @@ public class ExceptionProcess {
             flowBody.setEleTypeDesc(EletypeEnum.START.getName());
             flowBody.setEleId(flowStart.getStartId());
             flowBody.setFlowId(flowStart.getFlowId());
-		} else if(mcgProduct instanceof FlowJson) {
-			FlowJson flowJson =(FlowJson)mcgProduct;
-            flowBody.setEleType(EletypeEnum.JSON.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.JSON.getName() + "--》" + flowJson.getJsonProperty().getName());
-            flowBody.setEleId(flowJson.getId());
-            flowBody.setFlowId(flowJson.getFlowId());
 		} else if(mcgProduct instanceof FlowData) {
 			FlowData flowData =(FlowData)mcgProduct;
             flowBody.setEleType(EletypeEnum.DATA.getValue());
@@ -120,18 +111,6 @@ public class ExceptionProcess {
             flowBody.setEleTypeDesc(EletypeEnum.WONTON.getName() + "--》" + flowWonton.getWontonProperty().getName());
             flowBody.setEleId(flowWonton.getId());
             flowBody.setFlowId(flowWonton.getFlowId());
-		} else if(mcgProduct instanceof FlowProcess) {
-			FlowProcess flowProcess = (FlowProcess)mcgProduct;
-            flowBody.setEleType(EletypeEnum.PROCESS.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.PROCESS.getName() + "--》" + flowProcess.getProcessProperty().getName());
-            flowBody.setEleId(flowProcess.getId());
-            flowBody.setFlowId(flowProcess.getFlowId());
-		} else if(mcgProduct instanceof FlowLoop) {
-			FlowLoop flowLoop = (FlowLoop)mcgProduct;
-            flowBody.setEleType(EletypeEnum.LOOP.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.LOOP.getName() + "--》" + flowLoop.getLoopProperty().getName());
-            flowBody.setEleId(flowLoop.getId());
-            flowBody.setFlowId(flowLoop.getFlowId());
 		} else if(mcgProduct instanceof FlowEnd) {
             FlowEnd flowEnd = (FlowEnd)mcgProduct;
             flowBody.setEleType(EletypeEnum.END.getValue());

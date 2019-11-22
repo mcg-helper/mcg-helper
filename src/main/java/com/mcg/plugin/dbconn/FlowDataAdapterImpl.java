@@ -35,7 +35,7 @@ import com.mcg.plugin.dbconn.postgresql.PostgresqlConnectImpl;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
-import oracle.jdbc.pool.OracleDataSource;
+//import oracle.jdbc.pool.OracleDataSource;
 
 public class FlowDataAdapterImpl implements McgBizAdapter {
 
@@ -44,65 +44,65 @@ public class FlowDataAdapterImpl implements McgBizAdapter {
     private McgConnect mcgConnect;
     
     public FlowDataAdapterImpl(McgDataSource mcgDataSource) {
-        if(DatabaseTypeEnum.MYSQL.getValue().equals(mcgDataSource.getDbType())) {
-            MysqlDataSource mysqlDataSource = new MysqlDataSource();
-            mysqlDataSource.setServerName(mcgDataSource.getDbServer());
-            mysqlDataSource.setPort(mcgDataSource.getDbPort());
-            mysqlDataSource.setDatabaseName(mcgDataSource.getDbName());
-            mysqlDataSource.setCharacterEncoding("UTF-8");
-            mysqlDataSource.setCharacterSetResults("UTF-8");
-            mysqlDataSource.setUser(mcgDataSource.getDbUserName());
-            mysqlDataSource.setPassword(mcgDataSource.getDbPwd());
-            try {
-				mysqlDataSource.setConnectTimeout(3000);
-			} catch (SQLException e) {
-				logger.debug("mysql数据源适配失败，异常信息：{}", e.getMessage());
-			}
-            mcgConnect = new MysqlConnectImpl(mysqlDataSource);
-        } else if(DatabaseTypeEnum.ORACLE.getValue().equals(mcgDataSource.getDbType())) {
-            try {
-                OracleDataSource oracleDataSource = new OracleDataSource();
-                oracleDataSource.setDriverType("thin"); 
-                oracleDataSource.setNetworkProtocol("tcp"); 
-                oracleDataSource.setServerName(mcgDataSource.getDbServer()); 
-                oracleDataSource.setDatabaseName(mcgDataSource.getDbName()); 
-                oracleDataSource.setPortNumber(mcgDataSource.getDbPort()); 
-                oracleDataSource.setUser(mcgDataSource.getDbUserName()); 
-                oracleDataSource.setPassword(mcgDataSource.getDbPwd()); 
-                oracleDataSource.setLoginTimeout(3000);
-                mcgConnect = new OracleConnectImpl(oracleDataSource);
-            } catch (SQLException e) {
-            	logger.debug("oracle数据源适配失败，异常信息：{}", e.getMessage());
-            }
-        } else if(DatabaseTypeEnum.MSSQL.getValue().equals(mcgDataSource.getDbType())) {
-        	try {
-	            SQLServerDataSource sqlServerDataSource = new SQLServerDataSource();
-	            sqlServerDataSource.setDatabaseName(mcgDataSource.getDbName());
-	            sqlServerDataSource.setUser(mcgDataSource.getDbUserName());
-	            sqlServerDataSource.setPassword(mcgDataSource.getDbPwd());
-	            sqlServerDataSource.setServerName(mcgDataSource.getDbServer());
-	            sqlServerDataSource.setPortNumber(mcgDataSource.getDbPort());
-	            sqlServerDataSource.setLoginTimeout(3000);
-	            mcgConnect = new MssqlConnectImpl(sqlServerDataSource);
-        	} catch (Exception e) {
-        		logger.debug("oracle数据源适配失败，异常信息：{}", e.getMessage());
-			}
-        } else if(DatabaseTypeEnum.POSTGRESQL.getValue().equals(mcgDataSource.getDbType())) {
-        	PGPoolingDataSource pgDataSource = new PGPoolingDataSource();
-        	try {
-	            pgDataSource.setDatabaseName(mcgDataSource.getDbName());
-	            pgDataSource.setUser(mcgDataSource.getDbUserName());
-	            pgDataSource.setPassword(mcgDataSource.getDbPwd());
-	            pgDataSource.setPortNumber(mcgDataSource.getDbPort());
-	            pgDataSource.setServerName(mcgDataSource.getDbServer());
+//        if(DatabaseTypeEnum.MYSQL.getValue().equals(mcgDataSource.getDbType())) {
+//            MysqlDataSource mysqlDataSource = new MysqlDataSource();
+//            mysqlDataSource.setServerName(mcgDataSource.getDbServer());
+//            mysqlDataSource.setPort(mcgDataSource.getDbPort());
+//            mysqlDataSource.setDatabaseName(mcgDataSource.getDbName());
+//            mysqlDataSource.setCharacterEncoding("UTF-8");
+//            mysqlDataSource.setCharacterSetResults("UTF-8");
+//            mysqlDataSource.setUser(mcgDataSource.getDbUserName());
+//            mysqlDataSource.setPassword(mcgDataSource.getDbPwd());
+//            try {
+//				mysqlDataSource.setConnectTimeout(3000);
+//			} catch (SQLException e) {
+//				logger.debug("mysql数据源适配失败，异常信息：{}", e.getMessage());
+//			}
+//            mcgConnect = new MysqlConnectImpl(mysqlDataSource);
+//        } else if(DatabaseTypeEnum.ORACLE.getValue().equals(mcgDataSource.getDbType())) {
+//            try {
+//                OracleDataSource oracleDataSource = new OracleDataSource();
+//                oracleDataSource.setDriverType("thin");
+//                oracleDataSource.setNetworkProtocol("tcp");
+//                oracleDataSource.setServerName(mcgDataSource.getDbServer());
+//                oracleDataSource.setDatabaseName(mcgDataSource.getDbName());
+//                oracleDataSource.setPortNumber(mcgDataSource.getDbPort());
+//                oracleDataSource.setUser(mcgDataSource.getDbUserName());
+//                oracleDataSource.setPassword(mcgDataSource.getDbPwd());
+//                oracleDataSource.setLoginTimeout(3000);
+//                mcgConnect = new OracleConnectImpl(oracleDataSource);
+//            } catch (SQLException e) {
+//            	logger.debug("oracle数据源适配失败，异常信息：{}", e.getMessage());
+//            }
+//        } else if(DatabaseTypeEnum.MSSQL.getValue().equals(mcgDataSource.getDbType())) {
+//        	try {
+//	            SQLServerDataSource sqlServerDataSource = new SQLServerDataSource();
+//	            sqlServerDataSource.setDatabaseName(mcgDataSource.getDbName());
+//	            sqlServerDataSource.setUser(mcgDataSource.getDbUserName());
+//	            sqlServerDataSource.setPassword(mcgDataSource.getDbPwd());
+//	            sqlServerDataSource.setServerName(mcgDataSource.getDbServer());
+//	            sqlServerDataSource.setPortNumber(mcgDataSource.getDbPort());
+//	            sqlServerDataSource.setLoginTimeout(3000);
+//	            mcgConnect = new MssqlConnectImpl(sqlServerDataSource);
+//        	} catch (Exception e) {
+//        		logger.debug("oracle数据源适配失败，异常信息：{}", e.getMessage());
+//			}
+//        } else if(DatabaseTypeEnum.POSTGRESQL.getValue().equals(mcgDataSource.getDbType())) {
+//        	PGPoolingDataSource pgDataSource = new PGPoolingDataSource();
+//        	try {
+//	            pgDataSource.setDatabaseName(mcgDataSource.getDbName());
+//	            pgDataSource.setUser(mcgDataSource.getDbUserName());
+//	            pgDataSource.setPassword(mcgDataSource.getDbPwd());
+//	            pgDataSource.setPortNumber(mcgDataSource.getDbPort());
+//	            pgDataSource.setServerName(mcgDataSource.getDbServer());
+//
+//				pgDataSource.setLoginTimeout(3000);
+//			} catch (SQLException e) {
+//				logger.debug("postgresql数据源适配失败，异常信息：{}", e.getMessage());
+//			}
+//            mcgConnect = new PostgresqlConnectImpl(pgDataSource);
             
-				pgDataSource.setLoginTimeout(3000);
-			} catch (SQLException e) {
-				logger.debug("postgresql数据源适配失败，异常信息：{}", e.getMessage());
-			}
-            mcgConnect = new PostgresqlConnectImpl(pgDataSource);
-            
-        }        
+//        }
     }
     
     @Override

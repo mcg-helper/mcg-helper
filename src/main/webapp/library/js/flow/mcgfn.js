@@ -24,11 +24,14 @@
  * highlight: 当前控制台日志高亮显示的id
  * flowDataSourceModalId 数据源弹出框的id，点击数据源时触发保存id
  */
+var CANNOTUSE="developing, please waiting";
 var baseMap = new Map();
-/* 流程节点Map */		
+/* 流程节点Map */
 var elementMap = new Map();
 /* html工具Map*/
 var htmlToolsMap = new Map();
+var sourceMap = new Map();
+var targetMap = new Map();
 var setting = {
         view: {
             addHoverDom: addHoverDom,
@@ -58,14 +61,14 @@ var setting = {
 
 $(function() {
 	setAutoHeight($("body"), 500);
-/*	
+/*
 	$('#mcg_toolbar').affix({
 	   offset: {
 		   bottom: 0
 	  },
 	  target: $("#flowarea")
 	});
-	
+
 	$('#console_header').affix({
 		offset: {
 			bottom: 0
@@ -82,7 +85,7 @@ $(function() {
     	$.fn.zTree.init($("#flowTree"), setting, data.topologys);
     	var treeObj = $.fn.zTree.getZTreeObj("flowTree");
     	treeObj.expandAll(true);
-    	
+
     	var rootNode = treeObj.getNodeByParam("id", data.selected.id, null);
     	nodeSelected(rootNode);
     	//  系统初始化
@@ -96,9 +99,9 @@ $(function() {
  * 绑定按钮功能
  */
 function initFlowConsole() {
-	
+
 	$("#flowStopBtn").click(function(){
-		
+
 		if($("#flowStopBtn span").is(".text-danger")) {
 			common.ajax({
 				url : "/flow/stop",
@@ -140,13 +143,18 @@ function flowDropBind() {
 	$("#flowarea").droppable({
 		drop: function( event, ui ) {
 			//排除流程区中，非流程控件的html对象拖拽事件
-			if(ui.draggable.attr("eletype") == undefined || ui.draggable.attr("eletype") == "undefined") {
+			if(ui.draggable.attr("eletype") == undefined || ui.draggable.attr("eletype") == "undefined" ) {
 				return ;
+			} else if( ui.draggable.attr("eletype") != "text"){
+				if(ui.draggable.attr("eletype" ) != "info") {
+					alert(CANNOTUSE);
+					return;
+				}
 			}
-			
+
 			// 从工具栏拖拽到流程区时
 			if(ui.draggable.attr("clone") != "true" && ui.draggable.attr("eletype") != undefined) {
-		    	var element = new $.DragWidget({ id:ui.draggable.attr("id")+Math.uuid(), label:$("#"+ui.draggable.attr("id")).text() ,name:$("#"+ui.draggable.attr("id")).text(), classname:"w eletype",eletype:ui.draggable.attr("eletype"), clone:'true',left:ui.offset.left,top:ui.offset.top,sign:"false" });
+		    	var element = new $.DragWidget({ id:Math.uuid(), label:$("#"+ui.draggable.attr("id")).text() ,name:$("#"+ui.draggable.attr("id")).text(), classname:"w eletype",eletype:ui.draggable.attr("eletype"), clone:'true',left:ui.offset.left,top:ui.offset.top,sign:"false" });
 		    	var divNode = $("<div data-toggle='popover' id=" + element.getId() + " name='' eletype=" + element.getEletype() + " class='" + element.getClassname() +"' clone='" + element.getClone() + "'>工具<div class='ep'></div></div>");
 		 		divNode.css("left", element.getLeft()+"px");
 		 		divNode.css("top", element.getTop()+"px");
@@ -156,7 +164,7 @@ function flowDropBind() {
 		 		element.setTop(xy.y);
 		 		elementMap.put(element.getId(), element);
 		 		setXY(element.getId(), xy);
-		 		
+
 		        //重绘流程区节点和连接线
 				repaint(this);
 		 		//初始化流程节点工具层
@@ -170,12 +178,35 @@ function flowDropBind() {
 				element.setTop(xy.y);
 				saveXY(ui.draggable.attr("id"), xy);
 				elementMap.put(ui.draggable.attr("id"), element);
+
+				tempId = element.getId();
+				let tlist = sourceMap.get(element.getId());
+				if(tlist != undefined) {
+                    for (let i = 0; i < tlist.length; i++) {
+                        let left = element.getLeft() + tlist[i].getLeft();
+                        let top = element.getTop() + tlist[i].getTop();
+                        alert("left: "+left + "\n top:"+ top );
+                        $("#" + element.getId() + tlist[i].getId()).css("left", left / 2);
+                        $("#" + element.getId() + tlist[i].getId()).css("top", top / 2);
+                    }
+                }
+
+
+				let slist = targetMap.get(element.getId());
+				if(slist != undefined) {
+                    for (let i = 0; i < slist.length; i++) {
+                        let left = element.getLeft() + slist[i].getLeft();
+                        let top = element.getTop() + slist[i].getTop();
+                        $("#" + slist[i].getId() + element.getId() ).css("left", left / 2);
+                        $("#" + slist[i].getId() + element.getId() ).css("top", top / 2);
+                    }
+                }
 			}
 			$(".draggable").draggable({containment: "parent", zIndex: 100 }); //grid: [ 50, 20 ]
 		}
-	
+
 	});
-}	
+}
 
 /* 计算流程节点坐标
  * (flag="true") 第一次生成节点时
@@ -185,7 +216,7 @@ function getXY(id, flag) {
 	if(id == undefined || flag == undefined) {
 		return false;
 	}
-	
+
 	var xy = {x:0, y:0};
 	if(flag != "true") {
 //		xy.x = $("#"+id).position().left - $("#flowarea").offset().left;
@@ -195,7 +226,7 @@ function getXY(id, flag) {
 	} else {
 		xy.x = document.getElementById(id).offsetLeft;
 		xy.y = document.getElementById(id).offsetTop;
-	}	
+	}
 	return xy;
 }
 
@@ -260,6 +291,8 @@ function suspend(operate) {
 		removeElement(baseMap.get("selector"));
 	} else if(operate == "logOut") {
 		removePopover();
+		alert(CANNOTUSE);
+		return ;
 		if(baseMap.get("selector") != null && baseMap.get("selector") != "" && baseMap.get("selector") != undefined) {
 			if($("#log" + baseMap.get("selector")).length > 0) {
 				if($("#" + baseMap.get("highlight")).length > 0) {
@@ -272,7 +305,7 @@ function suspend(operate) {
 			    $("#mcg_flow").animate({scrollTop: (pos - 40)}, 100);
 			//    return false;
 			}
-		}		
+		}
 	}/*	else if(operate == "set") {
 		$(".dropdown-toggle").show();
 	} else if(operate == "no") {
@@ -284,8 +317,8 @@ function suspend(operate) {
 	}*/
 }
 
-function clearAll(object) {
-	//删除所有连接线 
+function clearAll() {
+	//删除所有连接线
 	if(baseMap.get("instance") != undefined)
 		baseMap.get("instance").deleteEveryEndpoint();
 	var array = elementMap.keySet();
@@ -294,15 +327,15 @@ function clearAll(object) {
 		for(var i=0; i<array.length; i++) {
 			$("#"+elementMap.get(array[i]).getId()).remove();
 		}
-	}	
+	}
 	elementMap = null;
 	elementMap = new Map();
-	
-}
 
+}
+// use when import mcg data file
 // 重绘流程区节点和连接线
 function repaint(object) {
-	//删除所有连接线 
+	//删除所有连接线
 	if(baseMap.get("instance") != undefined)
 		baseMap.get("instance").deleteEveryEndpoint();
 	var array = elementMap.keySet();
@@ -347,9 +380,9 @@ function removeConnectorById(elementId) {
 			var connectorArray  = connectorMap.keySet();
 			for(var k=0; k<connectorArray.length; k++) {
 				var connector = connectorMap.get(connectorArray[k]);
-				if(connector.getSourceId() == elementId) 
+				if(connector.getSourceId() == elementId)
 					elementMap.get(elementId).getConnectorMap().remove(connector.getConnectorId());
-				if(connector.getTargetId() == elementId) 
+				if(connector.getTargetId() == elementId)
 					removeConnectorsById(connector.getSourceId(), connector.getConnectorId());
 			}
 		}
@@ -360,7 +393,7 @@ function removeConnectorById(elementId) {
 /* 获取所有连接线集合 
  * return connectors;
  * */
-function getConnectors(elementMap) {
+function getConnectors() {
 	var connectors = new Array();
 	var array = elementMap.keySet();
 	if(array.length > 0) {
@@ -448,17 +481,22 @@ function removeReverse(instance, info) {
 /* 将elementMap中的连接线，重绘到流程区 */
 function repaintConnector(instance) {
 	var tempValue = baseMap.get("status");
-	var connectors = getConnectors(elementMap);
+	var connectors = getConnectors();
 	baseMap.put("status", 1);
 	for(var i=0; i<connectors.length; i++) {
 		instance.connect({ source: connectors[i].getSourceId(), target: connectors[i].getTargetId() });
-	}  
+		// if finish the import function, below code can be used for repaint connectors' properties. Maybe
+		// var divNode = $("<div data-toggle='popover' id=" + connectors[i].getSourceId()+connectors[i].getTargetId() + " name='' eletype=" + element.getEletype() + " class='" + element.getClassname() +"' clone='" + element.getClone() + "'>工具<div class='ep'></div></div>");
+		// divNode.css("left", element.getLeft()+"px");
+		// divNode.css("top", element.getTop()+"px");
+		// $(this).append(divNode);
+	}
 	baseMap.put("status",tempValue);
 }
 
 /* 重置流程节点坐标 */
 function setXY(id, xy) {
-	$("#"+id).css("left",xy.x + "px"); 
+	$("#"+id).css("left",xy.x + "px");
 	$("#"+id).css("top",xy.y + "px");
 }
 
@@ -494,7 +532,7 @@ function initFlowSystem() {
 	$(".selectpicker").selectpicker({
 		noneSelectedText: "请选择",
 		liveSearch: true,
-		width:"100%" 
+		width:"100%"
 	});
 	initToolbarDrag();
 	initFunc();
@@ -513,9 +551,9 @@ function initFlowData(flowId) {
 	}, function(data) {
 		if(data != null && data != undefined && data.webElement != undefined && data.webElement.length > 0) {
 			for(var i=0; i<data.webElement.length; i++) {
-				var element = new $.DragWidget({ 
+				var element = new $.DragWidget({
 					id:data.webElement[i].id, label:data.webElement[i].label,
-					name:data.webElement[i].name, classname:data.webElement[i].classname,eletype:data.webElement[i].eletype, 
+					name:data.webElement[i].name, classname:data.webElement[i].classname,eletype:data.webElement[i].eletype,
 					clone:data.webElement[i].clone,left:data.webElement[i].left,top:data.webElement[i].top,sign:data.webElement[i].sign });
 				elementMap.put(element.getId(), element);
 			}
@@ -525,7 +563,7 @@ function initFlowData(flowId) {
 		    		sourceId:data.webConnector[i].sourceId,
 		    		targetId:data.webConnector[i].targetId
 		    	});
-		    	elementMap.get(data.webConnector[i].sourceId).insertConnector(connector);			
+		    	elementMap.get(data.webConnector[i].sourceId).insertConnector(connector);
 			}
 			repaint($("#flowarea"));
 			initConnectLine();
@@ -544,51 +582,55 @@ function initToolbarDrag() {
 /* 初始化功能区按钮 */
 function initFunc() {
 	$('#flowSaveBtn').click(function(){
-		var webStruct = convertFlowObject();
-		common.ajax({
-			url : "/flow/saveWebStruct",
-			type : "POST",
-			data : JSON.stringify(webStruct),
-			contentType : "application/json"
-		}, function(data) {
-			if(data.statusCode != 1) {
-				Messenger().post({
-					message: "保存流程失败！",
-					type: "error",
-					hideAfter: 5,
-				 	showCloseButton: true
-				});
-			}
-		});
+		alert (CANNOTUSE);
+		// var webStruct = convertFlowObject();
+		// common.ajax({
+		// 	url : "/flow/saveWebStruct",
+		// 	type : "POST",
+		// 	data : JSON.stringify(webStruct),
+		// 	contentType : "application/json"
+		// }, function(data) {
+		// 	if(data.statusCode != 1) {
+		// 		Messenger().post({
+		// 			message: "保存流程失败！",
+		// 			type: "error",
+		// 			hideAfter: 5,
+		// 		 	showCloseButton: true
+		// 		});
+		// 	}
+		// });
 	});
 	$('#flowGenBtn').click(function(){
 		//清空控制台
-		$("#console").html("");
-		var array = elementMap.keySet();
-		for(var i in array) {
-			$("#name_" + array[i]).children("span").remove();
-			$("#name_" + array[i]).removeClass("run_state");
-		}	 
-		var webStruct = convertFlowObject();
-		$("#flowStopBtn span").addClass("text-danger");
-		common.ajax({
-			isLoading : true,
-			url : "/flow/generate",
-			type : "POST",
-			data : JSON.stringify(webStruct),
-			contentType : "application/json"
-		}, function(data) {
-			if(data.statusCode != 1) {
-				Messenger().post({
-					message: "执行流程失败！",
-					type: "error",
-					hideAfter: 5,
-				 	showCloseButton: true
-				});
-			}
-		});
+		alert(CANNOTUSE);
+		// $("#console").html("");
+		// var array = elementMap.keySet();
+		// for(var i in array) {
+		// 	$("#name_" + array[i]).children("span").remove();
+		// 	$("#name_" + array[i]).removeClass("run_state");
+		// }
+		// var webStruct = convertFlowObject();
+		// $("#flowStopBtn span").addClass("text-danger");
+		// common.ajax({
+		// 	isLoading : true,
+		// 	url : "/flow/generate",
+		// 	type : "POST",
+		// 	data : JSON.stringify(webStruct),
+		// 	contentType : "application/json"
+		// }, function(data) {
+		// 	if(data.statusCode != 1) {
+		// 		Messenger().post({
+		// 			message: "执行流程失败！",
+		// 			type: "error",
+		// 			hideAfter: 5,
+		// 		 	showCloseButton: true
+		// 		});
+		// 	}
+		// });
 	});
 	$('#flowImpBtn').click(function(){
+		alert(CANNOTUSE);
+		return;
 		var form = $("<form id='flowUploadForm' />");
 		form.attr("style", "display:none");
 		form.attr("method", "post");
@@ -601,15 +643,40 @@ function initFunc() {
 		form.append(flowIdInput);
 		form.append($("#flowFile"));
 		$("body").append(form);
-		
+
 		$("#flowFile").click();
 	});
 	$('#flowExpBtn').click(function(){
+		delAll();
+		//export data here
+		acquireConnectors();
+		if(!flowIsLegal()){
+			alert("check is there a loop exist which would occurs error");
+			return;
+		}
 		var form = $("<form>");
 		form.attr("style", "display:none");
 		form.attr("target", "");
 		form.attr("method", "post");
 		form.attr("action", baseUrl + "/tool/down");
+		var  mapArray = elementMap.keySet();
+		if(mapArray.length > 0) {
+			var index = 0 ;
+			while(index < mapArray.length) {
+				var value = elementMap.get(mapArray[index++]);
+				var flowIdInput = $("<input>");
+				flowIdInput.attr("type", "hidden");
+				flowIdInput.attr("name", "flowId_" + index);
+				flowIdInput.attr("value", value.getId());
+				form.append(flowIdInput);
+			}
+		}
+		var flowIdInput = $("<input>");
+		flowIdInput.attr("type","hidden");
+		flowIdInput.attr("name","length");
+		flowIdInput.attr("value",mapArray.length);
+		form.append(flowIdInput);
+
 		var flowIdInput = $("<input>");
 		flowIdInput.attr("type","hidden");
 		flowIdInput.attr("name","flowId");
@@ -619,15 +686,15 @@ function initFunc() {
 		flowNameInput.attr("type","hidden");
 		flowNameInput.attr("name","flowName");
 		flowNameInput.attr("value",$("#flowSelect").attr("flowName"));
-		form.append(flowNameInput);		
+		form.append(flowNameInput);
 		$("body").append(form);
-		
+
 		form.submit();
-		form.remove();		
+		form.remove();
 
 	});
 	$('#flowClearBtn').click(function(){
-        var parentdiv=$('<div></div>');       
+        var parentdiv=$('<div></div>');
         parentdiv.attr('id', "flowClear");
         $(parentdiv).html("<div style='height:50px;line-height:50px;'>清空数据不可恢复，您确定清空当前流程数据吗？</div>");
     	$(parentdiv).dialog({
@@ -641,9 +708,10 @@ function initFunc() {
     		position: { my: "center", at: "center", of: window  },
     		buttons: [
 				{
-					class: "btn btn-primary",			
+					class: "btn btn-primary",
 					text: "确定",
 					click: function() {
+						removeConnectDiv();
 						var _this = this;
 			    		common.ajax({
 			    			url : "/flow/clearFlowData",
@@ -661,24 +729,26 @@ function initFunc() {
 			    				 	showCloseButton: true
 			    				});
 			    			}
-			    		});							
+			    		});
 					}
 				},
 				{
-					class: "btn btn-default",			
+					class: "btn btn-default",
 					text: "关闭",
 					click: function() {
 						$( this ).dialog( "destroy" );
 					}
 				}
-			]	    	
+			]
     	}).on( "dialogclose", function( event, ui ) {
         	$(this).dialog( "destroy" );
-    	});		            	
+    	});
     	$(parentdiv).dialog("open");
-	
-	});	
+
+	});
 	$('#flowDataSourceBtn').click(function(data){
+		alert(CANNOTUSE);
+		return;
 		var modalId = createModalId("dataSource");
 		var param = {};
 		var option = {};
@@ -687,14 +757,14 @@ function initFunc() {
 		param["modalId"] = modalId.replace(/_Modal/g, "");
 		param["eletype"] = "dataSource";
 		param["option"] = option;
-		common.showAjaxDialog("/html/flowDataSourceModal", setDialogBtns(param), 
+		common.showAjaxDialog("/html/flowDataSourceModal", setDialogBtns(param),
 			function (data) {
 				baseMap.put("flowDataSourceModalId", param.modalId);
 				initFlowDataSourceModal(param.modalId);
 			},
 		null, param);
-		
-	});	
+
+	});
 }
 
 /* 将elementMap中的缓存数据转换成WebStruct*/
@@ -718,7 +788,7 @@ function convertFlowObject() {
  			top:data.getTop(),
  			sign:data.getSign()
  		}));
- 
+
 		var connectorMap = data.getConnectorMap();
 		var connectorArray  = connectorMap.keySet();
 		for(var k=0; k<connectorArray.length; k++) {
@@ -729,7 +799,7 @@ function convertFlowObject() {
 	 		}));
 		}
 	}
-	var webStruct = new $.WebStruct({flowId:$("#flowSelect").attr("flowId"), webElement:webElementArray, webConnector:webConnectorArray});
+ 	webStruct = new $.WebStruct({flowId:$("#flowSelect").attr("flowId"), webElement:webElementArray, webConnector:webConnectorArray});
 	return webStruct;
 }
 
@@ -760,7 +830,7 @@ function setHtmlTool(url, param) {
 			"type":"get",
 			"dataType":"html",
 			"data":param,
-			"async":false 
+			"async":false
 		}, function(data){
 			result = data;
 		}
@@ -771,35 +841,36 @@ function setHtmlTool(url, param) {
 /* 流程区控件的名称过滤掉父级绑定的事件(点击、双击、鼠标按下、mouseenter) */
 function eventInterceptor(id) {
 	$("#" + id).click(function(e){
-		if (e && e.stopPropagation) {//非IE浏览器 
-			e.stopPropagation(); 
-		} else {//IE浏览器 
-			window.event.cancelBubble = true; 
-		}     			
-	});    		
+		if (e && e.stopPropagation) {//非IE浏览器
+			e.stopPropagation();
+		} else {//IE浏览器
+			window.event.cancelBubble = true;
+		}
+	});
 	$("#" + id).dblclick(function(e){
 		if (e && e.stopPropagation) {
-			e.stopPropagation(); 
+			e.stopPropagation();
 		} else {
-			window.event.cancelBubble = true; 
-		}     			
-	});    	
+			window.event.cancelBubble = true;
+		}
+	});
 	$("#" + id).mousedown(function(e){
 		if (e && e.stopPropagation) {
-			e.stopPropagation(); 
+			e.stopPropagation();
 		} else {
-			window.event.cancelBubble = true; 
-		}     			
+			window.event.cancelBubble = true;
+		}
 	});
 	$("#" + id).mouseenter(function(e){
-		if (e && e.stopPropagation) { 
-			e.stopPropagation(); 
+		if (e && e.stopPropagation) {
+			e.stopPropagation();
 		} else {
-			window.event.cancelBubble = true; 
-		}     			
-	});  	
+			window.event.cancelBubble = true;
+		}
+	});
 }
-
+// TODO: 2019/11/12 14:38  connector
+var tempConnectId ;
 function initConnectLine() {
     // setup some defaults for jsPlumb.
     var instance = jsPlumb.getInstance({
@@ -812,7 +883,7 @@ function initConnectLine() {
                   length: 14,
                   foldback: 0.8     //三角形的厚度  0.618： 普通箭头，1：平底箭头，2：钻石箭头
               } ],
-              [ "Label", { id: "label" }]              
+              [ "Label", { id: "label" }]
 //            [ "Label", { label: "请拖至需要选择连接的节点", id: "label", cssClass: "aLabel" }]
         ],
         Container: "flowarea"
@@ -832,40 +903,69 @@ function initConnectLine() {
     	"stop": function( event, ui ) {
 //    		$("#name_" + ui.helper.context.id).html(elementMap.get(ui.helper.context.id).getName());
     		eventInterceptor("name_"　+ ui.helper.context.id);
-    	},    	
+    	},
     });
 
-    instance.bind("click", function (c) {
-    	instance.detach(c);
-    	removeConnector(c.sourceId, (c.sourceId+c.targetId));
-    });
-    
+    instance.bind("click",function (c) {
+    	var connectorId = c.sourceId + c.targetId;
+		tempConnectId = connectorId;
+    	removePopover();
+    	$("#"+connectorId).popover('show');
+		// connectorId = sourceId + targetId
+		// TODO: 2019/11/12 15:24 add connector info modify here , needing info constructor and connector code reference
+	});
+
     //当连接线取消时
     instance.bind("connectionDetached", function (c) {
     });
-    
+
     instance.bind("connection", function (info) {
 //    	info.connection.getOverlay("label").setLabel("删除");
     	//流程节点连接自己时删除该连接线
-        if(info.sourceId == info.targetId) {      
-        	instance.detach(info); 
-        } else {      
-        	/* 流程节点连接节点只能有一条，否则删除第二条连接线 
+        if(info.sourceId == info.targetId) {
+        	instance.detach(info);
+        } else {
+        	/* 流程节点连接节点只能有一条，否则删除第二条连接线
         	 * baseMap.get("status")=1 属于流程区重绘时,不用删除连接线
         	 * */
         	if(baseMap.get("status") != 1) {
         		removeConnectorElement(instance, info);
         		if(!removeReverse(instance, info))
         			return ;
-        	} 
-        	
+        	}
+
         	var connector = new $.Connector({
         		connectorId:info.sourceId+info.targetId,
-        		sourceId:info.sourceId,
-        		targetId:info.targetId
+				sourceId:info.sourceId,
+				targetId:info.targetId
         	});
-        	elementMap.get(info.sourceId).insertConnector(connector);                 
-        }    
+			elementMap.get(info.sourceId).insertConnector(connector);
+        	var s = elementMap.get(info.sourceId);
+        	var t = elementMap.get(info.targetId);
+        	var left = s.getLeft() + t.getLeft();
+        	var top = s.getTop() + t.getTop();
+			var divNode = $("<div data-toggle='popover' id=" + connector.getConnectorId()+ " name='' eletype='text' class='w eletype'></div>");
+			divNode.css("visibility","hidden");
+			// divNode.css("display","none");
+			divNode.css("left", left/2 +"px");
+			divNode.css("top", top/2 +"px");
+			$("#flowarea").append(divNode);
+			initConnectPopover(connector.getConnectorId());
+			var sid = s.getId();
+			var tid = t.getId();
+			var tlist = sourceMap.get(sid);
+			if(tlist == undefined) {
+				tlist = []
+			}
+			tlist.push(t);
+			sourceMap.put(sid,tlist);
+			var slist = targetMap.get(tid);
+			if(slist == undefined) {
+				slist = [];
+			}
+			slist.push(s);
+			targetMap.put(tid,slist);
+        }
     });
 
     instance.batch(function () {
@@ -873,7 +973,7 @@ function initConnectLine() {
             filter: ".ep",
             anchor: "Continuous",
             connector: [ "StateMachine", { curviness: 20 } ],//轻微弯曲的线 连接线离节点有间隙
-   //       connector: [ "Bezier", { curviness: 50 } ], // 连接线离节点无间隙            
+   //       connector: [ "Bezier", { curviness: 50 } ], // 连接线离节点无间隙
             connectorStyle: { strokeStyle: "#5c96bc", lineWidth: 2, outlineColor: "transparent", outlineWidth: 4 },
             maxConnections: 5,
             onMaxConnections: function (info, e) {
@@ -888,14 +988,14 @@ function initConnectLine() {
         });
 
         instance.makeTarget(windows, {
-            dropOptions: { 
-            	hoverClass: "dragHover" //释放时指定鼠标停留在该元素上使用的css class  , activeClass:"dragActive"//可拖动到的元素使用的css class 
-            },  
+            dropOptions: {
+            	hoverClass: "dragHover" //释放时指定鼠标停留在该元素上使用的css class  , activeClass:"dragActive"//可拖动到的元素使用的css class
+            },
             anchor: "Continuous",
             allowLoopback: true
         });
 
-        repaintConnector(instance);     
+        repaintConnector(instance);
     });
 
     jsPlumb.fire("jsPlumbDemoLoaded", instance);
@@ -904,27 +1004,27 @@ function initConnectLine() {
 
 function uploadFlow() {
 	var form = $("#flowUploadForm");
-	form.ajaxSubmit({  
-    	url : baseUrl + "/tool/upload",  
-    	type : "post",  
-    	dataType : 'json',  
-    	success : function(data) {  
+	form.ajaxSubmit({
+    	url : baseUrl + "/tool/upload",
+    	type : "post",
+    	dataType : 'json',
+    	success : function(data) {
     		if(data.statusCode == 1) {
     			clearAll($("#flowarea"));
     			initFlowData($("#flowSelect").attr("flowId"));
     			form.remove();
     		}
     	},
-    	error : function(data) {  
+    	error : function(data) {
 			Messenger().post({
 				message: "上传流程失败！",
 				type: "error",
 				hideAfter: 5,
 			 	showCloseButton: true
 			});
-    		
-    	}  
-	});  
+
+    	}
+	});
 	return false;
 }
 
@@ -937,7 +1037,7 @@ function getCurrentFlowId() {
 /* 用于当鼠标移动到节点上时，显示用户自定义控件，显示隐藏状态同 zTree 内部的编辑、删除按钮 */
 function addHoverDom(treeId, treeNode) {
     var sObj = $("#" + treeNode.tId + "_span");
-    if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) { 
+    if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) {
     	return;
     }
     var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
@@ -980,7 +1080,7 @@ function beforeEditName(treeId, treeNode) {
 // 设置是否显示删除按钮。过滤根元素不显示删除按钮 
 function setRemoveBtn(treeId, treeNode) {
 	return treeNode.id == "root" ? false:true;
-}        
+}
 
 //用于捕获节点被删除之前的事件回调函数，并且根据返回值确定是否允许删除操作 
 function beforeRemove(treeId, treeNode) {
@@ -988,7 +1088,7 @@ function beforeRemove(treeId, treeNode) {
 	var ids = new Array();
 	ids = getChildren(ids,treeNode);
 
-    var parentdiv=$('<div></div>');       
+    var parentdiv=$('<div></div>');
     parentdiv.attr('id', "flowDelete_" + treeId);
     $(parentdiv).html("<div style='height:50px;line-height:50px;'>删除当前流程以及所有子流程，您确定需要删除吗？</div>");
 	$(parentdiv).dialog({
@@ -1002,7 +1102,7 @@ function beforeRemove(treeId, treeNode) {
 		position: { my: "center", at: "center", of: window  },
 		buttons: [
 			{
-				class: "btn btn-primary",			
+				class: "btn btn-primary",
 				text: "确定",
 				click: function() {
 					var _this = this;
@@ -1019,14 +1119,14 @@ function beforeRemove(treeId, treeNode) {
 					    	var rootNode = treeObj.getNodeByParam("id", "root", null);
 					    	nodeSelected(rootNode);
 					    	$( _this ).dialog( "destroy" );
-					    	
+
 		    				Messenger().post({
 		    					message: "删除流程成功！",
 		    					type: "success",
 		    					hideAfter: 5,
 		    				 	showCloseButton: true
 		    				});
-		    				
+
 		    			} else {
 		    				Messenger().post({
 		    					message: "清空流程失败！",
@@ -1035,23 +1135,23 @@ function beforeRemove(treeId, treeNode) {
 		    				 	showCloseButton: true
 		    				});
 		    			}
-						
+
 
 					});
-		    								
+
 				}
 			},
 			{
-				class: "btn btn-default",			
+				class: "btn btn-default",
 				text: "关闭",
 				click: function() {
 					$( this ).dialog( "destroy" );
 				}
 			}
-		]	    	
+		]
 	}).on( "dialogclose", function( event, ui ) {
     	$(this).dialog( "destroy" );
-	});		            	
+	});
 	$(parentdiv).dialog("open");
 
 	return false;
@@ -1083,5 +1183,5 @@ function nodeSelected(treeNode) {
 	$("#flowSelect").attr("flowPid", treeNode.pId);
 	clearAll($("#flowarea"));
 	initFlowData($("#flowSelect").attr("flowId"));
-}	
+}
 /*------------------流程树方法结束 ---------------------*/

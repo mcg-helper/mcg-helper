@@ -30,7 +30,11 @@ public class Constants {
 
     /*   字符编码        */
     public static final Charset CHARSET = Charset.forName("utf-8");
-    /*   版本号        */
+    /*   ID前缀     */
+	public static  final String ID_PREX = "flowId_";
+	/*   name前缀     */
+	public static  final String NAME_PREX = "flowName_";
+	/*   版本号        */
     public static final String VERSION = "mcg-helper_V1.6.0-Release";
     /*   全局变量key   */
     public static final String GLOBAL_KEY = "mcgGlobal";
@@ -44,6 +48,8 @@ public class Constants {
     public static String WEB_PATH;
 	/*   缓存名称        */
 	public final static String CACHE_NAME = "varCache";
+	/*   连接缓存        */
+	public final static String CONNECTOR_CACHE = "conCache";
 	/*   SSH Linux控件 交互符        */
 	public final static String LINUX_INTERACT = "interact";
 	/*   SSH Linux控件 默认交互等待时间       */

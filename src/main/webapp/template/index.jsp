@@ -22,7 +22,7 @@
 <head>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>mcg-helper研发助手</title>
+	<title>data_flow</title>
 	<%@include file="/template/common.jsp"%>
 	<link rel="shortcut icon" type="image/x-icon" href="<%=basePath %>/favicon.ico" >
 	<link rel="stylesheet" href="<%=basePath %>/library/css/index.css?_v=${version}">
@@ -51,12 +51,12 @@
 			<div class="col-md-12">
 				<div id="mcg_nav" class="mcg_main_nav_header">
 					<div class="navbar-header pull-right">
-						 <a class="navbar-brand" href="https://github.com/mcg-helper/mcg-helper" target="_blank">mcg-helper</a>
+						 <a class="navbar-brand" href="https://github.com/mcg-helper/mcg-helper" target="_blank">Data-Flow</a>
 					</div>
 						<ul class="nav nav-pills" role="tablist" id="mcgTab">
-							<li role="presentation" class="active"><a href="#mcg_home" data-toggle="tab">主页</a></li>
-							<li role="presentation"><a href="#mcg_flow" data-toggle="tab">工作台</a></li>
-							<li role="presentation"><a href="#mcg_wonton" data-toggle="tab">混沌工程</a></li>
+							<li role="presentation" class="active"><a href="#mcg_flow" data-toggle="tab">工作台</a></li>
+							<li role="presentation" ><a href="#mcg_home" data-toggle="tab">帮助</a></li>
+<%--							<li role="presentation"><a href="#mcg_wonton" data-toggle="tab">混沌工程</a></li>--%>
 						</ul>
 
 				</div>
@@ -66,9 +66,9 @@
 			<div class="col-md-12 autoHeight">
 			
 				<div class="tab-content autoHeight">
-					<div id="mcg_home" class="tab-pane active mcg_main_highlight autoHeight" style="overflow-x: auto;overflow-y: auto;"></div>
-					<div id="mcg_flow" class="tab-pane mcg_main_highlight autoHeight"style="overflow-x: auto;overflow-y: auto;"></div>
-					<div id="mcg_wonton" class="tab-pane mcg_main_highlight autoHeight"  style="overflow-x: auto;overflow-y: auto;"></div>
+					<div id="mcg_flow" class="tab-pane active mcg_main_highlight autoHeight" style="overflow-x: auto;overflow-y: auto;"></div>
+					<div id="mcg_home" class="tab-pane mcg_main_highlight autoHeight" style="overflow-x: auto;overflow-y: auto;"></div>
+<%--					<div id="mcg_wonton" class="tab-pane mcg_main_highlight autoHeight"  style="overflow-x: auto;overflow-y: auto;"></div>--%>
 				</div>
 			</div>
 

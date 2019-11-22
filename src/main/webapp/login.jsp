@@ -47,7 +47,7 @@
 	        <div class="modal-dialog" style="margin-top: 15%;">
 	            <div class="modal-content">
 	                <div class="modal-header">
-	                    <h4 class="modal-title">欢迎使用mcg-helper研发助手</h4>
+	                    <h4 class="modal-title">欢迎使用Data-Flow</h4>
 	                </div>
  	                
 	                <div class="modal-body">

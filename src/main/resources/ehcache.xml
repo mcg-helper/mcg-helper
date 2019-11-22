@@ -22,5 +22,13 @@
     -->
 
 	<cache name="varCache" timeToIdleSeconds="1200" timeToLiveSeconds="600" maxEntriesLocalHeap="600" eternal="true" overflowToDisk="true"/>
+	<cache name="conCache"
+		    eternal="false"
+			maxElementsInMemory="100"
+			overflowToDisk="true"
+			diskPersistent="false"
+			timeToIdleSeconds="0"
+			timeToLiveSeconds="300"
+			memoryStoreEvictionPolicy="LRU" />
 
 </ehcache>  

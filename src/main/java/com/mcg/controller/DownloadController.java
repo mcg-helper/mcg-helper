@@ -16,12 +16,7 @@
 
 package com.mcg.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,7 +42,8 @@ import com.mcg.util.LevelDbUtil;
 public class DownloadController {
 
 	private static Logger logger = LoggerFactory.getLogger(DownloadController.class);
-	
+
+	//使用downloadFlow替代download
 	@RequestMapping("download")
 	public String download(String filePath, String fileName, HttpServletRequest request, HttpServletResponse response) {
 	    
@@ -91,6 +87,7 @@ public class DownloadController {
         response.setContentType("multipart/form-data");
         response.setHeader("Content-Disposition", "attachment;fileName=" + convertCharacterEncoding(request, fileName));
         OutputStream os = null;
+        System.out.println(request.toString());
         
         try {
             os = response.getOutputStream();

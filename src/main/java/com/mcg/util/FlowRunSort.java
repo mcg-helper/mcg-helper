@@ -32,13 +32,9 @@ import com.alibaba.fastjson.JSON;
 import com.mcg.entity.flow.FlowStruct;
 import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.java.FlowJava;
-import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
-import com.mcg.entity.flow.loop.FlowLoop;
-import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
-import com.mcg.entity.flow.sequence.FlowSequence;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
 import com.mcg.entity.flow.text.FlowText;
@@ -142,13 +138,6 @@ public class FlowRunSort {
 				sortMap.put(flowSqlExecute.getId(), num++);
 			}
 		}
-		if (flowStruct.getFlowJsons() != null && flowStruct.getFlowJsons().getFlowJson() != null
-				&& flowStruct.getFlowJsons().getFlowJson().size() > 0) {
-			for (FlowJson flowJson : flowStruct.getFlowJsons().getFlowJson()) {
-				dataMap.put(flowJson.getId(), flowJson);
-				sortMap.put(flowJson.getId(), num++);
-			}
-		}
 		if (flowStruct.getFlowDatas() != null && flowStruct.getFlowDatas().getFlowData() != null
 				&& flowStruct.getFlowDatas().getFlowData().size() > 0) {
 			for (FlowData flowData : flowStruct.getFlowDatas().getFlowData()) {
@@ -198,20 +187,6 @@ public class FlowRunSort {
 				sortMap.put(flowWonton.getId(), num++);
 			}
 		}
-		if (flowStruct.getFlowProcesses() != null && flowStruct.getFlowProcesses().getFlowProcess() != null
-				&& flowStruct.getFlowProcesses().getFlowProcess().size() > 0) {
-			for (FlowProcess flowProcess : flowStruct.getFlowProcesses().getFlowProcess()) {
-				dataMap.put(flowProcess.getId(), flowProcess);
-				sortMap.put(flowProcess.getId(), num++);
-			}
-		}
-		if (flowStruct.getFlowLoops() != null && flowStruct.getFlowLoops().getFlowLoop() != null
-				&& flowStruct.getFlowLoops().getFlowLoop().size() > 0) {
-			for (FlowLoop flowLoop : flowStruct.getFlowLoops().getFlowLoop()) {
-				dataMap.put(flowLoop.getId(), flowLoop);
-				sortMap.put(flowLoop.getId(), num++);
-			}
-		}
 
 		if (flowStruct.getFlowEnd() != null) {
 			dataMap.put(flowStruct.getFlowEnd().getEndId(), flowStruct.getFlowEnd());
@@ -221,10 +196,6 @@ public class FlowRunSort {
 		nodeMap = new LinkedHashMap<Integer, String>();
 		for (String key : sortMap.keySet()) {
 			nodeMap.put(sortMap.get(key), key);
-		}
-
-		for (FlowSequence flowSequence : flowStruct.getFlowSequences().getFlowSequences()) {
-			graph.get(sortMap.get(flowSequence.getSourceId())).add(sortMap.get(flowSequence.getTargetId()));
 		}
 
 		result = run();
@@ -237,11 +208,6 @@ public class FlowRunSort {
 				Order order = new Order();
 				order.setElementId(nodeMap.get(result.get(i).get(j))); // 节点的id
 				List<String> pidList = new ArrayList<String>();
-				for (FlowSequence flowSequence : flowStruct.getFlowSequences().getFlowSequences()) {
-					if (nodeMap.get(result.get(i).get(j)).equals(flowSequence.getTargetId())) {
-						pidList.add(flowSequence.getSourceId());
-					}
-				}
 				if (pidList.size() > 0) {
 					order.setPid(pidList);
 				}

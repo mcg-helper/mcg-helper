@@ -24,6 +24,8 @@ import com.mcg.common.Constants;
 import com.mcg.controller.base.BaseController;
 
 /**
+ *
+ *
  * 
  * @ClassName:   HomeController   
  * @Description: TODO(系统主页功能服务) 
@@ -39,6 +41,7 @@ public class HomeController extends BaseController {
 	public ModelAndView index() throws Exception{
 		ModelAndView mv = this.getModelAndView();
 		mv.addObject("version", Constants.VERSION);
+//		System.out.println("cell home here");
 		mv.setViewName("home/index");
 		return mv;
 	}

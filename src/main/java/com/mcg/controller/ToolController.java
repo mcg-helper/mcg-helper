@@ -16,10 +16,21 @@
 
 package com.mcg.controller;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
+import Utils.SpendTime;
+import com.mcg.entity.flow.connector.ConnectorData;
+import com.mcg.entity.flow.text.FlowText;
+import com.mcg.entity.flow.text.TextCore;
+import com.mcg.entity.flow.text.TextProperty;
+import com.mcg.plugin.ehcache.CachePlugin;
+import com.mcg.plugin.ehcache.ConnectorCache;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -45,12 +56,9 @@ import com.mcg.util.LevelDbUtil;
 import com.mcg.util.PageData;
 
 /**
- * 
- * @ClassName:   ToolController   
- * @Description: TODO(上传、下载处理) 
- * @author:      缪聪(mcg-helper@qq.com)
- * @date:        2018年3月9日 下午5:28:54  
- *
+ * DESC : for upload and down
+ * DATA : 2019/11/6 16:17
+ * AUTHOR : UDEAN
  */
 @Controller
 @RequestMapping(value="/tool")
@@ -62,13 +70,77 @@ public class ToolController extends BaseController {
     public ModelAndView down() {
         ModelAndView modeAndView = new ModelAndView("redirect:/downloadFlow");
     	PageData pd = this.getPageData();
-        if(pd != null && pd.get("flowId") != null && pd.get("flowName") != null) {
-            modeAndView.addObject("flowId", pd.getString("flowId"));
+    	String id = null ;
+        if(pd != null && (id = pd.getString("flowId")) != null && pd.get("flowName") != null) {
+            modeAndView.addObject("flowId", id);
             modeAndView.addObject("fileName", pd.getString("flowName") + Constants.EXTENSION);
         }
+        int len =Integer.valueOf( (String)pd.get("length"));
+        int i = 1;
+        Set<FlowText> set = new HashSet<>();
+        while( i <= len ){
+        	if(pd.get(Constants.ID_PREX+i) != null) {
+				modeAndView.addObject(Constants.ID_PREX + i, pd.getString(Constants.ID_PREX + i));
+				FlowText object= CachePlugin.getFlowEntity(id,pd.getString(Constants.ID_PREX+i));
+				if(object != null) {
+					set.add(object);
+				}
+        	}
+        	i++;
+		}
+        FileWriter fw;
+        BufferedWriter bw;
+		SpendTime time = new SpendTime();
+		time.clockUp();
+		try {
+			fw = new FileWriter(new File("E://recovery//persistent.txt"));
+			bw = new BufferedWriter(fw);
+			if (set.size() != 0) {
+				for (FlowText temp : set) {
+					TextProperty property = temp.getTextProperty();
+					TextCore core = temp.getTextCore();
+					bw.write(temp.getTextId());
+					bw.newLine();
+					bw.write(property.getName() + " " + property.getKey());
+					bw.newLine();
+					bw.write(core.getSource());
+					bw.newLine();
+				}
+			}
+			ConnectController.cachePersistent(bw);
+			bw.flush();
 
-    	return modeAndView;
+			bw.close();
+			fw.close();
+			time.clockOver();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+        return modeAndView;
     }
+
+	public static void cachePersistent(int a[], BufferedWriter bw) throws Exception {
+		boolean failed = false;
+		if(a.length == 0)
+			return;
+		try {
+			for (int i : a) {
+				ConnectorData data = ConnectorCache.get(i);
+				bw.write(data.getSourceId() + " " + data.getTargetId());
+				bw.newLine();
+				if (!ConnectorCache.removr(i) && !failed) {
+					failed = true;
+					logger.error("remove connector cache failed");
+				}
+			}
+		} finally {
+			if (failed) {
+				logger.debug("removing all connector cache");
+				ConnectorCache.removeAll();
+			}
+		}
+	}
     
     @RequestMapping(value="downFlowGenFile", method=RequestMethod.POST)
     public ModelAndView downFlowGenFile() {
@@ -91,8 +163,8 @@ public class ToolController extends BaseController {
     @ResponseBody
     public McgResult upload(@RequestParam(value = "flowFile", required = false) MultipartFile file, @RequestParam String flowId, HttpSession session) {
         Message messageComplete = MessagePlugin.getMessage();
-        messageComplete.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
-        NotifyBody notifyBody = new NotifyBody();    	
+        messageComplete.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+        NotifyBody notifyBody = new NotifyBody();
     	McgResult result = new McgResult();
     	
     	if(file == null) {
