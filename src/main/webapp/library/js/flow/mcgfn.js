@@ -32,6 +32,7 @@ var elementMap = new Map();
 var htmlToolsMap = new Map();
 var sourceMap = new Map();
 var targetMap = new Map();
+var instanceMap = new Map();
 var setting = {
         view: {
             addHoverDom: addHoverDom,
@@ -179,20 +180,18 @@ function flowDropBind() {
 				saveXY(ui.draggable.attr("id"), xy);
 				elementMap.put(ui.draggable.attr("id"), element);
 
-				tempId = element.getId();
-				let tlist = sourceMap.get(element.getId());
+				let tlist = sourceMap.get(element.getId().substr(0,18));
 				if(tlist != undefined) {
                     for (let i = 0; i < tlist.length; i++) {
                         let left = element.getLeft() + tlist[i].getLeft();
                         let top = element.getTop() + tlist[i].getTop();
-                        alert("left: "+left + "\n top:"+ top );
                         $("#" + element.getId() + tlist[i].getId()).css("left", left / 2);
                         $("#" + element.getId() + tlist[i].getId()).css("top", top / 2);
                     }
                 }
 
 
-				let slist = targetMap.get(element.getId());
+				let slist = targetMap.get(element.getId().substr(0,18));
 				if(slist != undefined) {
                     for (let i = 0; i < slist.length; i++) {
                         let left = element.getLeft() + slist[i].getLeft();
@@ -654,6 +653,7 @@ function initFunc() {
 			alert("check is there a loop exist which would occurs error");
 			return;
 		}
+		acquireInput();
 		var form = $("<form>");
 		form.attr("style", "display:none");
 		form.attr("target", "");
@@ -808,6 +808,8 @@ function initHtmlTools() {
 	/* 设置流程节点悬浮层html */
 	var dataHtml = setHtmlTool("/html/flowSuspension", null);
 	baseMap.put("popoverContent", dataHtml);
+	var connectDataHtml = setHtmlTool("/html/flowConnectorSuspen", null);
+	baseMap.put("connectorPopover",connectDataHtml);
 }
 
 /* 生成Modal的id */
@@ -909,6 +911,7 @@ function initConnectLine() {
     instance.bind("click",function (c) {
     	var connectorId = c.sourceId + c.targetId;
 		tempConnectId = connectorId;
+		instanceMap.put(connectorId,c);
     	removePopover();
     	$("#"+connectorId).popover('show');
 		// connectorId = sourceId + targetId
@@ -944,15 +947,15 @@ function initConnectLine() {
         	var t = elementMap.get(info.targetId);
         	var left = s.getLeft() + t.getLeft();
         	var top = s.getTop() + t.getTop();
-			var divNode = $("<div data-toggle='popover' id=" + connector.getConnectorId()+ " name='' eletype='text' class='w eletype'></div>");
+			var divNode = $("<div data-toggle='popover' id=" + connector.getConnectorId()+ " name='' eletype='connector' class='w eletype'></div>");
 			divNode.css("visibility","hidden");
 			// divNode.css("display","none");
 			divNode.css("left", left/2 +"px");
 			divNode.css("top", top/2 +"px");
 			$("#flowarea").append(divNode);
 			initConnectPopover(connector.getConnectorId());
-			var sid = s.getId();
-			var tid = t.getId();
+			var sid = s.getId().substr(0,18);
+			var tid = t.getId().substr(0,18);
 			var tlist = sourceMap.get(sid);
 			if(tlist == undefined) {
 				tlist = []

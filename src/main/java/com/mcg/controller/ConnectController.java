@@ -31,24 +31,6 @@ public class ConnectController {
     private static int index ;
     private static Logger logger = LoggerFactory.getLogger(ConnectController.class);
 
-//    public static void main(String args[]){
-//        ConnectController instance = new ConnectController();
-//        instance.add(new ConnectorData("1","2"));
-//        instance.add(new ConnectorData("2","4"));
-//        instance.add(new ConnectorData("2","3"));
-//        instance.add(new ConnectorData("5","6"));
-//        instance.add(new ConnectorData("5","7"));
-//        instance.add(new ConnectorData("8","7"));
-//        instance.add(new ConnectorData("8","6"));
-//        SpendTime time = new SpendTime();
-//        time.clockUp();
-//        System.out.println(instance.isIllegal());
-//        time.clockOver();
-//        time.clockUp();
-//        System.out.println(instance.TP());
-//        time.clockOver();
-//    }
-
     static {
         index = 0;
         indexMap = new HashMap<>();
@@ -71,7 +53,7 @@ public class ConnectController {
 
     @RequestMapping(value="/addArray", method = RequestMethod.POST)
     @ResponseBody
-    public McgResult addArray(String[] sourceId ,String []targetId){
+    public McgResult addArray(String[] sourceId ,String []targetId){ // TODO: 2019/11/27 16:26 data persistent and front-data transform format
         McgResult result = new McgResult();
         int len;
         len = Math.min(targetId.length,sourceId.length);
@@ -251,6 +233,23 @@ public class ConnectController {
             addStack(stacks, s, t);
         }
         return false;
+    }
+
+    @RequestMapping(value = "/input" , method = RequestMethod.POST)
+    @ResponseBody
+    public McgResult getInputData(String []source, String []target, String[] input){ // TODO: 2019/11/27 16:25 data persistent
+        McgResult result = new McgResult();
+        result.setStatusCode(1);
+        if(source.length ==0 || target.length ==0 || input.length == 0){
+            result.setStatusCode(0);
+        }else{
+            int len = source.length;
+            for(int i = 0 ; i < len ; i++){
+                logger.info("source: " + source[i] + " target: " + target[i]);
+                logger.info("data: "+ input[i]);
+            }
+        }
+        return result;
     }
 }
 

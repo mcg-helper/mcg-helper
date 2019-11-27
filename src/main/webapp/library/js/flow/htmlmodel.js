@@ -23,11 +23,11 @@
  * */
 function createHtmlModal(id, param) {
 	removePopover();
-	let modalId = createModalId(id);
-	let url = null;
+	var modalId = createModalId(id);
+	var url = null;
 	if(param == null)
 		param = {};
-	let option = {};
+	var option = {};
 	if($("#"+id).attr("eletype") != null && $("#"+id).attr("eletype") != undefined) {
 		// if($("#"+id).attr("eletype") == "json") {
 		// 	url = "/html/flowJsonModal";
@@ -50,11 +50,9 @@ function createHtmlModal(id, param) {
 		// 	option["title"] = "开始控件";
 		// 	option["width"] = 1100;
 		// } else
-			if($("#"+id).attr("eletype") == "text"){
-			url = "/html/flowTextModal";
-			option["title"] = "文本控件";
-			option["width"] = 1100;
-		}
+		url = "/html/flowTextModal";
+		option["title"] = "文本控件";
+		option["width"] = 1100;
 			// else if($("#"+id).attr("eletype") == "script") {
 		// 	url = "/html/flowScriptModal";
 		// 	option["title"] = "js控件";
@@ -97,25 +95,6 @@ function createHtmlModal(id, param) {
 	}
 }
 
-function createConnectorModel(id, param) {
-	removePopover();
-	let modalId = createModalId(id); // id + "_Modal";
-	let url = null;
-	if(param == null)
-		param = {};
-	let option = {};
-	if($("#"+id).attr("eletype") != null && $("#"+id).attr("eletype") != undefined) {
-		url = "/html/Connector";
-		option["title"] = "connector";
-		option["width"] = 1100;
-	param["modalId"] = modalId.replace(/_Modal/g, "");
-	param["eletype"] = $("#"+id).attr("eletype");
-	param["option"] = option;
-	if(url != null)
-		common.showAjaxDialog(url, setDialogBtns(param), createModalCallBack, null, param);
-	}
-}
-
 /**
  * 拖拽出的控件保存时，
  * 1、将name(控件名称),sign(控件是否保存)字段，同步到elementMap中对应的控件基本数据
@@ -125,7 +104,7 @@ function createConnectorModel(id, param) {
  * @returns
  */
 function saveElementUpdateCache(elementId, name) {
-	let element = elementMap.get(elementId);
+	var element = elementMap.get(elementId);
 	element.setName(name);
 	element.setSign("true");
 	$("#name_" + elementId).html(name);
@@ -136,16 +115,16 @@ function saveElementUpdateCache(elementId, name) {
  * @returns 按钮集合
  */
 function setDialogBtns(param) {
-    let buttons = [];
+    var buttons = [];
 	if(param.eletype == "start") {
 		buttons = [
 			{
 				class: "btn btn-default",
 				text: "增加",
 				click: function() {
-					let tableData = $("#" + param.modalId + "_flowStartTable").bootstrapTable('getData');
-					for(let i=0; i<tableData.length; i++) {
-						let row={};
+					var tableData = $("#" + param.modalId + "_flowStartTable").bootstrapTable('getData');
+					for(var i=0; i<tableData.length; i++) {
+						var row={};
 						row["key"] = tableData[i].key;
 						row["value"] = tableData[i].value;
 						row["desc"] = tableData[i].desc;
@@ -158,7 +137,7 @@ function setDialogBtns(param) {
 				class: "btn btn-default",
 				text: "删除",
 				click: function() {
-		            let ids = $.map($("#" + param.modalId + "_flowStartTable").bootstrapTable('getSelections'), function (row) {
+		            var ids = $.map($("#" + param.modalId + "_flowStartTable").bootstrapTable('getSelections'), function (row) {
 		                return row.id;
 		            });
 		            $("#" + param.modalId + "_flowStartTable").bootstrapTable('remove', {
@@ -178,18 +157,18 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let tableData = $("#" + param.modalId + "_flowStartTable").bootstrapTable('getData');
-					let rowsData = {let:[]};
-					for(let i=0; i<tableData.length; i++) {
-						let row={};
+					var _this = this;
+					var tableData = $("#" + param.modalId + "_flowStartTable").bootstrapTable('getData');
+					var rowsData = {var:[]};
+					for(var i=0; i<tableData.length; i++) {
+						var row={};
 						row["key"] = tableData[i].key;
 						row["value"] = tableData[i].value;
 						row["desc"] = tableData[i].desc;
-						rowsData.let.push(row);
+						rowsData.var.push(row);
 					}
-					let data = $("#" + param.modalId + "_startForm").serializeJSON();
-					let result = JSON.parse(data);
+					var data = $("#" + param.modalId + "_startForm").serializeJSON();
+					var result = JSON.parse(data);
 					result["startProperty"] = rowsData;
 					result["flowId"] = getCurrentFlowId();
 					common.ajax({
@@ -219,9 +198,9 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",			
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let data = $("#" + param.modalId　+ "_endForm").serializeJSON();
-					let result = JSON.parse(data);
+					var _this = this;
+					var data = $("#" + param.modalId　+ "_endForm").serializeJSON();
+					var result = JSON.parse(data);
 					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveFlowEnd",
@@ -250,10 +229,10 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",			
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let data = $("#" + param.modalId + "_jsonForm").serializeJSON();
-					let result = JSON.parse(data);
-					let jsonCore = {};
+					var _this = this;
+					var data = $("#" + param.modalId + "_jsonForm").serializeJSON();
+					var result = JSON.parse(data);
+					var jsonCore = {};
 					jsonCore["source"] = param.editor.getValue();
 					result["jsonCore"] = jsonCore; 
 					result["flowId"] = getCurrentFlowId();
@@ -284,9 +263,9 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let data = $("#" + param.modalId + "_sqlQueryForm").serializeJSON();
-					let result = JSON.parse(data);
+					var _this = this;
+					var data = $("#" + param.modalId + "_sqlQueryForm").serializeJSON();
+					var result = JSON.parse(data);
 					result.sqlQueryCore["source"] = param.editor.getValue(); 
 					result["flowId"] = getCurrentFlowId();
 					common.ajax({
@@ -316,9 +295,9 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let data = $("#" + param.modalId + "_sqlExecuteForm").serializeJSON();
-					let result = JSON.parse(data);
+					var _this = this;
+					var data = $("#" + param.modalId + "_sqlExecuteForm").serializeJSON();
+					var result = JSON.parse(data);
 					result.sqlExecuteCore["source"] = param.editor.getValue(); 
 					result["flowId"] = getCurrentFlowId();
 					common.ajax({
@@ -348,9 +327,9 @@ function setDialogBtns(param) {
 				class: "btn btn-default",			
 				text: "增加",
 				click: function() {
-					let tableData = $("#" + param.modalId + "_flowDataTable").bootstrapTable('getData');
-					for(let i=0; i<tableData.length; i++) {
-						let row={};
+					var tableData = $("#" + param.modalId + "_flowDataTable").bootstrapTable('getData');
+					for(var i=0; i<tableData.length; i++) {
+						var row={};
 						row["classField"] = tableData[i].classField;
 						row["tableField"] = tableData[i].tableField;
 						row["comment"] = tableData[i].comment;
@@ -374,7 +353,7 @@ function setDialogBtns(param) {
 				class: "btn btn-default",			
 				text: "删除",
 				click: function() {
-		            let ids = $.map($("#" + param.modalId + "_flowDataTable").bootstrapTable('getSelections'), function (row) {
+		            var ids = $.map($("#" + param.modalId + "_flowDataTable").bootstrapTable('getSelections'), function (row) {
 		                return row.id;
 		            });
 		            $("#" + param.modalId + "_flowDataTable").bootstrapTable('remove', {
@@ -394,11 +373,11 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",			
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let tableData = $("#" + param.modalId + "_flowDataTable").bootstrapTable('getData');
-					let rowsData = [];
-					for(let i=0; i<tableData.length; i++) {
-						let row={};
+					var _this = this;
+					var tableData = $("#" + param.modalId + "_flowDataTable").bootstrapTable('getData');
+					var rowsData = [];
+					for(var i=0; i<tableData.length; i++) {
+						var row={};
 						row["classField"] = tableData[i].classField;
 						row["tableField"] = tableData[i].tableField;
 						row["comment"] = tableData[i].comment;
@@ -413,8 +392,8 @@ function setDialogBtns(param) {
 						row["include"] = tableData[i].include;
 						rowsData.push(row);
 					}
-					let data = $("#" + param.modalId + "_dataForm").serializeJSON();
-					let result = JSON.parse(data);
+					var data = $("#" + param.modalId + "_dataForm").serializeJSON();
+					var result = JSON.parse(data);
 					result.dataField["dataRecord"] = rowsData;
 					result["flowId"] = getCurrentFlowId();
 					common.ajax({
@@ -445,10 +424,10 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",			
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let data = $("#" + param.modalId + "_scriptForm").serializeJSON();
-					let result = JSON.parse(data);
-					let scriptCore = {};
+					var _this = this;
+					var data = $("#" + param.modalId + "_scriptForm").serializeJSON();
+					var result = JSON.parse(data);
+					var scriptCore = {};
 					scriptCore["source"] = param.editor.getValue();
 					result["scriptCore"] = scriptCore; 
 					result["flowId"] = getCurrentFlowId();
@@ -481,10 +460,10 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",			
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let data = $("#" + param.modalId + "_javaForm").serializeJSON();
-					let result = JSON.parse(data);
-					let javaCore = {};
+					var _this = this;
+					var data = $("#" + param.modalId + "_javaForm").serializeJSON();
+					var result = JSON.parse(data);
+					var javaCore = {};
 					javaCore["source"] = param.editor.getValue();
 					result["javaCore"] = javaCore; 
 					result["flowId"] = getCurrentFlowId();
@@ -517,10 +496,10 @@ function setDialogBtns(param) {
 						class: "btn btn-primary",			
 						text: "保存",
 						click: function() {
-							let _this = this;
-							let data = $("#" + param.modalId + "_pythonForm").serializeJSON();
-							let result = JSON.parse(data);
-							let pythonCore = {};
+							var _this = this;
+							var data = $("#" + param.modalId + "_pythonForm").serializeJSON();
+							var result = JSON.parse(data);
+							var pythonCore = {};
 							pythonCore["source"] = param.editor.getValue();
 							result["pythonCore"] = pythonCore; 
 							result["flowId"] = getCurrentFlowId();
@@ -552,9 +531,9 @@ function setDialogBtns(param) {
 						class: "btn btn-primary",			
 						text: "保存",
 						click: function() {
-							let _this = this;
-							let data = $("#" + param.modalId + "_linuxForm").serializeJSON();
-							let result = JSON.parse(data);
+							var _this = this;
+							var data = $("#" + param.modalId + "_linuxForm").serializeJSON();
+							var result = JSON.parse(data);
 							result.linuxCore["source"] = param.editor.getValue();
 							result.linuxCore["connMode"] = $("#" + param.modalId + "_connMode").val();
 							result.linuxCore["serverSourceId"] = $("#" + param.modalId + "_serverSourceId").val();
@@ -587,8 +566,8 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let result = JSON.parse($("#" + param.modalId + "_wontonForm").serializeJSON());
+					var _this = this;
+					var result = JSON.parse($("#" + param.modalId + "_wontonForm").serializeJSON());
 					result.wontonNetRule["targetIps"] = result.wontonNetRule.TargetIps.split(",");
 					result.wontonNetRule.TargetIps = result.wontonNetRule.TargetIps.split(",");
 					result.wontonNetRule["targetPorts"] = result.wontonNetRule.TargetPorts.split(",");
@@ -623,10 +602,10 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",			
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let data = $("#" + param.modalId + "_textForm").serializeJSON();
-					let result = JSON.parse(data);
-					let textCore = {};
+					var _this = this;
+					var data = $("#" + param.modalId + "_textForm").serializeJSON();
+					var result = JSON.parse(data);
+					var textCore = {};
 					textCore["source"] = param.editor.getValue();
 					result["textCore"] = textCore; 
 					result["flowId"] = getCurrentFlowId();
@@ -661,7 +640,7 @@ function setDialogBtns(param) {
 					
 					$("#"+ param.modalId + "_tab").children("li").each(function() {
 						if($(this).hasClass("active") == true) {
-							if($(this).attr("id") == "letType") {
+							if($(this).attr("id") == "varType") {
 					 			$("#" + param.modalId + "_flowVarTable").bootstrapTable('append',
 				 					{ "id":Math.uuid(), "key":"", "value":"", "note":"", "type":"flow" });	
 							} else if($(this).attr("id") == "dbType") {
@@ -685,8 +664,8 @@ function setDialogBtns(param) {
 					$("#"+ param.modalId + "_tab").children("li").each(function() {
 						if($(this).hasClass("active") == true){
 							
-							if($(this).attr("id") == "letType") {
-					            let ids = $.map($("#" + param.modalId + "_flowVarTable").bootstrapTable('getSelections'), function (row) {
+							if($(this).attr("id") == "varType") {
+					            var ids = $.map($("#" + param.modalId + "_flowVarTable").bootstrapTable('getSelections'), function (row) {
 					                return row.id;
 					            });
 					            $("#" + param.modalId + "_flowVarTable").bootstrapTable('remove', {
@@ -694,7 +673,7 @@ function setDialogBtns(param) {
 					                values: ids
 					            });									
 							} else if($(this).attr("id") == "dbType") {
-					            let ids = $.map($("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('getSelections'), function (row) {
+					            var ids = $.map($("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('getSelections'), function (row) {
 					                return row.id;
 					            });
 					            $("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('remove', {
@@ -702,7 +681,7 @@ function setDialogBtns(param) {
 					                values: ids
 					            });									
 							} else if($(this).attr("id") == "serverType") {
-					            let ids = $.map($("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('getSelections'), function (row) {
+					            var ids = $.map($("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('getSelections'), function (row) {
 					                return row.id;
 					            });
 					            $("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('remove', {
@@ -721,7 +700,7 @@ function setDialogBtns(param) {
 				click: function() {
 					$("#"+ param.modalId + "_tab").children("li").each(function() {
 						if($(this).hasClass("active") == true){
-							if($(this).attr("id") == "letType") {
+							if($(this).attr("id") == "varType") {
 								$("#" + param.modalId + "_flowVarTable").bootstrapTable('removeAll');
 							} else if($(this).attr("id") == "dbType") {
 								$("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('removeAll');
@@ -737,13 +716,13 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let global = {"flowVars":[], "flowDataSources":[], "serverSources":[]};
+					var _this = this;
+					var global = {"flowVars":[], "flowDataSources":[], "serverSources":[]};
 					
-					let tableData = $("#" + param.modalId + "_flowVarTable").bootstrapTable('getData');
-					for(let i=0; i<tableData.length; i++) {
+					var tableData = $("#" + param.modalId + "_flowVarTable").bootstrapTable('getData');
+					for(var i=0; i<tableData.length; i++) {
 						if(tableData[i].type != "system") {
-							let row={};
+							var row={};
 							row["type"] = tableData[i].type;
 							row["id"] = tableData[i].id;
 							row["key"] =tableData[i].key;
@@ -754,8 +733,8 @@ function setDialogBtns(param) {
 					}
 					
 					tableData = $("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('getData');
-					for(let i=0; i<tableData.length; i++) {
-						let row={};
+					for(var i=0; i<tableData.length; i++) {
+						var row={};
 						row["dataSourceId"] =tableData[i].id;
 						row["name"] =tableData[i].name;
 						row["dbType"] = tableData[i].dbType;
@@ -768,9 +747,9 @@ function setDialogBtns(param) {
 						global.flowDataSources.push(row);
 					}
 					
-					let flowServerSourceTableData = $("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('getData');
-					for(let i=0; i<flowServerSourceTableData.length; i++) {
-						let row={};
+					var flowServerSourceTableData = $("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('getData');
+					for(var i=0; i<flowServerSourceTableData.length; i++) {
+						var row={};
 						row["id"] =flowServerSourceTableData[i].id;
 						row["name"] =flowServerSourceTableData[i].name;
 						row["type"] = flowServerSourceTableData[i].type;
@@ -810,9 +789,9 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",			
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let data = $("#" + param.modalId + "_processForm").serializeJSON();
-					let result = JSON.parse(data);
+					var _this = this;
+					var data = $("#" + param.modalId + "_processForm").serializeJSON();
+					var result = JSON.parse(data);
 					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveProcess",
@@ -842,9 +821,9 @@ function setDialogBtns(param) {
 				class: "btn btn-primary",			
 				text: "保存",
 				click: function() {
-					let _this = this;
-					let data = $("#" + param.modalId + "_loopForm").serializeJSON();
-					let result = JSON.parse(data);
+					var _this = this;
+					var data = $("#" + param.modalId + "_loopForm").serializeJSON();
+					var result = JSON.parse(data);
 					result["flowId"] = getCurrentFlowId();
 					common.ajax({
 						url : "/flow/saveLoop",
@@ -879,7 +858,7 @@ function setDialogBtns(param) {
 function createModalCallBack(param) {
 	
 	if(param.eletype == "json") {
-		let editor = ace.edit(param.modalId + "_editor");
+		var editor = ace.edit(param.modalId + "_editor");
 		editor.setTheme("ace/theme/eclipse");
 		editor.session.setMode("ace/mode/json");		 
 		editor.setFontSize(18);
@@ -889,7 +868,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});
 		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
@@ -904,7 +883,7 @@ function createModalCallBack(param) {
 			width:"100%"
 		});		
 		
-		let editor = ace.edit(param.modalId + "_editor");
+		var editor = ace.edit(param.modalId + "_editor");
 		editor.setTheme("ace/theme/eclipse");
 		editor.session.setMode("ace/mode/sql");		 
 		editor.setFontSize(18);
@@ -914,7 +893,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});
 		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
@@ -929,7 +908,7 @@ function createModalCallBack(param) {
 			width:"100%"
 		});		
 		
-		let editor = ace.edit(param.modalId + "_editor");
+		var editor = ace.edit(param.modalId + "_editor");
 		editor.setTheme("ace/theme/eclipse");
 		editor.session.setMode("ace/mode/sql");		 
 		editor.setFontSize(18);
@@ -939,7 +918,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});
 		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
@@ -954,13 +933,13 @@ function createModalCallBack(param) {
 		});
  		initFlowStartModal(param.modalId);
  		
-	} else if(param.eletype == "text") {
+	} else if(param.eletype == "text") { // TODO: 2019/11/26 15:13 error here maybe
 		$("#" + param.modalId + "_outMode").selectpicker({
 			noneSelectedText: "请选择",
 			width:"100%"
 		});
 		
-		let editor = ace.edit(param.modalId + "_editor");
+		var editor = ace.edit(param.modalId + "_editor");
 		editor.setTheme("ace/theme/eclipse");
 		editor.session.setMode("ace/mode/java");		 
 		editor.setFontSize(18);
@@ -980,7 +959,7 @@ function createModalCallBack(param) {
 		
 		initTextModal(param.modalId, editor);
 	} else if(param.eletype == "script") {
-		let editor = ace.edit(param.modalId + "_editor");
+		var editor = ace.edit(param.modalId + "_editor");
 		editor.setTheme("ace/theme/eclipse");
 		editor.session.setMode("ace/mode/javascript");		 
 		editor.setFontSize(18);
@@ -990,14 +969,14 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});		
 		editorScreen($("#" + param.modalId + "_scriptId").val(), editor);
 		param["editor"] = editor;
 		
 		initScriptModal(param.modalId, editor);
 	} else if(param.eletype == "java") {
-		let editor = ace.edit(param.modalId + "_editor");
+		var editor = ace.edit(param.modalId + "_editor");
 		editor.setTheme("ace/theme/eclipse");
 		editor.session.setMode("ace/mode/java");		 
 		editor.setFontSize(18);
@@ -1007,14 +986,14 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
 		param["editor"] = editor;
 		
 		initJavaModal(param.modalId, editor);
 	} else if(param.eletype == "python") {
-		let editor = ace.edit(param.modalId + "_editor");
+		var editor = ace.edit(param.modalId + "_editor");
 		editor.setTheme("ace/theme/eclipse");
 		editor.session.setMode("ace/mode/python");		 
 		editor.setFontSize(18);
@@ -1024,7 +1003,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
 		param["editor"] = editor;
@@ -1055,7 +1034,7 @@ function createModalCallBack(param) {
 		});
 		
 		
-		let editor = ace.edit(param.modalId + "_editor");
+		var editor = ace.edit(param.modalId + "_editor");
 		editor.setTheme("ace/theme/eclipse");
 		editor.session.setMode("ace/mode/sh");		 
 		editor.setFontSize(18);
@@ -1065,7 +1044,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
 		param["editor"] = editor;
@@ -1078,8 +1057,8 @@ function createModalCallBack(param) {
 
 	 	$("#"+ param.modalId + "_tab a").each(function(){
 			$(this).on("shown.bs.tab", function (e) {
-		    	let href = $(this).attr("href");
-		    	let id = href.substring(href.indexOf("#") + 1);
+		    	var href = $(this).attr("href");
+		    	var id = href.substring(href.indexOf("#") + 1);
 		    	$('#'+id + ' input[type=checkbox]').bootstrapSwitch({
 		    		animate:true
 		    	}).on('switchChange.bootstrapSwitch', function(event, state) {
@@ -1114,7 +1093,7 @@ function createModalCallBack(param) {
 				}, function(data) {
 					$("#" + param.modalId + "_tableNameSelect").find('option').remove();
 					$("#" + param.modalId + "_tableNameSelect").append($('<option value="">请选择</option>'));
-					for(let i=0; i<data.length; i++) {
+					for(var i=0; i<data.length; i++) {
 			 			$("#" + param.modalId + "_tableNameSelect").append($('<option value="' + data[i].tableName + '">' + data[i].tableName + '</option>'));
 					}
 					$("#" + param.modalId + "_tableNameSelect").selectpicker('refresh');
@@ -1130,12 +1109,12 @@ function createModalCallBack(param) {
 					data : "tableName=" + $("#" + param.modalId + "_tableNameSelect").val() + "&dataSourceId=" + $("#" + param.modalId + "_dataSourceId").val(),
 				}, function(data) {
 					$("#" + param.modalId + "_flowDataTable").bootstrapTable('removeAll');
-					for(let i=0; i<data.length; i++){
+					for(var i=0; i<data.length; i++){
 			 			$("#" + param.modalId + "_flowDataTable").bootstrapTable('append', {"id":Math.uuid(), "classField":data[i].classField, "tableField":data[i].tableField, "comment": typeof(data[i].comment) == "undefined" ? "":data[i].comment , "tableFieldType":data[i].tableFieldType, 
 								"dataType":data[i].dataType, "length":data[i].length, "precision":data[i].precision, "primary":data[i].primary, 
 								"autoincrement":data[i].autoincrement, "mandatory":data[i].mandatory, "show":data[i].show, "include":data[i].include});						
 					}
-					let tableName = $("#" + param.modalId + "_tableNameSelect").find("option:selected").text();
+					var tableName = $("#" + param.modalId + "_tableNameSelect").find("option:selected").text();
 					$("#" + param.modalId + "_tableName").val(tableName);
 					$("#" + param.modalId + "_className").val(tools.convertClassName(tableName));					
 				});
@@ -1150,7 +1129,7 @@ function createModalCallBack(param) {
 		
 		initDataModal(param.modalId);
 	} else if(param.eletype == "process") {
-		let setting = {
+		var setting = {
 		        view: {
 		            selectedMulti: false
 		        },
@@ -1174,9 +1153,9 @@ function createModalCallBack(param) {
 			data : null,
 			contentType : "application/json"
 		}, function(data) {
-			let flowTreeName = param.modalId + "_flowTree";
+			var flowTreeName = param.modalId + "_flowTree";
 	    	$.fn.zTree.init($("#" + flowTreeName), setting, data.topologys);
-	    	let treeObj = $.fn.zTree.getZTreeObj(flowTreeName);
+	    	var treeObj = $.fn.zTree.getZTreeObj(flowTreeName);
 	    	treeObj.expandAll(true);
 	    	
 	    	initProcessModal(param.modalId, treeObj);
@@ -1196,7 +1175,7 @@ function createModalCallBack(param) {
 }
 
 function zTreeBeforeClick(treeId, treeNode, clickFlag) {
-	let result = false;
+	var result = false;
 	if(treeNode.id !== $("#flowSelect").attr("flowId")) {
 		result = true;
 	} else {
@@ -1211,7 +1190,7 @@ function zTreeBeforeClick(treeId, treeNode, clickFlag) {
 }
 
 function flowSelected(event, treeId, treeNode) {
-	let modalFlowTreeId = treeNode.tId.substring(0, treeNode.tId.indexOf("_flowTree"));
+	var modalFlowTreeId = treeNode.tId.substring(0, treeNode.tId.indexOf("_flowTree"));
 	$("#" + modalFlowTreeId + "_flowName").html(treeNode.name+"&nbsp;<span class='caret'></span>");
 	$("#" + modalFlowTreeId + "_flowId").val(treeNode.id);
 }
@@ -1238,9 +1217,9 @@ function editorScreen(id, editor) {
 				editor.isFullScreen = false;
 			} else {
 				$( "#dialog" + id ).dialog( "option", "resizable", false);
-				let oldWidth = $( "#dialog" + id ).dialog("option", "width");
-				let oldHeight = $( "#dialog" + id ).dialog("option", "height");
-				let position = $( "#dialog" + id ).dialog("option", "position");
+				var oldWidth = $( "#dialog" + id ).dialog("option", "width");
+				var oldHeight = $( "#dialog" + id ).dialog("option", "height");
+				var position = $( "#dialog" + id ).dialog("option", "position");
 				acePropertyMap.put(id+"_position", position);
 				
 				
