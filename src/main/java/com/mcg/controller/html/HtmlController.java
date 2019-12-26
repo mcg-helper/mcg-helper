@@ -56,6 +56,32 @@ public class HtmlController extends BaseController {
 		mv.setViewName("html/flowSuspension");
 		return mv;
 	}
+
+	//acquire connector tool bar html
+	@RequestMapping(value="/flowConnectorSuspen")
+	public ModelAndView getFlowConnectorSuspensionModal() throws Exception{
+		ModelAndView mv = this.getModelAndView();
+		mv.setViewName("html/flowConnectorSuspen");
+		return mv;
+	}
+
+	@RequestMapping(value = "/Connector")
+	public ModelAndView getConnectorModel()throws  Exception{
+		ModelAndView mv = this.getModelAndView();
+		PageData pd = this.getPageData();
+		mv.addObject("modalId",pd.get("modalId"));
+		mv.setViewName("html/Connetor");
+		return mv;
+	}
+
+	@RequestMapping(value = "/TextOutput")
+	public ModelAndView getOnputHtml()throws Exception{
+		ModelAndView mv = this.getModelAndView();
+		PageData pd = this.getPageData();
+		mv.addObject("modalId",pd.getString("modalId"));
+		mv.setViewName("html/TextOutput");
+		return mv;
+	}
 	
     /* 流程节点 开始_Modal */
     @RequestMapping(value="/flowStartModal")

@@ -23,7 +23,7 @@ $(function () {
 			"mcg_flow":true,
 			"mcg_wonton":true
 	};
-	loadNavBody("mcg_home");
+	loadNavBody("mcg_flow_first");
     $("#mcgTab a[href='#mcg_home']").on("shown.bs.tab", function (e) {
     	if(tabState.mcg_home) {
     		loadNavBody("mcg_home");
@@ -58,7 +58,9 @@ function loadNavBody(id) {
 	var url = "";
 	if(id == "mcg_home") {
 		url = "/home/index";
-	} else if(id == "mcg_flow") {
+	} else if( id == "mcg_flow_first"){
+		url = "/flow/index";
+	}else if(id == "mcg_flow") {
 		//进行流程区时，清除存在的属性弹出层
 		$("div.popover").each(function() {
 			$(this).remove();

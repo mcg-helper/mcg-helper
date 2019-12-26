@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="<%=basePath %>/library/js/jsoneditor/jsoneditor.css?_v=${version}">
 	<link rel="stylesheet" href="<%=basePath %>/library/css/flow/core.css?_v=${version}">
 	<link rel="stylesheet" href="<%=basePath %>/library/css/flow/drage.css?_v=${version}">
+	<link rel="stylesheet" href="<%=basePath %>/library/css/addition.css?_v=${version}">
     
 	<script type="text/javascript" src="<%=basePath %>/library/js/jquery-1.12.2.min.js?_v=${version}"></script>
 	<script type="text/javascript" src="<%=basePath %>/library/js/jquery-ui-1.12.1/jquery-ui.min.js?_v=${version}"></script>

@@ -40,6 +40,19 @@ $.WebStruct = function (args) {
 	this.webConnector = args.webConnector;
 };
 
+$.transConnector = function (source ,target){
+    var sourceId = source;
+    var targetId = target;
+
+    this.getSourceId = function () {
+        return sourceId;
+    };
+    this.getTargetId = function () {
+        return targetId;
+    };
+}
+
+
 /*=================连接线============== 
  * 提供所有节点的父级与子级节点id
  * 向afterArray插入  connectors.insertAfter(elementId);
@@ -78,7 +91,7 @@ $.DragWidget = function (option) {
 	var top = option.top; //相对纵坐标，整型
 	var sign = option.sign; //"true"：已保存到后台缓存中 "false"：未保存
 	var connectorMap = new Map(); //当前节点的连接线集合,用于存储$.Connector
-	
+
 	/* 将连接线保存流程节点变量中 */
     this.insertConnector = function (connector) {   
         connectorMap.put(connector.getConnectorId(), connector);

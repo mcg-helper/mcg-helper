@@ -31,7 +31,8 @@
 		<link rel="shortcut icon" type="image/png" href="../../img/favicon.png">
         <title>mcg-helper研发助手</title>
 		
-		<script type="text/javascript" src="<%=basePath %>/library/js/flow/mcgfn.js?_v=${version}"></script>			
+		<script type="text/javascript" src="<%=basePath %>/library/js/flow/mcgfn.js?_v=${version}"></script>
+		<script type="text/javascript" src="<%=basePath %>/library/js/flow/addition.js?_v=${version}"></script>
 	</head>
 
 	<body>
@@ -113,7 +114,29 @@
 									</div>
 								</div>
 							</div>
-						</div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne2">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion"
+                                           href="#collapseOne" aria-expanded="true"
+                                           aria-controls="collapseOne">可用控件</a>
+                                    </h4>
+                                </div>
+                                <div id="collapseOne2" class="panel-collapse collapse in"
+                                     role="tabpanel" aria-labelledby="headingOne">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-4 col-md-offset-1">
+                                                <div id="toolbarText2" class="toolbar_eletype" eletype="text">文本</div>
+                                            </div>
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarInfo" class="toolbar_eletype" eletype="info">信息</div>
+											</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 					</div>
 
 				</div>
@@ -145,30 +168,30 @@
 		    		</div>
 		    		<!-- 绘制流程区结束 -->
 		    		<!-- 控制台区开始 -->
- 		    		<div class="row">
-				 		<nav class="navbar-default" id="console_header">
-							<div class="container-fluid">
-								<div class="navbar-header" >
-									<span class="navbar-brand">控制台</span>
-								</div>
+<%-- 		    		<div class="row">--%>
+<%--				 		<nav class="navbar-default" id="console_header">--%>
+<%--							<div class="container-fluid">--%>
+<%--								<div class="navbar-header" >--%>
+<%--									<span class="navbar-brand">控制台</span>--%>
+<%--								</div>--%>
 
-								<div class="collapse navbar-collapse">
-									<form class="navbar-form navbar-right">
-										<div class="btn-group">
-										    <button id="flowStopBtn" type="button" class="btn btn-default remove_border"><span class="glyphicon glyphicon-stop text-muted"></span></button>
-										    <button id="flowLogCleanBtn" type="button" class="btn btn-default remove_border"><span class="glyphicon glyphicon-remove text-muted"></span></button>
-										</div>
-									</form>
-									<!-- 
-									<p class="navbar-text navbar-right">图标<a href="#" class="navbar-link">最大化</a></p>
-									 -->
-								</div>
-							</div>
-						</nav>
-		    		</div>
-		    		<div class="row">
- 						<div id="console" style="width:100%;" ></div>	    			
-		    		</div>
+<%--								<div class="collapse navbar-collapse">--%>
+<%--									<form class="navbar-form navbar-right">--%>
+<%--										<div class="btn-group">--%>
+<%--										    <button id="flowStopBtn" type="button" class="btn btn-default remove_border"><span class="glyphicon glyphicon-stop text-muted"></span></button>--%>
+<%--										    <button id="flowLogCleanBtn" type="button" class="btn btn-default remove_border"><span class="glyphicon glyphicon-remove text-muted"></span></button>--%>
+<%--										</div>--%>
+<%--									</form>--%>
+<%--									<!-- --%>
+<%--									<p class="navbar-text navbar-right">图标<a href="#" class="navbar-link">最大化</a></p>--%>
+<%--									 -->--%>
+<%--								</div>--%>
+<%--							</div>--%>
+<%--						</nav>--%>
+<%--		    		</div>--%>
+<%--		    		<div class="row">--%>
+<%-- 						<div id="console" style="width:100%;" ></div>	    			--%>
+<%--		    		</div>--%>
 		    		
 		    		<!-- 控制台区结束 -->
 				</div>

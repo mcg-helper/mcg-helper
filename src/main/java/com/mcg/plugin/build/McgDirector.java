@@ -21,10 +21,7 @@ import java.util.ArrayList;
 import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.end.FlowEnd;
 import com.mcg.entity.flow.java.FlowJava;
-import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
-import com.mcg.entity.flow.loop.FlowLoop;
-import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
@@ -40,12 +37,7 @@ public class McgDirector {
         this.sequence.clear();
         return (FlowStart) new McgConcreteBuilder(flowStart, this.sequence).getMcgProduct();
     }
-    
-    public FlowJson getFlowJsonProduct(FlowJson flowJson) {
-        this.sequence.clear();
-        
-        return (FlowJson) new McgConcreteBuilder(flowJson, this.sequence).getMcgProduct();
-    }    
+
     
     public FlowSqlQuery getFlowSqlQueryProduct(FlowSqlQuery flowSqlQuery) {
         this.sequence.clear();
@@ -93,17 +85,7 @@ public class McgDirector {
     	this.sequence.clear();
     	return (FlowWonton) new McgConcreteBuilder(flowWonton, this.sequence).getMcgProduct();     
     }  
-    
-    public FlowProcess getFlowProcessProduct(FlowProcess flowProcess) {
-    	this.sequence.clear();
-    	return (FlowProcess) new McgConcreteBuilder(flowProcess, this.sequence).getMcgProduct();     
-    }  
-    
-    public FlowLoop getFlowLoopProduct(FlowLoop flowLoop) {
-    	this.sequence.clear();
-    	return (FlowLoop) new McgConcreteBuilder(flowLoop, this.sequence).getMcgProduct();     
-    } 
-      
+
     public FlowEnd getFlowEndProduct(FlowEnd flowEnd) {
         this.sequence.clear();
         return (FlowEnd) new McgConcreteBuilder(flowEnd, this.sequence).getMcgProduct();

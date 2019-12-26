@@ -29,63 +29,63 @@ function createHtmlModal(id, param) {
 		param = {};
 	var option = {};
 	if($("#"+id).attr("eletype") != null && $("#"+id).attr("eletype") != undefined) {
-		if($("#"+id).attr("eletype") == "json") {
-			url = "/html/flowJsonModal";
-			option["title"] = "json控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "sqlQuery") {
-			url = "/html/flowSqlQueryModal";
-			option["title"] = "sql查询";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "sqlExecute") {
-			url = "/html/flowSqlExecuteModal";
-			option["title"] = "sql执行";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "data") {
-			url = "/html/flowDataModal";
-			option["title"] = "data控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "start") {
-			url = "/html/flowStartModal";
-			option["title"] = "开始控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "text"){
-			url = "/html/flowTextModal";
-			option["title"] = "文本控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "script") {
-			url = "/html/flowScriptModal";
-			option["title"] = "js控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "java") {
-			url = "/html/flowJavaModal";
-			option["title"] = "java控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "python") {
-			url = "/html/flowPythonModal";
-			option["title"] = "python控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "linux") {
-			url = "/html/flowLinuxModal";
-			option["title"] = "linux控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "wonton") {
-			url = "/html/flowWontonModal";
-			option["title"] = "混沌控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "process") {
-			url = "/html/flowProcessModal";
-			option["title"] = "子流程控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "loop") {
-			url = "/html/flowLoopModal";
-			option["title"] = "循环控件";
-			option["width"] = 1100;
-		} else if($("#"+id).attr("eletype") == "end") {
-			url = "/html/flowEndModal";
-			option["title"] = "结束控件";
-			option["width"] = 1100;
-		}
+		// if($("#"+id).attr("eletype") == "json") {
+		// 	url = "/html/flowJsonModal";
+		// 	option["title"] = "json控件";
+		// 	option["width"] = 1100;
+		// } else if($("#"+id).attr("eletype") == "sqlQuery") {
+		// 	url = "/html/flowSqlQueryModal";
+		// 	option["title"] = "sql查询";
+		// 	option["width"] = 1100;
+		// } else if($("#"+id).attr("eletype") == "sqlExecute") {
+		// 	url = "/html/flowSqlExecuteModal";
+		// 	option["title"] = "sql执行";
+		// 	option["width"] = 1100;
+		// } else if($("#"+id).attr("eletype") == "data") {
+		// 	url = "/html/flowDataModal";
+		// 	option["title"] = "data控件";
+		// 	option["width"] = 1100;
+		// } else if($("#"+id).attr("eletype") == "start") {
+		// 	url = "/html/flowStartModal";
+		// 	option["title"] = "开始控件";
+		// 	option["width"] = 1100;
+		// } else
+		url = "/html/flowTextModal";
+		option["title"] = "文本控件";
+		option["width"] = 1100;
+			// else if($("#"+id).attr("eletype") == "script") {
+		// 	url = "/html/flowScriptModal";
+		// 	option["title"] = "js控件";
+		// 	option["width"] = 1100;
+		// } else if($("#"+id).attr("eletype") == "java") {
+		// 	url = "/html/flowJavaModal";
+		// 	option["title"] = "java控件";
+		// 	option["width"] = 1100;
+		// } else if($("#"+id).attr("eletype") == "python") {
+		// 	url = "/html/flowPythonModal";
+		// 	option["title"] = "python控件";
+		// 	option["width"] = 1100;
+		// } else if($("#"+id).attr("eletype") == "linux") {
+		// 	url = "/html/flowLinuxModal";
+		// 	option["title"] = "linux控件";
+		// 	option["width"] = 1100;
+		// } else if($("#"+id).attr("eletype") == "wonton") {
+		// 	url = "/html/flowWontonModal";
+		// 	option["title"] = "混沌控件";
+		// 	option["width"] = 1100;
+		// } else if($("#"+id).attr("eletype") == "process") {
+		// 	url = "/html/flowProcessModal";
+		// 	option["title"] = "子流程控件";
+		// 	option["width"] = 1100;
+		// } else if($("#"+id).attr("eletype") == "loop") {
+		// 	url = "/html/flowLoopModal";
+		// 	option["title"] = "循环控件";
+		// 	option["width"] = 1100;
+		// } else if($("#"+id).attr("eletype") == "end") {
+		// 	url = "/html/flowEndModal";
+		// 	option["title"] = "结束控件";
+		// 	option["width"] = 1100;
+		// }
 
 		param["modalId"] = modalId.replace(/_Modal/g, "");
 		param["eletype"] = $("#"+id).attr("eletype");
@@ -732,7 +732,7 @@ function setDialogBtns(param) {
 						}
 					}
 					
-					var tableData = $("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('getData');
+					tableData = $("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('getData');
 					for(var i=0; i<tableData.length; i++) {
 						var row={};
 						row["dataSourceId"] =tableData[i].id;
@@ -868,7 +868,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});
 		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
@@ -893,7 +893,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});
 		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
@@ -918,7 +918,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});
 		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
@@ -933,7 +933,7 @@ function createModalCallBack(param) {
 		});
  		initFlowStartModal(param.modalId);
  		
-	} else if(param.eletype == "text") {
+	} else if(param.eletype == "text") { // TODO: 2019/11/26 15:13 error here maybe
 		$("#" + param.modalId + "_outMode").selectpicker({
 			noneSelectedText: "请选择",
 			width:"100%"
@@ -969,7 +969,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});		
 		editorScreen($("#" + param.modalId + "_scriptId").val(), editor);
 		param["editor"] = editor;
@@ -986,7 +986,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
 		param["editor"] = editor;
@@ -1003,7 +1003,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
 		param["editor"] = editor;
@@ -1044,7 +1044,7 @@ function createModalCallBack(param) {
 		editor.setOptions({
 			enableBasicAutocompletion: true,
 			enableSnippets: true,
-		    enableLiveAutocompletion: true
+			enableLiveAutocompletion: true
 		});		
 		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
 		param["editor"] = editor;

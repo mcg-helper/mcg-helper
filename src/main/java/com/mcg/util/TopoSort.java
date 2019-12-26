@@ -25,12 +25,9 @@ import java.util.Map;
 import com.mcg.entity.flow.FlowStruct;
 import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.java.FlowJava;
-import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
-import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
-import com.mcg.entity.flow.sequence.FlowSequence;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
 import com.mcg.entity.flow.text.FlowText;
@@ -61,7 +58,6 @@ public class TopoSort {
 	String topoNameSort[];
 	Map<Integer, String> nodeMap;
 	Map<String, Integer> sortMap;
-	List<FlowSequence> flowSequenceList;
 	Map<String, Order> orderMap;
 	
 	// 构造顶点关键字数组
@@ -139,11 +135,6 @@ public class TopoSort {
 		    Order order = new Order();
 		    order.setElementId(topoNameSort[k]); //节点的id
 		    List<String> pidList = new ArrayList<String>();
-	        for(FlowSequence flowSequence : flowSequenceList) {
-	            if(topoNameSort[k].equals(flowSequence.getTargetId())) {
-	                pidList.add(flowSequence.getSourceId());
-	            }
-	        }
 /*	        for(int i=0; i<max; i++) {
 	            if(map[i][sortMap.get(topoNameSort[k])] == 1){
 	                pidList.add(nodeMap.get(i));  //父级节点的id
@@ -195,13 +186,7 @@ public class TopoSort {
                 sortMap.put(flowSqlExecute.getId(), num++);
             }
         }         
-	    if(flowStruct.getFlowJsons() != null && flowStruct.getFlowJsons().getFlowJson() != null && flowStruct.getFlowJsons().getFlowJson().size() >0) {
-    	    for(FlowJson flowJson : flowStruct.getFlowJsons().getFlowJson()) {
-    	        topoSort.addVertex(flowJson.getId());
-    	        dataMap.put(flowJson.getId(), flowJson);
-    	        sortMap.put(flowJson.getId(), num++);
-    	    }
-	    }	    
+
 	    if(flowStruct.getFlowDatas() != null && flowStruct.getFlowDatas().getFlowData() != null && flowStruct.getFlowDatas().getFlowData().size() > 0) {
             for(FlowData flowData : flowStruct.getFlowDatas().getFlowData()) {
                 topoSort.addVertex(flowData.getId());
@@ -244,13 +229,7 @@ public class TopoSort {
                 sortMap.put(flowWonton.getId(), num++);
             }
 	    }
-	    if(flowStruct.getFlowProcesses() != null && flowStruct.getFlowProcesses().getFlowProcess() != null && flowStruct.getFlowProcesses().getFlowProcess().size() > 0) {
-            for(FlowProcess flowProcess : flowStruct.getFlowProcesses().getFlowProcess()) {
-                topoSort.addVertex(flowProcess.getId());
-                dataMap.put(flowProcess.getId(), flowProcess);
-                sortMap.put(flowProcess.getId(), num++);
-            }
-	    }
+
 	    
 	    if(flowStruct.getFlowTexts() != null && flowStruct.getFlowTexts().getFlowText() != null && flowStruct.getFlowTexts().getFlowText().size() > 0) {
             for(FlowText flowText : flowStruct.getFlowTexts().getFlowText()) {
@@ -269,11 +248,7 @@ public class TopoSort {
         for (String key : sortMap.keySet()) {
             nodeMap.put(sortMap.get(key), key);
         }
-	    
-        flowSequenceList = flowStruct.getFlowSequences().getFlowSequences();
-        for(FlowSequence flowSequence : flowStruct.getFlowSequences().getFlowSequences()) {
-            topoSort.addEdge(sortMap.get(flowSequence.getSourceId()), sortMap.get(flowSequence.getTargetId()));
-        }
+
         return dataMap;
 	}
 }

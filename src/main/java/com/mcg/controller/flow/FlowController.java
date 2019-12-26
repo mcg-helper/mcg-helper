@@ -44,10 +44,7 @@ import com.mcg.entity.common.McgResult;
 import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.end.FlowEnd;
 import com.mcg.entity.flow.java.FlowJava;
-import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
-import com.mcg.entity.flow.loop.FlowLoop;
-import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
@@ -100,85 +97,65 @@ public class FlowController extends BaseController {
 		return mv;
 	}
 	
-    @RequestMapping(value="saveStart", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public McgResult saveStart(@Valid @RequestBody FlowStart flowStart, BindingResult result, HttpSession session) {
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
-        NotifyBody notifyBody = new NotifyBody();
-        McgResult mcgResult = new McgResult();
-        
-        if(Tools.validator(result, mcgResult, notifyBody)) {
-            flowStart.setName("流程开始");
-            CachePlugin.putFlowEntity(flowStart.getFlowId(), flowStart.getStartId(), flowStart);
-            notifyBody.setContent("开始控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
-        }
-        
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
-        return mcgResult;
-    }	
-	
-    @RequestMapping(value="saveSqlQuery", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public McgResult saveSqlQuery(@Valid @RequestBody FlowSqlQuery flowSqlQuery, BindingResult result, HttpSession session) {
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
-        NotifyBody notifyBody = new NotifyBody();       
-        McgResult mcgResult = new McgResult();
-        
-        if(Tools.validator(result, mcgResult, notifyBody)) {
-            flowSqlQuery.setName(flowSqlQuery.getSqlQueryProperty().getName());
-            CachePlugin.putFlowEntity(flowSqlQuery.getFlowId(), flowSqlQuery.getId(), flowSqlQuery);
-            notifyBody.setContent("Sql查询控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
-        }
-        
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
-        return mcgResult;
-    }
-    
-    @RequestMapping(value="saveSqlExecute", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public McgResult saveSqlExecute(@Valid @RequestBody FlowSqlExecute flowSqlExecute, BindingResult result, HttpSession session) {
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
-        NotifyBody notifyBody = new NotifyBody();       
-        McgResult mcgResult = new McgResult();
-        if(Tools.validator(result, mcgResult, notifyBody)) {
-            flowSqlExecute.setName(flowSqlExecute.getSqlExecuteProperty().getName());
-            CachePlugin.putFlowEntity(flowSqlExecute.getFlowId(), flowSqlExecute.getId(), flowSqlExecute);
-            notifyBody.setContent("Sql执行控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
-        }
-        
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
-        return mcgResult;
-    }
-    
-	@RequestMapping(value="saveJson", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public McgResult saveJson(@Valid @RequestBody FlowJson flowJson, BindingResult result, HttpSession session) {
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
-        NotifyBody notifyBody = new NotifyBody();	    
-	    McgResult mcgResult = new McgResult();
-	    
-	    if(Tools.validator(result, mcgResult, notifyBody)) {
-            flowJson.setName(flowJson.getJsonProperty().getName());
-            CachePlugin.putFlowEntity(flowJson.getFlowId(), flowJson.getId(), flowJson);
-            notifyBody.setContent("Json控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());            
-        }
+//    @RequestMapping(value="saveStart", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//    @ResponseBody
+//    public McgResult saveStart(@Valid @RequestBody FlowStart flowStart, BindingResult result, HttpSession session) {
+//        Message message = MessagePlugin.getMessage();
+//        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+//        NotifyBody notifyBody = new NotifyBody();
+//        McgResult mcgResult = new McgResult();
+//
+//        if(Tools.validator(result, mcgResult, notifyBody)) {
+//            flowStart.setName("流程开始");
+//            CachePlugin.putFlowEntity(flowStart.getFlowId(), flowStart.getStartId(), flowStart);
+//            notifyBody.setContent("开始控件保存成功！");
+//            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+//        }
+//
+//        message.setBody(notifyBody);
+//        MessagePlugin.push(session.getId(), message);
+//        return mcgResult;
+//    }
+//
+//    @RequestMapping(value="saveSqlQuery", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//    @ResponseBody
+//    public McgResult saveSqlQuery(@Valid @RequestBody FlowSqlQuery flowSqlQuery, BindingResult result, HttpSession session) {
+//        Message message = MessagePlugin.getMessage();
+//        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+//        NotifyBody notifyBody = new NotifyBody();
+//        McgResult mcgResult = new McgResult();
+//
+//        if(Tools.validator(result, mcgResult, notifyBody)) {
+//            flowSqlQuery.setName(flowSqlQuery.getSqlQueryProperty().getName());
+//            CachePlugin.putFlowEntity(flowSqlQuery.getFlowId(), flowSqlQuery.getId(), flowSqlQuery);
+//            notifyBody.setContent("Sql查询控件保存成功！");
+//            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+//        }
+//
+//        message.setBody(notifyBody);
+//        MessagePlugin.push(session.getId(), message);
+//        return mcgResult;
+//    }
+//
+//    @RequestMapping(value="saveSqlExecute", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//    @ResponseBody
+//    public McgResult saveSqlExecute(@Valid @RequestBody FlowSqlExecute flowSqlExecute, BindingResult result, HttpSession session) {
+//        Message message = MessagePlugin.getMessage();
+//        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+//        NotifyBody notifyBody = new NotifyBody();
+//        McgResult mcgResult = new McgResult();
+//        if(Tools.validator(result, mcgResult, notifyBody)) {
+//            flowSqlExecute.setName(flowSqlExecute.getSqlExecuteProperty().getName());
+//            CachePlugin.putFlowEntity(flowSqlExecute.getFlowId(), flowSqlExecute.getId(), flowSqlExecute);
+//            notifyBody.setContent("Sql执行控件保存成功！");
+//            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+//        }
+//
+//        message.setBody(notifyBody);
+//        MessagePlugin.push(session.getId(), message);
+//        return mcgResult;
+//    }
 
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
-		return mcgResult;
-	}	
-    
 	@RequestMapping(value="saveText", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public McgResult saveText(@Valid @RequestBody FlowText flowText, BindingResult result, HttpSession session) {
@@ -199,166 +176,127 @@ public class FlowController extends BaseController {
 		return mcgResult;
 	}  
 	
-	@RequestMapping(value="saveScript", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public McgResult saveScript(@Valid @RequestBody FlowScript flowScript, BindingResult result, HttpSession session) {
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
-        NotifyBody notifyBody = new NotifyBody();       
-        McgResult mcgResult = new McgResult();
-        
-        if(Tools.validator(result, mcgResult, notifyBody)) {
-            flowScript.setName(flowScript.getScriptProperty().getScriptName());
-            CachePlugin.putFlowEntity(flowScript.getFlowId(), flowScript.getScriptId(), flowScript);
-            notifyBody.setContent("脚本控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());            
-        }
+//	@RequestMapping(value="saveScript", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//	@ResponseBody
+//	public McgResult saveScript(@Valid @RequestBody FlowScript flowScript, BindingResult result, HttpSession session) {
+//        Message message = MessagePlugin.getMessage();
+//        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+//        NotifyBody notifyBody = new NotifyBody();
+//        McgResult mcgResult = new McgResult();
+//
+//        if(Tools.validator(result, mcgResult, notifyBody)) {
+//            flowScript.setName(flowScript.getScriptProperty().getScriptName());
+//            CachePlugin.putFlowEntity(flowScript.getFlowId(), flowScript.getScriptId(), flowScript);
+//            notifyBody.setContent("脚本控件保存成功！");
+//            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+//        }
+//
+//        message.setBody(notifyBody);
+//        MessagePlugin.push(session.getId(), message);
+//		return mcgResult;
+//	}
+//
+//	@RequestMapping(value="saveJava", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//	@ResponseBody
+//	public McgResult saveJava(@Valid @RequestBody FlowJava flowJava, BindingResult result, HttpSession session) {
+//        Message message = MessagePlugin.getMessage();
+//        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+//        NotifyBody notifyBody = new NotifyBody();
+//        McgResult mcgResult = new McgResult();
+//
+//        if(Tools.validator(result, mcgResult, notifyBody)) {
+//            flowJava.setName(flowJava.getJavaProperty().getName());
+//            CachePlugin.putFlowEntity(flowJava.getFlowId(), flowJava.getId(), flowJava);
+//            notifyBody.setContent("Java控件保存成功！");
+//            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+//        }
+//
+//        message.setBody(notifyBody);
+//        MessagePlugin.push(session.getId(), message);
+//		return mcgResult;
+//	}
+//
+//	@RequestMapping(value="savePython", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//	@ResponseBody
+//	public McgResult savePython(@Valid @RequestBody FlowPython flowPython, BindingResult result, HttpSession session) {
+//        Message message = MessagePlugin.getMessage();
+//        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+//        NotifyBody notifyBody = new NotifyBody();
+//        McgResult mcgResult = new McgResult();
+//
+//        if(Tools.validator(result, mcgResult, notifyBody)) {
+//            flowPython.setName(flowPython.getPythonProperty().getName());
+//            CachePlugin.putFlowEntity(flowPython.getFlowId(), flowPython.getId(), flowPython);
+//            notifyBody.setContent("Python控件保存成功！");
+//            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+//        }
+//
+//        message.setBody(notifyBody);
+//        MessagePlugin.push(session.getId(), message);
+//		return mcgResult;
+//	}
+//
+//	@RequestMapping(value="saveLinux", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//	@ResponseBody
+//	public McgResult saveLinux(@Valid @RequestBody FlowLinux flowLinux, BindingResult result, HttpSession session) {
+//        Message message = MessagePlugin.getMessage();
+//        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+//        NotifyBody notifyBody = new NotifyBody();
+//        McgResult mcgResult = new McgResult();
+//
+//        if(Tools.validator(result, mcgResult, notifyBody)) {
+//            flowLinux.setName(flowLinux.getLinuxProperty().getName());
+//            CachePlugin.putFlowEntity(flowLinux.getFlowId(), flowLinux.getId(), flowLinux);
+//            notifyBody.setContent("Linux控件保存成功！");
+//            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+//        }
+//
+//        message.setBody(notifyBody);
+//        MessagePlugin.push(session.getId(), message);
+//		return mcgResult;
+//	}
+//
+//	@RequestMapping(value="saveWonton", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//	@ResponseBody
+//	public McgResult saveWonton(@Valid @RequestBody FlowWonton flowWonton, BindingResult result, HttpSession session) {
+//        Message message = MessagePlugin.getMessage();
+//        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+//        NotifyBody notifyBody = new NotifyBody();
+//        McgResult mcgResult = new McgResult();
+//
+//        if(Tools.validator(result, mcgResult, notifyBody)) {
+//        	flowWonton.setName(flowWonton.getWontonProperty().getName());
+//            CachePlugin.putFlowEntity(flowWonton.getFlowId(), flowWonton.getId(), flowWonton);
+//            notifyBody.setContent("混沌控件保存成功！");
+//            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+//        }
+//
+//        message.setBody(notifyBody);
+//        MessagePlugin.push(session.getId(), message);
+//		return mcgResult;
+//	}
+//
 
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
-		return mcgResult;
-	}  	
-	
-	@RequestMapping(value="saveJava", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public McgResult saveJava(@Valid @RequestBody FlowJava flowJava, BindingResult result, HttpSession session) {
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
-        NotifyBody notifyBody = new NotifyBody();       
-        McgResult mcgResult = new McgResult();
-        
-        if(Tools.validator(result, mcgResult, notifyBody)) {
-            flowJava.setName(flowJava.getJavaProperty().getName());
-            CachePlugin.putFlowEntity(flowJava.getFlowId(), flowJava.getId(), flowJava);
-            notifyBody.setContent("Java控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());            
-        }
-
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
-		return mcgResult;
-	}  	
-	
-	@RequestMapping(value="savePython", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public McgResult savePython(@Valid @RequestBody FlowPython flowPython, BindingResult result, HttpSession session) {
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
-        NotifyBody notifyBody = new NotifyBody();       
-        McgResult mcgResult = new McgResult();
-        
-        if(Tools.validator(result, mcgResult, notifyBody)) {
-            flowPython.setName(flowPython.getPythonProperty().getName());
-            CachePlugin.putFlowEntity(flowPython.getFlowId(), flowPython.getId(), flowPython);
-            notifyBody.setContent("Python控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());            
-        }
-
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
-		return mcgResult;
-	}
-	
-	@RequestMapping(value="saveLinux", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public McgResult saveLinux(@Valid @RequestBody FlowLinux flowLinux, BindingResult result, HttpSession session) {
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
-        NotifyBody notifyBody = new NotifyBody();       
-        McgResult mcgResult = new McgResult();
-        
-        if(Tools.validator(result, mcgResult, notifyBody)) {
-            flowLinux.setName(flowLinux.getLinuxProperty().getName());
-            CachePlugin.putFlowEntity(flowLinux.getFlowId(), flowLinux.getId(), flowLinux);
-            notifyBody.setContent("Linux控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());            
-        }
-
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
-		return mcgResult;
-	}	
-	
-	@RequestMapping(value="saveWonton", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public McgResult saveWonton(@Valid @RequestBody FlowWonton flowWonton, BindingResult result, HttpSession session) {
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
-        NotifyBody notifyBody = new NotifyBody();
-        McgResult mcgResult = new McgResult();
-        
-        if(Tools.validator(result, mcgResult, notifyBody)) {
-        	flowWonton.setName(flowWonton.getWontonProperty().getName());
-            CachePlugin.putFlowEntity(flowWonton.getFlowId(), flowWonton.getId(), flowWonton);
-            notifyBody.setContent("混沌控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
-        }
-
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
-		return mcgResult;
-	}
-	
-	@RequestMapping(value="saveProcess", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public McgResult saveProcess(@Valid @RequestBody FlowProcess flowProcess, BindingResult result, HttpSession session) {
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
-        NotifyBody notifyBody = new NotifyBody();
-        McgResult mcgResult = new McgResult();
-        
-        if(Tools.validator(result, mcgResult, notifyBody)) {
-        	flowProcess.setName(flowProcess.getProcessProperty().getName());
-            CachePlugin.putFlowEntity(flowProcess.getFlowId(), flowProcess.getId(), flowProcess);
-            notifyBody.setContent("子流程控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
-        }
-
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
-		return mcgResult;
-	}
-	
-	@RequestMapping(value="saveLoop", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public McgResult saveLoop(@Valid @RequestBody FlowLoop flowLoop, BindingResult result, HttpSession session) {
-        Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
-        NotifyBody notifyBody = new NotifyBody();
-        McgResult mcgResult = new McgResult();
-        
-        if(Tools.validator(result, mcgResult, notifyBody)) {
-        	flowLoop.setName(flowLoop.getLoopProperty().getName());
-            CachePlugin.putFlowEntity(flowLoop.getFlowId(), flowLoop.getId(), flowLoop);
-            notifyBody.setContent("循环程控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
-        }
-
-        message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
-		return mcgResult;
-	}
-	
 	@RequestMapping(value="saveData", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public McgResult saveData(@Valid @RequestBody FlowData flowData, BindingResult result, HttpSession session) {
         Message message = MessagePlugin.getMessage();
-        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
-        NotifyBody notifyBody = new NotifyBody();	    
+        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+        NotifyBody notifyBody = new NotifyBody();
 	    McgResult mcgResult = new McgResult();
-        
+
 	    if(Tools.validator(result, mcgResult, notifyBody)) {
             flowData.setName(flowData.getDataProperty().getName());
             CachePlugin.putFlowEntity(flowData.getFlowId(), flowData.getId(), flowData);
             notifyBody.setContent("Data控件保存成功！");
-            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());            
+            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
         }
-        
+
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);         
+        MessagePlugin.push(session.getId(), message);
 		return mcgResult;
 	}
-	
+
     @RequestMapping(value="saveFlowEnd", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public McgResult saveFlowEnd(@Valid @RequestBody FlowEnd flowEnd, BindingResult result, HttpSession session) {
@@ -378,21 +316,21 @@ public class FlowController extends BaseController {
         MessagePlugin.push(session.getId(), message);        
         return mcgResult;
     }	
-    
-    @RequestMapping(value="testConnect", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public McgResult testConnect(@RequestBody McgDataSource mcgDataSource) {
-        
-        McgResult mcgResult = new McgResult();
-        if(flowService.testConnect(mcgDataSource)) {
-        	mcgResult.setStatusCode(1);
-        	mcgResult.setStatusMes("执行成功");
-        } else {
-        	mcgResult.setStatusCode(0);
-        	mcgResult.setStatusMes("执行失败");        	
-        }
-        return mcgResult;
-    }
+//
+//    @RequestMapping(value="testConnect", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//    @ResponseBody
+//    public McgResult testConnect(@RequestBody McgDataSource mcgDataSource) {
+//
+//        McgResult mcgResult = new McgResult();
+//        if(flowService.testConnect(mcgDataSource)) {
+//        	mcgResult.setStatusCode(1);
+//        	mcgResult.setStatusMes("执行成功");
+//        } else {
+//        	mcgResult.setStatusCode(0);
+//        	mcgResult.setStatusMes("执行失败");
+//        }
+//        return mcgResult;
+//    }
     
     @RequestMapping(value="saveDataSource", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody

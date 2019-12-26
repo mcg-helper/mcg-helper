@@ -21,7 +21,7 @@
 	<button id="elementEditBtn" onclick="suspend('edit')"  type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></button>
 	<button id="elementDeleteBtn" onclick="suspend('delete')" type="button" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span></button>
 	<div class="btn-group">
-		<button id="logOutBtn" onclick="suspend('logOut')" type="button" class="btn btn-default"><span class="glyphicon glyphicon-log-out"></span></button>
+		<button id="logOutBtn" onclick="suspendConnector('output')" type="button" class="btn btn-default"><span class="glyphicon glyphicon-log-out"></span></button>
 <!--  			
 		<button id="elementSet" onclick="suspend('set')" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 			<span class="glyphicon glyphicon-cog"></span>

@@ -37,7 +37,7 @@ import com.mcg.plugin.dbconn.McgConnect;
 import com.mcg.util.JDBCTypesUtils;
 import com.mcg.util.Tools;
 
-import oracle.jdbc.OracleConnection;
+//import oracle.jdbc.OracleConnection;
 
 public class OracleConnectImpl extends AbstractConnect implements McgConnect {
 
@@ -51,62 +51,62 @@ public class OracleConnectImpl extends AbstractConnect implements McgConnect {
     public List<DataRecord> getTableInfo(String tableName)  throws Exception {
         List<DataRecord> result = new ArrayList<DataRecord>();
         
-        try {
-	        OracleConnection conn = (OracleConnection)dbConnect.getConnection();
-	        conn.setRemarksReporting(true);
-	        DatabaseMetaData dbmd = conn.getMetaData();
-	        ResultSet resultSet = dbmd.getTables(null, "%", tableName, new String[] { "TABLE" });
-	        
-	        ResultSet primaryKeyResultSet = dbmd.getPrimaryKeys(conn.getCatalog() ,null,tableName);  
-	        Map<String, String> primaryMap = new HashMap<String, String>();
-	        while(primaryKeyResultSet.next()){  
-	            String primaryKeyColumnName = primaryKeyResultSet.getString("COLUMN_NAME"); 
-	            primaryMap.put(primaryKeyColumnName, primaryKeyColumnName);
-	        }          
-	        
-	        while (resultSet.next()) {
-	            String existTableName = resultSet.getString("TABLE_NAME");
-	            if(existTableName.equals(tableName)){
-	                ResultSet rs = conn.getMetaData().getColumns(null, getSchema(conn), existTableName, "%");
-	                while(rs.next()){
-	                    DataRecord dataRecord = new DataRecord();
-	                    dataRecord.setTableField(rs.getString("COLUMN_NAME")); //字段名
-	                    dataRecord.setClassField(Tools.convertFieldName(dataRecord.getTableField()));//变量名
-	                    dataRecord.setComment(rs.getString("REMARKS")); //字段注释
-	                    dataRecord.setTableFieldType(rs.getString("TYPE_NAME")); //表字段数据类型
-	                    dataRecord.setMandatory(!rs.getBoolean("NULLABLE"));//非空
-	                    dataRecord.setLength(rs.getInt("COLUMN_SIZE"));//列大小
-	                    dataRecord.setPrecision(rs.getInt("DECIMAL_DIGITS"));//精度
-	                    dataRecord.setInclude(JDBCTypesUtils.jdbcTypeToJavaType(rs.getInt("DATA_TYPE")).getName()); ////java import类型
-	                    dataRecord.setDataType(Tools.splitLast(dataRecord.getInclude()));
-	                    
-	                    dataRecord.setPrimary(rs.getString("COLUMN_NAME").equalsIgnoreCase(primaryMap.get(rs.getString("COLUMN_NAME")))); //是否为主键
-	//                  rs.getString("COLUMN_DEF"); //默认值
-	//                  rs.getString("ORDINAL_POSITION")//序号
-	                    
-	                    if("NUMBER".equalsIgnoreCase(dataRecord.getTableFieldType()) && dataRecord.getPrecision() <= 0 ) {
-	                    	if(dataRecord.getLength() <= 4) {
-	                    		dataRecord.setDataType("Short");
-	                    		dataRecord.setInclude("java.lang.Short");
-	                    	} else if(dataRecord.getLength() <= 9){
-	                    		dataRecord.setDataType("Integer");
-	                    		dataRecord.setInclude("java.lang.Integer");
-	                    	} else if(dataRecord.getLength() <= 18){
-	                    		dataRecord.setDataType("Long");
-	                    		dataRecord.setInclude("java.lang.Long");
-	                    	}
-	                    }
-	                    result.add(dataRecord);
-	                }
-	                
-	            }
-	        }
-	        
-        } catch (Exception e) {
-        	logger.error("获取oracle表结构信息出错，异常信息：", e);
-		} finally {
-        	dbConnect.freeConnection();
-        }
+//        try {
+//	        OracleConnection conn = (OracleConnection)dbConnect.getConnection();
+//	        conn.setRemarksReporting(true);
+//	        DatabaseMetaData dbmd = conn.getMetaData();
+//	        ResultSet resultSet = dbmd.getTables(null, "%", tableName, new String[] { "TABLE" });
+//
+//	        ResultSet primaryKeyResultSet = dbmd.getPrimaryKeys(conn.getCatalog() ,null,tableName);
+//	        Map<String, String> primaryMap = new HashMap<String, String>();
+//	        while(primaryKeyResultSet.next()){
+//	            String primaryKeyColumnName = primaryKeyResultSet.getString("COLUMN_NAME");
+//	            primaryMap.put(primaryKeyColumnName, primaryKeyColumnName);
+//	        }
+//
+//	        while (resultSet.next()) {
+//	            String existTableName = resultSet.getString("TABLE_NAME");
+//	            if(existTableName.equals(tableName)){
+//	                ResultSet rs = conn.getMetaData().getColumns(null, getSchema(conn), existTableName, "%");
+//	                while(rs.next()){
+//	                    DataRecord dataRecord = new DataRecord();
+//	                    dataRecord.setTableField(rs.getString("COLUMN_NAME")); //字段名
+//	                    dataRecord.setClassField(Tools.convertFieldName(dataRecord.getTableField()));//变量名
+//	                    dataRecord.setComment(rs.getString("REMARKS")); //字段注释
+//	                    dataRecord.setTableFieldType(rs.getString("TYPE_NAME")); //表字段数据类型
+//	                    dataRecord.setMandatory(!rs.getBoolean("NULLABLE"));//非空
+//	                    dataRecord.setLength(rs.getInt("COLUMN_SIZE"));//列大小
+//	                    dataRecord.setPrecision(rs.getInt("DECIMAL_DIGITS"));//精度
+//	                    dataRecord.setInclude(JDBCTypesUtils.jdbcTypeToJavaType(rs.getInt("DATA_TYPE")).getName()); ////java import类型
+//	                    dataRecord.setDataType(Tools.splitLast(dataRecord.getInclude()));
+//
+//	                    dataRecord.setPrimary(rs.getString("COLUMN_NAME").equalsIgnoreCase(primaryMap.get(rs.getString("COLUMN_NAME")))); //是否为主键
+//	//                  rs.getString("COLUMN_DEF"); //默认值
+//	//                  rs.getString("ORDINAL_POSITION")//序号
+//
+//	                    if("NUMBER".equalsIgnoreCase(dataRecord.getTableFieldType()) && dataRecord.getPrecision() <= 0 ) {
+//	                    	if(dataRecord.getLength() <= 4) {
+//	                    		dataRecord.setDataType("Short");
+//	                    		dataRecord.setInclude("java.lang.Short");
+//	                    	} else if(dataRecord.getLength() <= 9){
+//	                    		dataRecord.setDataType("Integer");
+//	                    		dataRecord.setInclude("java.lang.Integer");
+//	                    	} else if(dataRecord.getLength() <= 18){
+//	                    		dataRecord.setDataType("Long");
+//	                    		dataRecord.setInclude("java.lang.Long");
+//	                    	}
+//	                    }
+//	                    result.add(dataRecord);
+//	                }
+//
+//	            }
+//	        }
+//
+//        } catch (Exception e) {
+//        	logger.error("获取oracle表结构信息出错，异常信息：", e);
+//		} finally {
+//        	dbConnect.freeConnection();
+//        }
         return result;
     }
 
