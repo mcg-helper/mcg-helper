@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.SpringContextHelper;
 import com.mcg.entity.flow.start.FlowStart;
 import com.mcg.entity.flow.start.Var;
@@ -73,7 +74,28 @@ public class FlowStartStrategy implements ProcessStrategy {
         for(Var var : varList) {
             dataMap.put(var.getKey(), var.getValue());
         }
-        result.setJsonVar(JSON.toJSONString(dataMap, true));
+        
+        JSONObject param = new JSONObject();
+        
+        if(executeStruct.getSubFlag()) {
+        	if(executeStruct.getParentParam() instanceof JSONObject) {
+        		param = (JSONObject)executeStruct.getParentParam();
+
+        		for(String key : dataMap.keySet()){
+        		    if(param.get(key) == null) {
+        		    	param.put(key, dataMap.get(key));
+        		    }
+        		}
+        	} else {
+        		logger.error("父级流程传入参数有误，父级流程参数：{}", executeStruct.getParentParam().toJSONString());
+        		throw new Exception("当前子流程中父级流程传入参数有误，父级流程参数：" + executeStruct.getParentParam().toJSONString());
+        	}
+        	
+        	result.setJsonVar(JSON.toJSONString(param, true));
+        } else {
+        	result.setJsonVar(JSON.toJSONString(dataMap, true));
+        }
+        
         executeStruct.getRunStatus().setCode("success");
         
         logger.debug("开始控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowStart), JSON.toJSONString(executeStruct.getRunStatus()));

@@ -25,14 +25,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import com.mcg.common.Constants;
 import com.mcg.entity.global.McgGlobal;
 import com.mcg.entity.global.serversource.ServerSource;
 import com.mcg.service.DbService;
 import com.mcg.service.GlobalService;
+import com.mcg.util.SSHShellUtil;
 
 @Service
 public class GlobalServiceImpl implements GlobalService {
@@ -91,18 +89,13 @@ public class GlobalServiceImpl implements GlobalService {
 	@Override
 	public boolean isConnected(ServerSource serverSource) {
 		boolean result = false;
-        JSch jsch = new JSch();
-        Session session = null;		
+   	
 		try {
-			session = jsch.getSession(serverSource.getUserName(), serverSource.getIp(), serverSource.getPort());
-	        session.setConfig("StrictHostKeyChecking", "no");
-	        session.setPassword(serverSource.getPwd());
-	        session.connect();
-		} catch (JSchException e) {
+			SSHShellUtil.execute(serverSource.getIp(), serverSource.getPort(), serverSource.getUserName(), 
+					serverSource.getPwd(), serverSource.getSecretKey(), "");
+			result = true;
+		} catch (Exception e) {
 			logger.error("测试连接服务器出错，服务器信息：{}，异常信息：{}", JSON.toJSONString(serverSource), e.getMessage());
-		} finally {
-			result = session.isConnected();
-			session.disconnect();
 		}
 		return result;		
 	}

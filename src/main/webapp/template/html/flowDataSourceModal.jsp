@@ -79,7 +79,7 @@
 					                <th data-field="dbPort" data-formatter="inputFormatter">端口</th>
 					                <th data-field="dbName" data-formatter="inputFormatter">数据库名称</th>
 					                <th data-field="dbUserName" data-formatter="inputFormatter">用户名</th>
-					                <th data-field="dbPwd" data-formatter="inputFormatter">密码</th>
+					                <th data-field="dbPwd" data-formatter="inputPwdFormatter">密码</th>
 					                <th data-field="note" data-formatter="inputFormatter">说明</th>
 					                <th data-field="commands" data-formatter="dsCommandsFormatter">操作</th>
 					            </tr>
@@ -106,7 +106,8 @@
 					                <th data-field="ip" data-formatter="inputFormatter">服务器IP</th>
 					                <th data-field="port" data-formatter="inputFormatter">端口</th>
 					                <th data-field="userName" data-formatter="inputFormatter">用户名</th>
-					                <th data-field="pwd" data-formatter="inputFormatter">密码</th>
+					                <th data-field="pwd" data-formatter="inputPwdFormatter">密码</th>
+					                <th data-field="secretKey" data-formatter="inputPwdFormatter">谷歌身份密钥</th>
 					                <th data-field="note" data-formatter="inputFormatter">说明</th>
 					                <th data-field="commands" data-formatter="ssCommandsFormatter">操作</th>
 					            </tr>
@@ -116,7 +117,7 @@
 						<div class="tab-pane fade" id="${modalId }_explain">
 							全局变量：例如：变量名："name"、变量值："mcg-helper"，即可在流程中任何控件的任何位置，比如：采用${name }方式进行占位，在流程执行时会自动替换值为mcg-helper。<br/>
 							数据库：设置数据库连接信息，在流程中支持数据库引用的控件进行依赖，实现与数据库的通信，支持主流数据库mysql、oracle、sqlserver、postgresql。<br/>
-							服务器：设置Linux连接信息，在流程中支持服务器引用的控件进行依赖，实现SSH连接。
+							服务器：设置Linux连接信息，在流程中支持服务器引用的控件进行依赖，实现SSH连接。注：有需要进行谷歌身份认证的，才填写“谷歌身份密钥”。
 						</div>
 					</div>
 				</div>

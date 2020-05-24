@@ -22,10 +22,12 @@ import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpSession;
 
+import com.alibaba.fastjson.JSON;
 import com.mcg.entity.common.Table;
 import com.mcg.entity.flow.FlowStruct;
 import com.mcg.entity.flow.data.DataRecord;
 import com.mcg.entity.flow.web.WebStruct;
+import com.mcg.entity.generate.RunStatus;
 import com.mcg.entity.global.datasource.McgDataSource;
 
 /**
@@ -74,9 +76,11 @@ public interface FlowService {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws ExecutionException
+	 * 
+	 * @return 返回流程执行完成状态
 	 */
 
-	boolean generate(WebStruct webStruct, HttpSession session, boolean subFlag, String parentFlowId) throws ClassNotFoundException, IOException, InterruptedException, ExecutionException;
+	RunStatus generate(WebStruct webStruct, HttpSession session, boolean subFlag, String parentFlowId, JSON parentParam) throws ClassNotFoundException, IOException, InterruptedException, ExecutionException;
 	
     /**
      * 清空文件的数据，但不删除文件

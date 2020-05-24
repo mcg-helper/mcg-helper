@@ -17,7 +17,6 @@
 package com.mcg.plugin.execute.strategy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.mcg.common.SpringContextHelper;
 import com.mcg.common.sysenum.EletypeEnum;
@@ -105,9 +105,9 @@ public class FlowSqlQueryStrategy implements ProcessStrategy {
         List<Map<String, Object>> result = null;
         result = mcgBizAdapter.tableQuery(flowSqlQuery.getSqlQueryCore().getSource(), null);
      
-		Map<String, List<Map<String, Object>>> map = new HashMap<String, List<Map<String, Object>>>();
-		map.put(flowSqlQuery.getSqlQueryProperty().getKey(), result);
-		runResult.setJsonVar(JSON.toJSONString(map, SerializerFeature.WriteDateUseDateFormat));
+        JSONObject runResultJson = (JSONObject)parentParam;
+        runResultJson.put(flowSqlQuery.getSqlQueryProperty().getKey(), result);
+		runResult.setJsonVar(JSON.toJSONString(runResultJson, SerializerFeature.WriteDateUseDateFormat));
 		executeStruct.getRunStatus().setCode("success");
 		
 		logger.debug("SQL查询控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowSqlQuery), JSON.toJSONString(executeStruct.getRunStatus()));

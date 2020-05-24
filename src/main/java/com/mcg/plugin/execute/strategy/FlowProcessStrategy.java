@@ -17,12 +17,15 @@
 package com.mcg.plugin.execute.strategy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.SpringContextHelper;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
@@ -31,6 +34,7 @@ import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.web.WebStruct;
 import com.mcg.entity.generate.ExecuteStruct;
 import com.mcg.entity.generate.RunResult;
+import com.mcg.entity.generate.RunStatus;
 import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
 import com.mcg.plugin.build.McgProduct;
@@ -53,7 +57,9 @@ public class FlowProcessStrategy implements ProcessStrategy {
 	public RunResult run(McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
 		
 		FlowProcess flowProcess = (FlowProcess)mcgProduct;
+//		JSON parentParam = DataConverter.getParentRunResultByValue(flowProcess.getId(), executeStruct);
 		JSON parentParam = DataConverter.getParentRunResult(flowProcess.getId(), executeStruct);
+		
 		flowProcess = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowProcess);		
 		RunResult runResult = new RunResult();
 		
@@ -78,21 +84,33 @@ public class FlowProcessStrategy implements ProcessStrategy {
         
         MessagePlugin.push(executeStruct.getSession().getId(), message);
         
-        
         FlowService flowService = SpringContextHelper.getSpringBean(FlowService.class);
         WebStruct webStruct = new WebStruct();
 
         if (!StringUtils.isEmpty(flowProcess.getProcessProperty().getFlowId())) {
         	webStruct.setFlowId(flowProcess.getProcessProperty().getFlowId());
         	logger.debug("开始执行子流程，数据：{}", JSON.toJSONString(flowProcess));
-        	flowService.generate(webStruct, executeStruct.getSession(), true, executeStruct.getTopology().getId());
+        	RunStatus flowRunStatus = flowService.generate(webStruct, executeStruct.getSession(), true, executeStruct.getTopology().getId(), parentParam);
+        	
+        	executeStruct.getRunStatus().setCode(flowRunStatus.getCode());
+    		Map<String, String> runStatusMap = new HashMap<String, String>();
+    		runStatusMap.put("code", flowRunStatus.getCode());
+    		Map<String, Object> map = new HashMap<String, Object>();
+    		map.put(flowProcess.getProcessProperty().getKey(), runStatusMap);
+    		runResult.setJsonVar(JSON.toJSONString(map, true));
+		} else {
+			executeStruct.getRunStatus().setCode("exception");
 		}
-        
-		executeStruct.getRunStatus().setCode("success");
 		
 		logger.debug("子流程控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowProcess), JSON.toJSONString(executeStruct.getRunStatus()));
+		runResult = new RunResult();
+		
+		runResult.setElementId(flowProcess.getId());
+		JSONObject runResultJson = (JSONObject)parentParam;
+		runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
+		
+		executeStruct.getRunStatus().setCode("success");
 		return runResult;
 	}
-	
 	
 }

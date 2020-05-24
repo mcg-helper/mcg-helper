@@ -78,7 +78,7 @@ public class FlowLoopStrategy implements ProcessStrategy {
         message.setBody(flowBody);
         MessagePlugin.push(executeStruct.getSession().getId(), message);
         
-        JSONObject jsonObject = (JSONObject)parentParam;
+        JSONObject jsonObject = new JSONObject();
         LoopStatus loopStatusLast = executeStruct.getRunStatus().getLoopStatusMap().get(flowLoop.getId());
         
         if(FlowLoopTypeEnum.COUNT.getValue().equals(flowLoop.getLoopProperty().getType()) ) {
@@ -111,10 +111,9 @@ public class FlowLoopStrategy implements ProcessStrategy {
         }
         
         runResult.setElementId(flowLoop.getId());
-        
-		JSONObject runResultJson = new JSONObject();
+        JSONObject runResultJson = (JSONObject)parentParam;
 		runResultJson.put(flowLoop.getLoopProperty().getKey(), jsonObject);
-        runResult.setJsonVar(JSON.toJSONString(runResultJson));
+        runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
         
         executeStruct.getRunStatus().setCode("success");
 		

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.mcg.common.sysenum.FlowGitModeEnum;
 import com.mcg.common.sysenum.FlowLinuxConnModeEnum;
 import com.mcg.common.sysenum.FlowLoopTypeEnum;
 import com.mcg.common.sysenum.FlowTextOutModeEnum;
@@ -215,6 +216,31 @@ public class HtmlController extends BaseController {
 		mv.addObject("loopTypes", FlowLoopTypeEnum.values());
 		
 		mv.setViewName("html/flowLoopModal");
+		return mv;
+	}
+	
+	/* 流程节点 Git_Modal */
+	@RequestMapping(value="/flowGitModal")
+	public ModelAndView getFlowGitModal() throws Exception{
+		ModelAndView mv = this.getModelAndView();
+		PageData pd = this.getPageData();
+		mv.addObject("modalId", pd.get("modalId"));
+		mv.addObject("gitModes", FlowGitModeEnum.values());
+		
+		mv.setViewName("html/flowGitModal");
+		return mv;
+	}
+	
+	/* 流程节点Sftp_Modal */
+	@RequestMapping(value="/flowSftpModal")
+	public ModelAndView getFlowSftpModal() throws Exception{
+		ModelAndView mv = this.getModelAndView();
+		PageData pd = this.getPageData();
+		mv.addObject("modalId", pd.get("modalId"));
+		mv.addObject("connMode", FlowLinuxConnModeEnum.values());
+		mv.addObject("serverSources", globalService.getServerSources());
+		
+		mv.setViewName("html/flowSftpModal");
 		return mv;
 	}
 	

@@ -25,6 +25,7 @@ import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.end.FlowEnd;
+import com.mcg.entity.flow.git.FlowGit;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
@@ -32,6 +33,7 @@ import com.mcg.entity.flow.loop.FlowLoop;
 import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
+import com.mcg.entity.flow.sftp.FlowSftp;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
 import com.mcg.entity.flow.start.FlowStart;
@@ -132,6 +134,18 @@ public class ExceptionProcess {
             flowBody.setEleTypeDesc(EletypeEnum.LOOP.getName() + "--》" + flowLoop.getLoopProperty().getName());
             flowBody.setEleId(flowLoop.getId());
             flowBody.setFlowId(flowLoop.getFlowId());
+		} else if(mcgProduct instanceof FlowGit) {
+			FlowGit flowGit = (FlowGit)mcgProduct;
+            flowBody.setEleType(EletypeEnum.GIT.getValue());
+            flowBody.setEleTypeDesc(EletypeEnum.GIT.getName() + "--》" + flowGit.getGitProperty().getName());
+            flowBody.setEleId(flowGit.getId());
+            flowBody.setFlowId(flowGit.getFlowId());
+		} else if(mcgProduct instanceof FlowSftp) {
+			FlowSftp flowSftp = (FlowSftp)mcgProduct;
+            flowBody.setEleType(EletypeEnum.SFTP.getValue());
+            flowBody.setEleTypeDesc(EletypeEnum.SFTP.getName() + "--》" + flowSftp.getSftpProperty().getName());
+            flowBody.setEleId(flowSftp.getId());
+            flowBody.setFlowId(flowSftp.getFlowId());
 		} else if(mcgProduct instanceof FlowEnd) {
             FlowEnd flowEnd = (FlowEnd)mcgProduct;
             flowBody.setEleType(EletypeEnum.END.getValue());

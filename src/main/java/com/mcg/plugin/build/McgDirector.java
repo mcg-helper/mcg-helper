@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.end.FlowEnd;
+import com.mcg.entity.flow.git.FlowGit;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
@@ -27,6 +28,7 @@ import com.mcg.entity.flow.loop.FlowLoop;
 import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
+import com.mcg.entity.flow.sftp.FlowSftp;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
 import com.mcg.entity.flow.start.FlowStart;
@@ -103,6 +105,16 @@ public class McgDirector {
     	this.sequence.clear();
     	return (FlowLoop) new McgConcreteBuilder(flowLoop, this.sequence).getMcgProduct();     
     } 
+    
+    public FlowGit getFlowGitProduct(FlowGit flowGit) {
+    	this.sequence.clear();
+    	return (FlowGit) new McgConcreteBuilder(flowGit, this.sequence).getMcgProduct();
+    }
+    
+    public FlowSftp getFlowSftpProduct(FlowSftp flowSftp) {
+    	this.sequence.clear();
+    	return (FlowSftp) new McgConcreteBuilder(flowSftp, this.sequence).getMcgProduct();
+    }
       
     public FlowEnd getFlowEndProduct(FlowEnd flowEnd) {
         this.sequence.clear();

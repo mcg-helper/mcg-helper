@@ -43,6 +43,7 @@ import com.mcg.controller.base.BaseController;
 import com.mcg.entity.common.McgResult;
 import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.end.FlowEnd;
+import com.mcg.entity.flow.git.FlowGit;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
@@ -50,6 +51,7 @@ import com.mcg.entity.flow.loop.FlowLoop;
 import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
+import com.mcg.entity.flow.sftp.FlowSftp;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
 import com.mcg.entity.flow.start.FlowStart;
@@ -330,7 +332,47 @@ public class FlowController extends BaseController {
         if(Tools.validator(result, mcgResult, notifyBody)) {
         	flowLoop.setName(flowLoop.getLoopProperty().getName());
             CachePlugin.putFlowEntity(flowLoop.getFlowId(), flowLoop.getId(), flowLoop);
-            notifyBody.setContent("循环程控件保存成功！");
+            notifyBody.setContent("循环控件保存成功！");
+            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+        }
+
+        message.setBody(notifyBody);
+        MessagePlugin.push(session.getId(), message);
+		return mcgResult;
+	}
+	
+	@RequestMapping(value="saveGit", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public McgResult saveGit(@Valid @RequestBody FlowGit flowGit, BindingResult result, HttpSession session) {
+        Message message = MessagePlugin.getMessage();
+        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+        NotifyBody notifyBody = new NotifyBody();
+        McgResult mcgResult = new McgResult();
+        
+        if(Tools.validator(result, mcgResult, notifyBody)) {
+        	flowGit.setName(flowGit.getGitProperty().getName());
+            CachePlugin.putFlowEntity(flowGit.getFlowId(), flowGit.getId(), flowGit);
+            notifyBody.setContent("GIT控件保存成功！");
+            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+        }
+
+        message.setBody(notifyBody);
+        MessagePlugin.push(session.getId(), message);
+		return mcgResult;
+	}
+	
+	@RequestMapping(value="saveSftp", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public McgResult saveGit(@Valid @RequestBody FlowSftp flowSftp, BindingResult result, HttpSession session) {
+        Message message = MessagePlugin.getMessage();
+        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+        NotifyBody notifyBody = new NotifyBody();
+        McgResult mcgResult = new McgResult();
+        
+        if(Tools.validator(result, mcgResult, notifyBody)) {
+        	flowSftp.setName(flowSftp.getSftpProperty().getName());
+            CachePlugin.putFlowEntity(flowSftp.getFlowId(), flowSftp.getId(), flowSftp);
+            notifyBody.setContent("sftp控件保存成功！");
             notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
         }
 
@@ -484,7 +526,7 @@ public class FlowController extends BaseController {
         
         if(Tools.validator(result, mcgResult, notifyBody)) {
             if(flowService.saveFlow(webStruct, session) ) {
-                flowService.generate(webStruct, session, false, null);
+                flowService.generate(webStruct, session, false, null, null);
             }            
         } else {
             Message message = MessagePlugin.getMessage();

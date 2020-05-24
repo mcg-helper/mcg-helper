@@ -61,7 +61,7 @@ public class FlowLinuxStrategy implements ProcessStrategy {
 		FlowLinux flowLinux = (FlowLinux)mcgProduct;
 		JSON parentParam = DataConverter.getParentRunResult(flowLinux.getId(), executeStruct);
 		JSON allParam = DataConverter.addFlowStartRunResult(parentParam, executeStruct);
-		flowLinux = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowLinux);		
+		flowLinux = DataConverter.flowOjbectRepalceGlobal(allParam, flowLinux);
 		RunResult runResult = new RunResult();
        
 		Message message = MessagePlugin.getMessage();
@@ -98,10 +98,15 @@ public class FlowLinuxStrategy implements ProcessStrategy {
             }
         } else if(FlowLinuxConnModeEnum.ASSIGN.getValue().equals(flowLinux.getLinuxCore().getConnMode())) {
         	serverSource = new ServerSource();
-        	serverSource.setIp(flowLinux.getLinuxCore().getIp());
-        	serverSource.setPort(Integer.valueOf(flowLinux.getLinuxCore().getPort()));
-        	serverSource.setUserName(flowLinux.getLinuxCore().getUser());
-        	serverSource.setPwd(flowLinux.getLinuxCore().getPwd());
+        	TplEngine tplEngine = new TplEngine(new FreeMakerTpLan());
+        	String ip = tplEngine.generate(allParam, flowLinux.getLinuxCore().getIp());
+        	serverSource.setIp(ip);
+        	String port = tplEngine.generate(allParam, flowLinux.getLinuxCore().getPort());
+        	serverSource.setPort(Integer.valueOf(port));
+        	String user = tplEngine.generate(allParam, flowLinux.getLinuxCore().getUser());
+        	serverSource.setUserName(user);
+        	String pwd = tplEngine.generate(allParam, flowLinux.getLinuxCore().getPwd());
+        	serverSource.setPwd(pwd);
         }
         
 
@@ -126,8 +131,8 @@ public class FlowLinuxStrategy implements ProcessStrategy {
 		
 		runResult.setElementId(flowLinux.getId());
 		
-		JSONObject runResultJson = new JSONObject();
-		runResultJson.put(flowLinux.getLinuxProperty().getKey(), parentParam);
+		JSONObject runResultJson = (JSONObject)parentParam;
+		runResultJson.put(flowLinux.getLinuxProperty().getKey(), null);
 		runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
 		
 		executeStruct.getRunStatus().setCode("success");
@@ -139,7 +144,7 @@ public class FlowLinuxStrategy implements ProcessStrategy {
 	public String resolve(String command, ServerSource serverSource) throws Exception {
         
 		String log = SSHShellUtil.execute(serverSource.getIp(), serverSource.getPort(), 
-											serverSource.getUserName(),  serverSource.getPwd(), command);
+											serverSource.getUserName(),  serverSource.getPwd(), serverSource.getSecretKey(), command);
 	    return log;
 	}
 	

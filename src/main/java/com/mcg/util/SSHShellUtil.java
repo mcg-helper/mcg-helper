@@ -31,20 +31,26 @@ import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;
 import com.mcg.common.Constants;
 import com.mcg.plugin.task.McgTask;
 
 public class SSHShellUtil {
-
-	public static String execute(String ip, int port, String userName, String password, String shell) throws JSchException, IOException {
+	
+	public static String execute(String ip, int port, String userName, String password, String secretKey, String shell) throws JSchException, IOException {
 		String response = null;
 		JSch.setLogger(new ShellLogger());
 		JSch jsch = new JSch();
 		Session session = jsch.getSession(userName, ip, port);
-		UserInfo ui = new SSHUserInfo(password);
+		UserInfo ui = null;
+		if(StringUtils.isEmpty(secretKey)) {
+			ui = new SSHUserInfo(password);
+		} else {
+			ui = new SSHGoogleAuthUserInfo(secretKey, password);
+		}
 		session.setUserInfo(ui);
-		session.connect();
+		session.connect(6000);
 
 		Channel channel = session.openChannel("shell");
 		PipedInputStream pipedInputStream = new PipedInputStream();
@@ -137,6 +143,55 @@ public class SSHShellUtil {
 
 	}	
 	
+	public static class SSHGoogleAuthUserInfo implements UserInfo, UIKeyboardInteractive {
+		private static Logger sshGoogleAuthUserInfoLogger = LoggerFactory.getLogger(SSHGoogleAuthUserInfo.class);
+		String password;
+		String keyCode;
+		
+		public SSHGoogleAuthUserInfo(String keyCode, String password) {
+			this.keyCode = keyCode;
+			this.password = password;
+		}
+		public String getPassword() {
+			return password;
+		}
+
+		public boolean promptYesNo(String str) {
+			return true;
+		}
+
+		public String getPassphrase() {
+			return null;
+		}
+
+		public boolean promptPassphrase(String message) {
+			sshGoogleAuthUserInfoLogger.debug("promptPassphrase={}", message);
+			return true;
+		}
+
+		public boolean promptPassword(String message) {
+			return true;
+		}
+
+		public void showMessage(String message) {
+			sshGoogleAuthUserInfoLogger.debug("showMessage={}", message);
+		}
+		
+		@Override
+		public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt,
+				boolean[] echo) {
+		
+			try {
+				Thread.sleep(1500L);
+			} catch (InterruptedException e) {
+				sshGoogleAuthUserInfoLogger.error("认证交互睡眠出错：", e);
+			}
+			String[] code = new String[1];
+			code[0] = TOTP.getTOTPCode(keyCode);
+			return code;
+		}
+	}	
+	
 }
 
 class MonitorShellUser implements Runnable {
@@ -170,7 +225,7 @@ class MonitorShellUser implements Runnable {
 						
 						continue;
 					} catch (Exception e) {
-						monitorShellUserLogger.error("执行linux命令失败，命令：{}，异常信息：{}", command, e.getMessage());
+						monitorShellUserLogger.error("执行linux命令失败，命令：{}，异常信息：", command, e);
 						pipedOutputStream.write((command + Constants.LINUX_ENTER).getBytes());
 						break;
 					}
@@ -187,12 +242,12 @@ class MonitorShellUser implements Runnable {
 			pipedOutputStream.flush();
 
 		} catch (Exception e) {
-			monitorShellUserLogger.error("执行shell出错，异常信息：{}", e.getMessage());
+			monitorShellUserLogger.error("执行shell出错，异常信息：", e);
 		} finally {
 			try {
 				pipedOutputStream.close();
 			} catch (IOException e) {
-				monitorShellUserLogger.error(e.getMessage());
+				monitorShellUserLogger.error("关闭模拟用户通道出错：", e);
 			}
 		}
 

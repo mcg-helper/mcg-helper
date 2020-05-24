@@ -17,14 +17,13 @@
 package com.mcg.plugin.execute.strategy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
@@ -80,9 +79,9 @@ public class FlowJavaStrategy implements ProcessStrategy {
 		String dataJson = resolve(executeStruct.getSession().getId(), flowJava.getFlowId(), flowJava.getJavaCore().getSource(), parentParam);
 		runResult.setElementId(flowJava.getId());
 		
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put(flowJava.getJavaProperty().getKey(), JSON.parse(dataJson));
-		runResult.setJsonVar(JSON.toJSONString(map, true));
+		JSONObject runResultJson = (JSONObject)parentParam;
+		runResultJson.put(flowJava.getJavaProperty().getKey(), JSON.parse(dataJson));
+		runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
 		
 		executeStruct.getRunStatus().setCode("success");
 		

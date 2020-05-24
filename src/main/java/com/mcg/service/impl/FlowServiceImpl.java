@@ -171,7 +171,8 @@ public class FlowServiceImpl implements FlowService {
     }
 
     @Override
-    public boolean generate(WebStruct webStruct, HttpSession session, boolean subFlag, String parentFlowId) throws ClassNotFoundException, IOException, ExecutionException {
+    public RunStatus generate(WebStruct webStruct, HttpSession session, boolean subFlag, String parentFlowId, JSON parentParam) throws ClassNotFoundException, IOException, ExecutionException {
+    	RunStatus runStatus = new RunStatus();
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.NOTIFY); 
         NotifyBody notifyBody = new NotifyBody();
@@ -203,7 +204,6 @@ public class FlowServiceImpl implements FlowService {
             executeStruct.setSession(session);
             executeStruct.setTopology(curTopology);
             executeStruct.setSubFlag(subFlag);
-            RunStatus runStatus = new RunStatus();
             executeStruct.setRunStatus(runStatus);
         
             notifyBody.setContent("【" + curTopology.getName() + "】流程执行开始！");
@@ -222,10 +222,12 @@ public class FlowServiceImpl implements FlowService {
 	            	
 	            	String subFlowInstanceId = Tools.genFlowInstanceId(session.getId(), parentFlowId);
 	            	ExecuteStruct parentExecuteStruct = FlowInstancesUtils.executeStructMap.get(subFlowInstanceId);
+	            	executeStruct.setParentParam(parentParam);
 	            	parentExecuteStruct.setChildExecuteStruct(executeStruct);
 	            }
-            	RunStatus flowRunStatus = future.get();
-            	logger.debug("流程：{}， 执行结果：{}", JSON.toJSONString(curTopology), JSON.toJSONString(flowRunStatus));
+	            runStatus = future.get();
+            	logger.debug("流程：{}， 执行结果：{}", JSON.toJSONString(curTopology), JSON.toJSONString(runStatus));
+            	return runStatus;
             	
             } catch(CancellationException e) {
     			executeStruct.getRunStatus().setInterrupt(true);
@@ -241,7 +243,7 @@ public class FlowServiceImpl implements FlowService {
             message.setBody(notifyBody);
             MessagePlugin.push(session.getId(), message);
         }
-        return false;
+        return runStatus;
     }
 
 	@Override

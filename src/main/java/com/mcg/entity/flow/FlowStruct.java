@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.mcg.entity.flow.data.FlowDatas;
 import com.mcg.entity.flow.end.FlowEnd;
+import com.mcg.entity.flow.git.FlowGits;
 import com.mcg.entity.flow.java.FlowJavas;
 import com.mcg.entity.flow.json.FlowJsons;
 import com.mcg.entity.flow.linux.FlowLinuxs;
@@ -34,6 +35,7 @@ import com.mcg.entity.flow.process.FlowProcesses;
 import com.mcg.entity.flow.python.FlowPythons;
 import com.mcg.entity.flow.script.FlowScripts;
 import com.mcg.entity.flow.sequence.FlowSequences;
+import com.mcg.entity.flow.sftp.FlowSftps;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecutes;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuerys;
 import com.mcg.entity.flow.start.FlowStart;
@@ -80,6 +82,10 @@ public class FlowStruct implements Serializable {
     private FlowProcesses flowProcesses;
     @XmlElement
     private FlowLoops flowLoops;
+    @XmlElement
+    private FlowGits flowGits;
+    @XmlElement
+    private FlowSftps flowSftps;
     
     public String getMcgId() {
         return mcgId;
@@ -185,6 +191,18 @@ public class FlowStruct implements Serializable {
 	}
 	public void setFlowLoops(FlowLoops flowLoops) {
 		this.flowLoops = flowLoops;
+	}
+	public FlowGits getFlowGits() {
+		return flowGits;
+	}
+	public void setFlowGits(FlowGits flowGits) {
+		this.flowGits = flowGits;
+	}
+	public FlowSftps getFlowSftps() {
+		return flowSftps;
+	}
+	public void setFlowSftps(FlowSftps flowSftps) {
+		this.flowSftps = flowSftps;
 	}
 
 }

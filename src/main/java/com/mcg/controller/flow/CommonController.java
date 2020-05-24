@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.mcg.common.sysenum.DatabaseTypeEnum;
 import com.mcg.common.sysenum.SeverTypeEnum;
+import com.mcg.common.sysenum.SftpOperationTypeEnum;
 import com.mcg.controller.base.BaseController;
 import com.mcg.entity.common.Table;
 import com.mcg.entity.flow.data.DataRecord;
@@ -108,5 +109,15 @@ public class CommonController extends BaseController {
         }       
         return map;
     }    
+    
+    @RequestMapping(value="/getSftpOperationTypes")
+    @ResponseBody
+    public Map<String, String> getSftpOperationTypes() throws ClassNotFoundException, IOException {
+        Map<String, String> map = new HashMap<String, String>();
+        for (SftpOperationTypeEnum dt : SftpOperationTypeEnum.values()) {
+            map.put(dt.getName(), dt.getValue());
+        }       
+        return map;
+    }
     
 }

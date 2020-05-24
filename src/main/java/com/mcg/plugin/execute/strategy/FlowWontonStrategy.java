@@ -172,6 +172,8 @@ public class FlowWontonStrategy implements ProcessStrategy {
     		}
         }
 		
+        JSONObject runResultJson = (JSONObject)parentParam;
+		runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
 		executeStruct.getRunStatus().setCode("success");
 		
 		logger.debug("混沌控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowWonton), JSON.toJSONString(executeStruct.getRunStatus()));

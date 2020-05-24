@@ -38,6 +38,10 @@ function inputFormatter(value, row, index) {
 	return '<input class="form-control input-sm" type="text" value="' + value + '" onfocus="inputFocus(this)" onChange="inputBlur(this, ' + index+ ')"/>';
 }
 
+function inputPwdFormatter(value, row, index) {
+	return '<input class="form-control input-sm" type="password" value="' + value + '" onfocus="inputFocus(this)" onChange="inputBlur(this, ' + index+ ')"/>';
+}
+
 function inputDataSourceFormatter(value, row, index) {
 	
 	if(row.type == "system") {
@@ -127,7 +131,7 @@ function getSelectData(cellValue, index, url, param) {
 		async : false,
 		contentType : "application/json"
 	}, function(data) {
-		var selectStr = '<select onChange="selectChange(this, ' + index + ');">';
+		var selectStr = '<select style="width:100%;" onChange="selectChange(this, ' + index + ');">';
 		for(var key in data){
 			selectStr += '<option value="' + data[key] + '"';
 			if(cellValue == data[key]) {
@@ -227,11 +231,12 @@ function initFlowDataSourceModal(modalId) {
 			var rows = [];
 			for(var i=0; i<data.serverSources.length; i++){
 				var serverSource = data.serverSources[i];
-				var port = serverSource.port == "" || serverSource.port == undefined ? "": serverSource.port;
+				var port = serverSource.port == "undefined" || serverSource.port == undefined ? "": serverSource.port;
+				var secretKey = serverSource.secretKey == "undefined" || serverSource.secretKey == undefined ? "": serverSource.secretKey;
 				rows.push({
 						"id":serverSource.id, "_bTableName_":modalId + "_flowServerSourceTable", "name":serverSource.name, "type":serverSource.type,  
 						"ip":serverSource.ip, "port":port, "userName":serverSource.userName, 
-						"pwd":serverSource.pwd, "note":serverSource.note 
+						"pwd":serverSource.pwd, "secretKey":secretKey, "note":serverSource.note 
 					});
 			}
 			$("#" + modalId + "_flowServerSourceTable").bootstrapTable({"data":rows});
@@ -239,7 +244,7 @@ function initFlowDataSourceModal(modalId) {
 			$("#" + modalId + "_flowServerSourceTable").bootstrapTable({data: [
        			{
        				"id":Math.uuid(), "_bTableName_":modalId + "_flowServerSourceTable", "name":"", "type":"LINUX",  
-       				"ip":"", "port":"", "userName":"", "pwd":"", "note":""
+       				"ip":"", "port":"", "userName":"", "pwd":"", "secretKey":"", "note":""
        			}
        		]});		
 		}		
@@ -371,7 +376,7 @@ function initScriptModal(id, editor) {
 		if(data != "" && data != undefined && data.scriptCore != null) {
 			editor.setValue(data.scriptCore.source);
 		} else {
-			editor.setValue("var Console = Java.type('com.mcg.plugin.assist.Console');\r\nvar console = new Console();\r\n\r\nfunction main(param) {\r\n    var result = {};\r\n    console.success({'name':'mcg-helper', 'desc':'欢迎使用mcg-helper研发助手'});\r\n    \r\n    result = param;\r\n    return result;\r\n}");
+			editor.setValue("var Console = Java.type('com.mcg.plugin.assist.Console');\r\nvar console = new Console();\r\n\r\nfunction main(param) {\r\n    var result = {};\r\n    console.success({'name':'mcg-helper', 'desc':'欢迎使用mcg-helper研发助手'});\r\n    \r\n    return result;\r\n}");
 		}
 	});
 }
@@ -386,7 +391,7 @@ function initJavaModal(id, editor) {
 		if(data != "" && data != undefined && data.javaCore != null) {
 			editor.setValue(data.javaCore.source);
 		} else {
-			editor.setValue("import com.alibaba.fastjson.JSON;\r\nimport com.alibaba.fastjson.JSONArray;\r\nimport com.alibaba.fastjson.JSONObject;\r\nimport com.mcg.plugin.assist.Console;\r\n\r\npublic class Controller {\r\n    private Console console = new Console();\r\n\r\n    public JSON execute(JSON param) {\r\n        console.info(\"-----欢迎使用---------\");\r\n\r\n\r\n\r\n        return param;\r\n    }\r\n}\r\n");
+			editor.setValue("import com.alibaba.fastjson.JSON;\r\nimport com.alibaba.fastjson.JSONArray;\r\nimport com.alibaba.fastjson.JSONObject;\r\nimport com.mcg.plugin.assist.Console;\r\n\r\npublic class Controller {\r\n    private Console console = new Console();\r\n\r\n    public JSON execute(JSON param) {\r\n        console.info(\"-----欢迎使用---------\");\r\n\r\n        JSONObject result = new JSONObject();\r\n        return result;\r\n    }\r\n}\r\n");
 		}
 	});
 }
@@ -401,7 +406,7 @@ function initPythonModal(id, editor) {
 		if(data != "" && data != undefined && data.pythonCore != null) {
 			editor.setValue(data.pythonCore.source);
 		} else {
-			editor.setValue("#param为Dictionary类型\r\ndef main(param):\r\n\r\n    return param");
+			editor.setValue("#param为Dictionary类型\r\ndef main(param):\r\n\r\n    result = {}\r\n\r\n\r\n    return result");
 		}
 	});
 }
@@ -481,6 +486,68 @@ function initLoopModal(id) {
 			
 			common.formUtils.setValues(id + "_loopForm", data);
 		} 
+	});
+}
+
+function initGitModal(id) {
+	getElementDataById(id, function(data) {
+		if(data != null && data != "" && data != undefined && data.gitProperty != undefined) {
+			
+			common.formUtils.setValues(id + "_gitForm", data);
+		} 
+	});
+}
+
+function initSftpModal(id, editor) {
+	
+	getElementDataById(id, function(data) {
+		
+		if(data != "" && data != undefined) {
+			common.formUtils.setValues(id + "_sftpForm", data);
+			
+			$("#" + id + "_connMode").selectpicker('refresh');
+			$("#" + id + "_connMode").selectpicker('val', data.sftpProperty.connMode);
+			$("#" + id + "_serverSourceId").selectpicker('refresh');
+			$("#" + id + "_serverSourceId").selectpicker('val', data.sftpProperty.serverSourceId);
+			
+			if(data.sftpProperty != null) {
+				if(data.sftpProperty.connMode == "dependency") {
+					$("#" + id + "_serverSourceId").prop("disabled", false);
+					$("#" + id + "_serverSourceId").selectpicker('refresh');
+					$("#" + id + "_ip_port").css("display", "none");
+					$("#" + id + "_user_pwd").css("display", "none");
+				} else if(data.sftpProperty.connMode == "assign") {
+					$("#" + id + "_serverSourceId").prop("disabled", true);
+					$("#" + id + "_serverSourceId").selectpicker('refresh');
+					$("#" + id + "_ip_port").css("display", "block");
+					$("#" + id + "_user_pwd").css("display", "block");
+				}
+			}
+			
+		}
+		
+		if(data != null && data != undefined && data.sftpUpload != null && data.sftpUpload.sftpUploadRecords != null && data.sftpUpload.sftpUploadRecords.length > 0) {
+			var rows = [];
+			for(var i=0; i<data.sftpUpload.sftpUploadRecords.length; i++){
+				var sftpRecord = data.sftpUpload.sftpUploadRecords[i];
+				rows.push({
+						"id":sftpRecord.id, "_bTableName_":id + "_flowSftpUploadTable", "filePath":sftpRecord.filePath, "uploadPath":sftpRecord.uploadPath, "note":sftpRecord.note 
+					});
+			}
+			$("#" + id + "_flowSftpUploadTable").bootstrapTable({"data":rows});
+		} else {
+			$("#" + id + "_flowSftpUploadTable").bootstrapTable({data: [
+				{
+					"id":Math.uuid(), "_bTableName_":id + "_flowSftpUploadTable", "filePath":"", "uploadPath":"", "note":""
+				}    
+			]});
+		}
+		
+		$("#" + id + "_flowSftpUploadTable").on('click-cell.bs.table', function ($element, field, value, row) {
+			_fieldName_ = field;
+			_tableName_ = id + "_flowSftpUploadTable";
+		});	
+		
 	});
 }
 

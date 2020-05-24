@@ -73,6 +73,13 @@ $(function() {
 		target: $("#flowarea")
 	});
 */
+	if($("#mcg_flow").height() <= 0) {
+		$("#mcg_flow").height(500);
+		$("#flowarea").height(460);
+	}
+
+	/* 设置流程管理树高度为流程区的高度 */
+	$("#flowTree").height($("#flowarea").height() - 60);
 	common.ajax({
 		url : "/flowTree/getDatas",
 		type : "GET",
@@ -85,6 +92,8 @@ $(function() {
     	
     	var rootNode = treeObj.getNodeByParam("id", data.selected.id, null);
     	nodeSelected(rootNode);
+    	
+    	fuzzySearch('flowTree','#flowTreeKey', null, true);
     	//  系统初始化
     	initFlowSystem();
 	});
@@ -541,8 +550,26 @@ function initToolbarDrag() {
 	});
 }
 
+function flowSelectTreeHide() {
+	$("#flowSelectTree").fadeOut("fast");
+	$("body").unbind("mousedown", onBodyDown);
+}
+function onBodyDown(event) {
+	if (!(event.target.id == "flowSelect" || event.target.id == "flowSelectTree" || $(event.target).parents("#flowSelectTree").length>0)) {
+		flowSelectTreeHide();
+	}
+}
+
 /* 初始化功能区按钮 */
 function initFunc() {
+	$('#flowSelect').click(function(){
+		$("#flowSelectTree").slideDown("fast");
+		$("body").bind("mousedown", onBodyDown);
+	});
+	$('#removeFlowTreeKeyBtn').click(function(){
+		$("#flowTreeKey").val("").trigger('propertychange');
+	});
+	
 	$('#flowSaveBtn').click(function(){
 		var webStruct = convertFlowObject();
 		common.ajax({
@@ -1076,6 +1103,7 @@ function onClick(event, treeId, treeNode) {
 /* 节点被选中时，更新下拉按钮的值 */
 function nodeSelected(treeNode) {
  	var treeObj = $.fn.zTree.getZTreeObj("flowTree");
+ 	treeNode.name = treeNode.name.replace(/<[^>]+>/g, "");
 	treeObj.selectNode(treeNode);
 	$("#flowSelect").html(treeNode.name+"&nbsp;<span class='caret'></span>");
 	$("#flowSelect").attr("flowId", treeNode.id);
@@ -1083,5 +1111,6 @@ function nodeSelected(treeNode) {
 	$("#flowSelect").attr("flowPid", treeNode.pId);
 	clearAll($("#flowarea"));
 	initFlowData($("#flowSelect").attr("flowId"));
+	flowSelectTreeHide();
 }	
 /*------------------流程树方法结束 ---------------------*/

@@ -18,10 +18,13 @@ package com.mcg.plugin.generate;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +36,7 @@ import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.FlowStruct;
 import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.end.FlowEnd;
+import com.mcg.entity.flow.git.FlowGit;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
@@ -40,6 +44,7 @@ import com.mcg.entity.flow.loop.FlowLoop;
 import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
+import com.mcg.entity.flow.sftp.FlowSftp;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
 import com.mcg.entity.flow.start.FlowStart;
@@ -226,6 +231,24 @@ public class FlowTask implements Callable<RunStatus> {
 		                    flowBody.setEleTypeDesc(EletypeEnum.LOOP.getName() + "--》" + flowLoop.getLoopProperty().getName());
 		                    flowBody.setEleId(flowLoop.getId());
 		                    flowBody.setComment("运行值");
+		                } else if(mcgProduct instanceof FlowGit) {
+		                	FlowGit flowGit = (FlowGit)mcgProduct.clone();
+		                	flowGit.setOrderNum(orderNum);
+		                	flowGit.setFlowId(flowStruct.getMcgId());
+		                    result = director.getFlowGitProduct(flowGit).build(executeStruct);
+		                    flowBody.setEleType(EletypeEnum.GIT.getValue());
+		                    flowBody.setEleTypeDesc(EletypeEnum.GIT.getName() + "--》" + flowGit.getGitProperty().getName());
+		                    flowBody.setEleId(flowGit.getId());
+		                    flowBody.setComment("运行值");
+		                } else if(mcgProduct instanceof FlowSftp) {
+		                	FlowSftp flowSftp = (FlowSftp)mcgProduct.clone();
+		                	flowSftp.setOrderNum(orderNum);
+		                	flowSftp.setFlowId(flowStruct.getMcgId());
+		                    result = director.getFlowSftpProduct(flowSftp).build(executeStruct);
+		                    flowBody.setEleType(EletypeEnum.SFTP.getValue());
+		                    flowBody.setEleTypeDesc(EletypeEnum.SFTP.getName() + "--》" + flowSftp.getSftpProperty().getName());
+		                    flowBody.setEleId(flowSftp.getId());
+		                    flowBody.setComment("运行值");
 		                } else if(mcgProduct instanceof FlowEnd) {
 		                    FlowEnd flowEnd = (FlowEnd)mcgProduct.clone();
 		                    flowEnd.setOrderNum(orderNum);
@@ -301,7 +324,9 @@ public class FlowTask implements Callable<RunStatus> {
 	                
 	                runStatus.setExecuteId(tempId);
 	                if(runStatus.getAvailableFileMap().size() > 0) {
-	                	fileFlowBody.setContent(JSON.toJSONString(runStatus));
+	                	Map<String, ConcurrentHashMap<String, String>> availableFileMap = new HashMap<>();
+	                	availableFileMap.put("availableFileMap", runStatus.getAvailableFileMap());
+	                	fileFlowBody.setContent(JSON.toJSONString(availableFileMap));
 	                } else {
 	                	fileFlowBody.setContent("none");
 	                }

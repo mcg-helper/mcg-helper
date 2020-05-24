@@ -7,7 +7,7 @@
 * 轻量级、无浸入性、部署简单（无需安装数据库或特定配置，jdk8、tomcat8即可独立运行） 
 * 跨平台性、可移植性、可扩展性，基于B/S架构，通过浏览器即可访问  
 * 实现一套流程自动化规范，更加便捷的实现自动化  
-* 二次开发，打造自定义流程控件或其它需求，让流程自动化更为强大  
+* 二次开发，打造自定义拖拽流程控件，让流程自动化更为强大  
 
 ## mcg-helper能够做什么？
 
@@ -23,22 +23,24 @@
 
 ## 学习资源
 QQ交流群：619815829  
-[mcg-helper博客链接](http://blog.csdn.net/loginandpwd)  最新的动态资讯、图文教程、场景案例  
-[第一节、视频教程内容介绍](https://edu.csdn.net/course/play/5954)  探讨研发工作中典型的重复繁杂工作，可通过流程自动化实现代替的常见场景  
-[第二节、mcg-helper初步认识教程](https://edu.csdn.net/course/play/5954/300130) mcg-helper概述、核心设计、基本知识、工作原理、入门示例、使用场景等方面来认识与熟悉工具  
-[第三节、开始、文本、结束控件讲解](https://edu.csdn.net/course/play/5954/300416)  了解流程控件运行原理，介绍与演示控件的功能与作用  
-[第四节、data、json控件讲解](https://edu.csdn.net/course/play/5954/305640)  全局变量的使用、动态读取表结构信息、输出指定内容到文件  
-[第五节、js、java、python控件讲解](https://edu.csdn.net/course/play/5954/309934)  在流程中使用多种计算机语言，发挥各自优势，让流程更为灵活强大  
-[第六节、sql查询、sql执行控件讲解](https://edu.csdn.net/course/play/5954/310142)  实现常用关系型数据库的交互功能  
-[第七节、Linux、循环、子流程控件讲解](https://edu.csdn.net/course/play/5954/324751)  Linux SSH连接，流程循环功能，以及流程拆分复用与组合。  
+免费视频教程： 
+[第一节、视频教程内容介绍](https://edu.csdn.net/course/play/5954)  探讨研发工作中典型的重复繁杂工作，可通过流程自动化实现代替的常见场景。 
+[第二节、mcg-helper初步认识教程](https://edu.csdn.net/course/play/5954/300130) mcg-helper概述、核心设计、基本知识、工作原理、入门示例、使用场景等方面来认识与熟悉工具。 
+[第三节、开始、文本、结束控件讲解](https://edu.csdn.net/course/play/5954/300416)  了解流程控件运行原理，介绍与演示控件的功能与作用。 
+[第四节、data、json控件讲解](https://edu.csdn.net/course/play/5954/305640)  全局变量的使用、动态读取表结构信息、输出指定内容到文件。 
+[第五节、js、java、python控件讲解](https://edu.csdn.net/course/play/5954/309934)  在流程中使用多种计算机语言，发挥各自优势，让流程更为灵活强大。   
+[第六节、sql查询、sql执行控件讲解](https://edu.csdn.net/course/play/5954/310142)  实现常用关系型数据库的交互功能。 
+[第七节、Linux、循环、子流程控件讲解](https://edu.csdn.net/course/play/5954/324751)  Linux SSH连接，流程循环功能，以及流程拆分复用与组合。 
+[第八节、万能代码生成讲解](https://edu.csdn.net/course/play/5954/365298?spm=1002.2009.3001.4024)  以一款java开源框架jeecg为例子，实现一键代码生成。 
 
 ## 初步认识mcg-helper
-  进入主页，里面包含QQ群、csdn博客、视频教程、开源地址、版本信息。
+  进入主页，里面包含QQ群、csdn博客、视频教程、开源地址、版本信息。 
+  
 ![主页](https://github.com/mcg-helper/mcg-helper/raw/master/image/home.png)
 
 ![代码生成](https://github.com/mcg-helper/mcg-helper/raw/master/image/genCode.jpg)
 
-![环境搭建](https://github.com/mcg-helper/mcg-helper/raw/master/image/build.jpg)
+![环境搭建](https://github.com/mcg-helper/mcg-helper/raw/master/image/build.png)
 
 ![应用发布](https://github.com/mcg-helper/mcg-helper/raw/master/image/publish.jpg)
 

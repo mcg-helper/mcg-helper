@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
@@ -86,7 +87,9 @@ public class FlowDataStrategy implements ProcessStrategy {
         map.put("record", dataRecordList);
         value.put(flowData.getDataProperty().getKey(), map);
         
-        result.setJsonVar(JSON.toJSONString(value, true));
+		JSONObject runResultJson = (JSONObject)parentParam;
+		runResultJson.put(flowData.getDataProperty().getKey(), map);
+        result.setJsonVar(JSON.toJSONString(runResultJson, true));
         executeStruct.getRunStatus().setCode("success");
         
         logger.debug("data控件：{}，执行完毕！流程执行当前状态：{}", JSON.toJSONString(flowData), JSON.toJSONString(executeStruct.getRunStatus()));

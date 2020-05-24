@@ -106,8 +106,7 @@ public class FlowTextStrategy implements ProcessStrategy {
         contentMessage.setBody(contentFlowBody);
         MessagePlugin.push(executeStruct.getSession().getId(), contentMessage);
 
-		JSONObject runResultJson = new JSONObject();
-		runResultJson.put(flowText.getTextProperty().getKey(), parentParam);
+        JSONObject runResultJson = (JSONObject)parentParam;
 		result.setJsonVar(JSON.toJSONString(runResultJson, true));
 		
 		executeStruct.getRunStatus().getAvailableFileMap().put(flowText.getTextId(), (outPath + flowText.getTextProperty().getFileName()));

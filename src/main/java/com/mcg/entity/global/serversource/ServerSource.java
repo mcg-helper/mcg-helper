@@ -33,6 +33,9 @@ public class ServerSource implements Serializable {
     /* 服务器密码 */
     @XmlElement
     private String pwd;
+    /* 谷歌身份密钥 */
+    @XmlElement
+    private String secretKey;
     /* 说明 */
     @XmlElement
     private String note;
@@ -85,6 +88,11 @@ public class ServerSource implements Serializable {
 	public void setNote(String note) {
 		this.note = note;
 	}
-    
+	public String getSecretKey() {
+		return secretKey;
+	}
+	public void setSecretKey(String secretKey) {
+		this.secretKey = secretKey;
+	}
     
 }

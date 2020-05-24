@@ -42,6 +42,8 @@
 	<script type="text/javascript" src="<%=basePath %>/library/js/ztree/js/jquery.ztree.core.js?_v=${version}"></script>
 	<script type="text/javascript" src="<%=basePath %>/library/js/ztree/js/jquery.ztree.excheck.js?_v=${version}"></script>
 	<script type="text/javascript" src="<%=basePath %>/library/js/ztree/js/jquery.ztree.exedit.js?_v=${version}"></script>
+	<script type="text/javascript" src="<%=basePath %>/library/js/ztree/js/jquery.ztree.exhide.min.js?_v=${version}"></script>
+	<script type="text/javascript" src="<%=basePath %>/library/js/ztree/js/fuzzysearch.js?_v=${version}"></script>
 	
 	<script type="text/javascript" src="<%=basePath %>/library/js/bootstrap-switch/js/bootstrap-switch.min.js?_v=${version}"></script>
 	<script type="text/javascript" src="<%=basePath %>/library/js/bootstraptable/js/bootstrap-table.min.js?_v=${version}"></script>

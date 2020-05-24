@@ -17,13 +17,12 @@
 package com.mcg.plugin.execute.strategy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
@@ -52,7 +51,6 @@ public class FlowJsonStrategy implements ProcessStrategy {
 		
 		FlowJson flowJson = (FlowJson)mcgProduct;
 		JSON parentParam = DataConverter.getParentRunResult(flowJson.getId(), executeStruct);
-		
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);		
         FlowBody flowBody = new FlowBody();
@@ -77,11 +75,11 @@ public class FlowJsonStrategy implements ProcessStrategy {
 		RunResult runResult = new RunResult();
 		runResult.setElementId(flowJson.getId());
 		
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put(flowJson.getJsonProperty().getKey(), JSON.parse(flowJson.getJsonCore().getSource()));
-		runResult.setJsonVar(JSON.toJSONString(map, true));
+		JSONObject runResultJson = (JSONObject)parentParam;
+		runResultJson.put(flowJson.getJsonProperty().getKey(), JSON.parse(flowJson.getJsonCore().getSource()));
+		runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
 		executeStruct.getRunStatus().setCode("success");
-		
+
 		logger.debug("JSON控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowJson), JSON.toJSONString(executeStruct.getRunStatus()));
 		return runResult;
 	}

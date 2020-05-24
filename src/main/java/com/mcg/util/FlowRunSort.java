@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSON;
 import com.mcg.entity.flow.FlowStruct;
 import com.mcg.entity.flow.data.FlowData;
+import com.mcg.entity.flow.git.FlowGit;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.linux.FlowLinux;
@@ -39,6 +40,7 @@ import com.mcg.entity.flow.process.FlowProcess;
 import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.sequence.FlowSequence;
+import com.mcg.entity.flow.sftp.FlowSftp;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
 import com.mcg.entity.flow.text.FlowText;
@@ -212,6 +214,22 @@ public class FlowRunSort {
 				sortMap.put(flowLoop.getId(), num++);
 			}
 		}
+		
+		if (flowStruct.getFlowGits() != null && flowStruct.getFlowGits().getFlowGit() != null
+				&& flowStruct.getFlowGits().getFlowGit().size() > 0) {
+			for (FlowGit flowGit : flowStruct.getFlowGits().getFlowGit()) {
+				dataMap.put(flowGit.getId(), flowGit);
+				sortMap.put(flowGit.getId(), num++);
+			}
+		}
+		
+		if (flowStruct.getFlowSftps() != null && flowStruct.getFlowSftps().getFlowSftp() != null
+				&& flowStruct.getFlowSftps().getFlowSftp().size() > 0) {
+			for (FlowSftp flowSftp : flowStruct.getFlowSftps().getFlowSftp()) {
+				dataMap.put(flowSftp.getId(), flowSftp);
+				sortMap.put(flowSftp.getId(), num++);
+			}
+		}
 
 		if (flowStruct.getFlowEnd() != null) {
 			dataMap.put(flowStruct.getFlowEnd().getEndId(), flowStruct.getFlowEnd());
@@ -232,7 +250,7 @@ public class FlowRunSort {
 		List<List<Order>> orderList = new ArrayList<List<Order>>();
 		
 		for (int i = (result.size() -1); i >= 0; i--) {
-			List<Order> orderLoopList = new ArrayList<Order>(); //list.size()大于1 则代表是流程图中的环，以及节点执行的顺序
+			List<Order> orderLoopList = new ArrayList<Order>();
 			for (int j = (result.get(i).size() -1); j >= 0 ; j--) {
 				Order order = new Order();
 				order.setElementId(nodeMap.get(result.get(i).get(j))); // 节点的id
@@ -251,9 +269,42 @@ public class FlowRunSort {
 			orderList.add(orderLoopList);
 		}
 		
-		logger.debug("正在执行流程：{}，排序完毕，执行顺序如下：{}", JSON.toJSONString(flowStruct), JSON.toJSONString(orderList));
+		List<List<Order>> mcgFlowOrderList = new ArrayList<>();
+		for(List<Order> loopList : orderList) {
+			if(loopList.size() == 1) {
+				mcgFlowOrderList.add(loopList);
+			} else {
+				List<FlowSequence> loopFlowSequenceList = new ArrayList<>();
+				List<Order> topoOrderList = new ArrayList<>();
+				Order loopOrder = new Order(); 
+				for(int i=0; i<loopList.size(); i++) {
+					Order order  = loopList.get(i);
+					if(order.getElementId().contains("toolbarLoop")) {
+						loopOrder = order;
+					} else {
+						topoOrderList.add(order);
+					}
+					for (FlowSequence flowSequence : flowStruct.getFlowSequences().getFlowSequences()) {					
+						if(flowSequence.getSourceId().contains("toolbarLoop")) {
+							continue ;
+						}
+						if(order.getElementId().equals(flowSequence.getSourceId())) {
+							loopFlowSequenceList.add(flowSequence);
+						}
+						
+					}
+				}
+				topoOrderList.add(loopOrder);
+				TopoSort topoSort = new TopoSort();
+				
+				List<Order> topoList = topoSort.init(topoSort, topoOrderList, loopFlowSequenceList, flowStruct.getFlowSequences().getFlowSequences());
+				mcgFlowOrderList.add(topoList);
+			}
+			
+		}
 		
-		tempOrders.setOrder(orderList);
+		logger.debug("正在执行流程：{}，排序完毕，执行顺序如下：{}", JSON.toJSONString(flowStruct), JSON.toJSONString(mcgFlowOrderList));
+		tempOrders.setOrder(mcgFlowOrderList);
 		this.orders = tempOrders;
 		return dataMap;
 	}

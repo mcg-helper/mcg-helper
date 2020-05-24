@@ -31,6 +31,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,8 @@ import com.mcg.entity.flow.FlowStruct;
 import com.mcg.entity.flow.data.FlowData;
 import com.mcg.entity.flow.data.FlowDatas;
 import com.mcg.entity.flow.end.FlowEnd;
+import com.mcg.entity.flow.git.FlowGit;
+import com.mcg.entity.flow.git.FlowGits;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.java.FlowJavas;
 import com.mcg.entity.flow.json.FlowJson;
@@ -59,6 +62,8 @@ import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.script.FlowScripts;
 import com.mcg.entity.flow.sequence.FlowSequence;
 import com.mcg.entity.flow.sequence.FlowSequences;
+import com.mcg.entity.flow.sftp.FlowSftp;
+import com.mcg.entity.flow.sftp.FlowSftps;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecutes;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
@@ -274,6 +279,32 @@ public class DataConverter {
                 }
             }
             
+            if(flowStruct.getFlowGits() != null && flowStruct.getFlowGits().getFlowGit() != null && flowStruct.getFlowGits().getFlowGit().size() > 0) {
+                List<FlowGit> flowGitList = flowStruct.getFlowGits().getFlowGit();
+                for(FlowGit flowGit : flowGitList) {
+                    WebElement webElement = new WebElement();
+                    FlowBase flowBase = flowGit;
+                    flowBase.setName(flowGit.getGitProperty().getName());
+                    webElement = setValue(flowBase, webElement);
+                    webElement.setId(flowGit.getId());
+                    webElementList.add(webElement);
+                    CachePlugin.putFlowEntity(flowId, flowGit.getId(), flowGit);
+                }
+            }
+            
+            if(flowStruct.getFlowSftps() != null && flowStruct.getFlowSftps().getFlowSftp() != null && flowStruct.getFlowSftps().getFlowSftp().size() > 0) {
+                List<FlowSftp> flowSftpList = flowStruct.getFlowSftps().getFlowSftp();
+                for(FlowSftp flowSftp : flowSftpList) {
+                    WebElement webElement = new WebElement();
+                    FlowBase flowBase = flowSftp;
+                    flowBase.setName(flowSftp.getSftpProperty().getName());
+                    webElement = setValue(flowBase, webElement);
+                    webElement.setId(flowSftp.getId());
+                    webElementList.add(webElement);
+                    CachePlugin.putFlowEntity(flowId, flowSftp.getId(), flowSftp);
+                }
+            }
+            
             if(flowStruct.getFlowEnd() != null) {
                 WebElement webElement = new WebElement();
                 FlowEnd flowEnd = flowStruct.getFlowEnd();
@@ -344,6 +375,10 @@ public class DataConverter {
             List<FlowProcess> flowProcessList = new ArrayList<FlowProcess>();
             FlowLoops flowLoops = new FlowLoops();
             List<FlowLoop> flowLoopList = new ArrayList<FlowLoop>();
+            FlowGits flowGits = new FlowGits();
+            List<FlowGit> flowGitList = new ArrayList<FlowGit>();
+            FlowSftps flowSftps = new FlowSftps();
+            List<FlowSftp> flowSftpList = new ArrayList<FlowSftp>();
             
             List<WebElement> webElementList = webStruct.getWebElement();
             for(WebElement webElement : webElementList) {
@@ -504,6 +539,30 @@ public class DataConverter {
                 	flowLoop.setTop(webElement.getTop());
                 	flowLoop.setSign(webElement.getSign());
                 	flowLoopList.add(flowLoop);
+                } else if(webElement.getEletype().equals(EletypeEnum.GIT.getValue())) {
+                	FlowGit flowGit = (FlowGit)obj;
+                	flowGit.setLabel(webElement.getLabel());
+                	flowGit.setWidth(webElement.getWidth());
+                	flowGit.setHeight(webElement.getHeight());
+                	flowGit.setClassname(webElement.getClassname());
+                	flowGit.setEletype(webElement.getEletype());
+                	flowGit.setClone(webElement.getClone());
+                	flowGit.setLeft(webElement.getLeft());
+                	flowGit.setTop(webElement.getTop());
+                	flowGit.setSign(webElement.getSign());
+                	flowGitList.add(flowGit);
+                } else if(webElement.getEletype().equals(EletypeEnum.SFTP.getValue())) {
+                	FlowSftp flowSftp = (FlowSftp)obj;
+                	flowSftp.setLabel(webElement.getLabel());
+                	flowSftp.setWidth(webElement.getWidth());
+                	flowSftp.setHeight(webElement.getHeight());
+                	flowSftp.setClassname(webElement.getClassname());
+                	flowSftp.setEletype(webElement.getEletype());
+                	flowSftp.setClone(webElement.getClone());
+                	flowSftp.setLeft(webElement.getLeft());
+                	flowSftp.setTop(webElement.getTop());
+                	flowSftp.setSign(webElement.getSign());
+                	flowSftpList.add(flowSftp);
                 } else if(webElement.getEletype().equals(EletypeEnum.END.getValue())) {
                     FlowEnd flowEnd = (FlowEnd)obj;
                     flowEnd.setLabel(webElement.getLabel());
@@ -544,7 +603,13 @@ public class DataConverter {
 
             flowLoops.setFlowLoop(flowLoopList);
             flowStruct.setFlowLoops(flowLoops);
-
+            
+            flowGits.setFlowGit(flowGitList);
+            flowStruct.setFlowGits(flowGits);
+            
+            flowSftps.setFlowSftp(flowSftpList);
+            flowStruct.setFlowSftps(flowSftps);
+            
             flowStruct.setTotalSize(webElementList.size());
             
             FlowSequences flowSequences = new FlowSequences();
@@ -730,6 +795,29 @@ public class DataConverter {
 	 * @return
 	 */
 	public static JSON getParentRunResult(String elementId, ExecuteStruct executeStruct) {
+
+		JSONObject allParam = new JSONObject();
+		
+		for(List<Order> orderList : executeStruct.getOrders().getOrder()) {
+			for(Order order : orderList) {
+				if(elementId.equals(order.getElementId())) {
+					List<String> ids = order.getPid();
+					if(!CollectionUtils.isEmpty(ids)) {
+						for(int i=0; i<ids.size(); i++) {
+							if(executeStruct.getRunResultMap().get(ids.get(i)) != null && executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar() != null && !"".equals(executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar())) {
+								JSONObject param = JSONObject.parseObject(executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar());
+								allParam.putAll(param);
+							}
+							
+						}
+		
+					}
+				}
+			}
+		}
+		
+		return  (JSON)allParam;
+/*
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
 		
@@ -754,7 +842,48 @@ public class DataConverter {
 		}
 		sb.append("}");		
 		return  (JSON)JSON.parse(sb.toString());
+		*/
 	}	
 	
-    
+	/**
+	 * 获取所有父级控件的运行值，将所有父级控件的key去掉，将value进行合并，若value中的key有相同的，则由后面控件运行值将覆盖前面控件运行值
+	 * @param elementId 当前组件的id
+	 * @param executeStruct 当前已执行的流程的组件
+	 * @return
+	 */
+	public static JSON getParentRunResultByValue(String elementId, ExecuteStruct executeStruct) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		
+		for(List<Order> orderList : executeStruct.getOrders().getOrder()) {
+			for(Order order : orderList) {
+				if(elementId.equals(order.getElementId())) {
+					List<String> ids = order.getPid();
+					if(!CollectionUtils.isEmpty(ids)) {
+						for(int i=0; i<ids.size(); i++) {
+							if(executeStruct.getRunResultMap().get(ids.get(i)) != null && executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar() != null && !"".equals(executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar())) {
+								String jsonValue = executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar().substring(1, executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar().length()-1 );
+								if(StringUtils.isNotEmpty(jsonValue)) {
+									int start = jsonValue.indexOf("{") + 1;
+									int end = jsonValue.lastIndexOf("}")-1;
+									if(start <= end) {
+										sb.append(jsonValue.substring(start, end));
+									} else {
+										sb.append("");
+									}
+									sb.append(",");
+								}
+							}
+						}
+						if(sb.length() >= 2) {
+						    sb.deleteCharAt(sb.length()-1);
+						}
+					}
+				}
+			}
+		}
+		
+		sb.append("}");		
+		return  (JSON)JSON.parse(sb.toString());
+	}
 }

@@ -70,7 +70,7 @@
 								</div>	
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">脚本描述</label>
+								<label class="col-sm-2 control-label">描述</label>
 								<div class="col-sm-9">
 									<div class="fg-line">
 										<textarea id="${modalId }_loopDesc" name="loopProperty[desc]" rows="5" cols="" class="form-control"></textarea>

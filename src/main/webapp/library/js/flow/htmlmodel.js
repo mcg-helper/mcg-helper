@@ -81,12 +81,20 @@ function createHtmlModal(id, param) {
 			url = "/html/flowLoopModal";
 			option["title"] = "循环控件";
 			option["width"] = 1100;
+		} else if($("#"+id).attr("eletype") == "git") {
+			url = "/html/flowGitModal";
+			option["title"] = "GIT控件";
+			option["width"] = 1100;
+		} else if($("#"+id).attr("eletype") == "sftp") {
+			url = "/html/flowSftpModal";
+			option["title"] = "SFTP控件";
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "end") {
 			url = "/html/flowEndModal";
 			option["title"] = "结束控件";
 			option["width"] = 1100;
 		}
-
+		
 		param["modalId"] = modalId.replace(/_Modal/g, "");
 		param["eletype"] = $("#"+id).attr("eletype");
 		param["option"] = option;
@@ -650,7 +658,7 @@ function setDialogBtns(param) {
 							} else if($(this).attr("id") == "serverType") {
 					 			$("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('append',
 	                          			{"id":Math.uuid(), "_bTableName_":param.modalId  + "_flowServerSourceTable", "name":"", "type":"LINUX",  
-                      				"ip":"", "port":"", "userName":"", "pwd":"", "note":""});
+                      				"ip":"", "port":"", "userName":"", "pwd":"", "secretKey":"", "note":""});
 							}
 						}
 					});
@@ -757,6 +765,7 @@ function setDialogBtns(param) {
 						row["port"] = flowServerSourceTableData[i].port;
 						row["userName"] = flowServerSourceTableData[i].userName;
 						row["pwd"] = flowServerSourceTableData[i].pwd;
+						row["secretKey"] = flowServerSourceTableData[i].secretKey;
 						row["note"] = flowServerSourceTableData[i].note;
 						global.serverSources.push(row);
 					}
@@ -771,7 +780,7 @@ function setDialogBtns(param) {
 							$( _this ).dialog( "destroy" );
 						}
 						
-					});					
+					});
 					
 				}
 			},
@@ -833,6 +842,122 @@ function setDialogBtns(param) {
 					}, function(data) {
 						if(data.statusCode == 1) {
 							saveElementUpdateCache(param.modalId, result.loopProperty.name);
+							$( _this ).dialog( "destroy" );
+						}
+					});
+					
+				}
+			},
+			{
+				class: "btn btn-default",			
+				text: "关闭",
+				click: function() {
+					$( this ).dialog( "destroy" );
+				}
+			}
+		];			
+	} else if(param.eletype == "git") {
+		buttons = [
+			{
+				class: "btn btn-primary",			
+				text: "保存",
+				click: function() {
+					var _this = this;
+					var data = $("#" + param.modalId + "_gitForm").serializeJSON();
+					var result = JSON.parse(data);
+					var gitCore = {};
+					result["flowId"] = getCurrentFlowId();
+					common.ajax({
+						url : "/flow/saveGit",
+						type : "POST",
+						data : JSON.stringify(result),
+						contentType : "application/json"
+					}, function(data) {
+						if(data.statusCode == 1) {
+							saveElementUpdateCache(param.modalId, result.gitProperty.name);
+							$( _this ).dialog( "destroy" );
+						}
+					});					
+				}
+			},
+			{
+				class: "btn btn-default",			
+				text: "关闭",
+				click: function() {
+					$( this ).dialog( "destroy" );
+				}
+			}
+		];			
+	} else if(param.eletype == "sftp") {
+		buttons = [
+			{
+				class: "btn btn-default",			
+				text: "增加",
+				click: function() {
+					var tableData = $("#" + param.modalId + "_flowSftpUploadTable").bootstrapTable('getData');
+					for(var i=0; i<tableData.length; i++) {
+						var row={};
+						row["filePath"] = tableData[i].filePath;
+						row["uploadPath"] = tableData[i].uploadPath;
+						row["note"] = tableData[i].note;
+						$("#" + param.modalId + "_flowSftpUploadTable").bootstrapTable('updateRow', {"index":i, "row":row  });
+					} 			
+		 			
+		 			$("#" + param.modalId + "_flowSftpUploadTable").bootstrapTable('append',
+		 					{ "id":Math.uuid(), "filePath":"", "uploadPath":"", "tableField":"", "note":"" });					
+				}
+			},
+			{
+				class: "btn btn-default",			
+				text: "删除",
+				click: function() {
+		            var ids = $.map($("#" + param.modalId + "_flowSftpUploadTable").bootstrapTable('getSelections'), function (row) {
+		                return row.id;
+		            });
+		            $("#" + param.modalId + "_flowSftpUploadTable").bootstrapTable('remove', {
+		                field: 'id',
+		                values: ids
+		            });					
+				}
+			},
+			{
+				class: "btn btn-default",			
+				text: "清空",
+				click: function() {
+					$("#" + param.modalId + "_flowSftpUploadTable").bootstrapTable('removeAll');
+				}
+			},
+			{
+				class: "btn btn-primary",			
+				text: "保存",
+				click: function() {
+					var _this = this;
+					var data = $("#" + param.modalId + "_sftpForm").serializeJSON();
+					var result = JSON.parse(data);
+					result.sftpProperty["connMode"] = $("#" + param.modalId + "_connMode").val();
+					result.sftpProperty["serverSourceId"] = $("#" + param.modalId + "_serverSourceId").val();
+					result["flowId"] = getCurrentFlowId();
+					result["sftpUpload"] = {"sftpUploadRecords":[]};
+					
+					var rowsData = {var:[]};
+					var flowSftpUploadTableData = $("#" + param.modalId + "_flowSftpUploadTable").bootstrapTable('getData');
+					for(var i=0; i<flowSftpUploadTableData.length; i++) {
+						var row={};
+						row["id"] =flowSftpUploadTableData[i].id;
+						row["filePath"] =flowSftpUploadTableData[i].filePath;
+						row["uploadPath"] =flowSftpUploadTableData[i].uploadPath;
+						row["note"] = flowSftpUploadTableData[i].note;
+						result.sftpUpload.sftpUploadRecords.push(row);
+					}
+					
+					common.ajax({
+						url : "/flow/saveSftp",
+						type : "POST",
+						data : JSON.stringify(result),
+						contentType : "application/json"
+					}, function(data) {
+						if(data.statusCode == 1) {
+							saveElementUpdateCache(param.modalId, result.sftpProperty.name);
 							$( _this ).dialog( "destroy" );
 						}
 					});
@@ -1168,6 +1293,46 @@ function createModalCallBack(param) {
 			width:"100%"
 		});
 	    initLoopModal(param.modalId);
+	} else if(param.eletype == "git") {
+		$("#" + param.modalId + "_mode").selectpicker({
+			noneSelectedText: "请选择",
+			width:"100%"
+		});
+	    initGitModal(param.modalId);
+	} else if(param.eletype == "sftp") {
+		$("#" + param.modalId + "_connMode").selectpicker({
+			noneSelectedText: "请选择",
+			width:"100%"
+		});
+		$("#" + param.modalId + "_serverSourceId").selectpicker({
+			noneSelectedText: "请选择",
+			width:"100%"
+		});
+		
+		$("#" + param.modalId + "_connMode").change(function(){
+			if($(this).val() == "dependency") {
+				$("#" + param.modalId + "_serverSourceId").prop("disabled", false);
+				$("#" + param.modalId + "_serverSourceId").selectpicker('refresh');
+				$("#" + param.modalId + "_ip_port").css("display", "none");
+				$("#" + param.modalId + "_user_pwd").css("display", "none");
+			} else if($(this).val() == "assign") {
+				$("#" + param.modalId + "_serverSourceId").prop("disabled", true);
+				$("#" + param.modalId + "_serverSourceId").selectpicker('refresh');
+				$("#" + param.modalId + "_ip_port").css("display", "block");
+				$("#" + param.modalId + "_user_pwd").css("display", "block");
+			}
+		});
+		
+		$("#" + param.modalId + "_connMode").change(function(){
+			
+		});
+		
+		$("#" + param.modalId + "_flowSftpUploadTable").on('click-cell.bs.table', function ($element, field, value, row) {
+			_fieldName_ = field;
+			_tableName_ = param.modalId + "_flowSftpUploadTable";
+		});
+		
+		initSftpModal(param.modalId, editor);
 	} else if(param.eletype == "end") {
 		
 		initFlowEndModal(param.modalId);

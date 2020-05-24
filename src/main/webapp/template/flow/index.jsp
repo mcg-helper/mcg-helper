@@ -109,6 +109,14 @@
 												<div id="toolbarLoop" class="toolbar_eletype" eletype="loop">循环</div>
 											</div>
 										</div>
+										<div class="row">
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarGit" class="toolbar_eletype" eletype="git">GIT</div>
+											</div>
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarSftp" class="toolbar_eletype" eletype="sftp">SFTP</div>
+											</div>
+										</div>
 										
 									</div>
 								</div>
@@ -127,8 +135,19 @@
 								<button id="flowSelect" value="" flowId="" flowName="" flowPid="" class="btn btn-default" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								   我的流程&nbsp;<span class="caret"></span>
 								  </button>
-								<ul class="dropdown-menu">
-									<ul id="flowTree" class="ztree" style="min-width: 240px;"></ul>
+								<ul class="dropdown-menu" id="flowSelectTree">
+									<form class="form-inline">
+										<div class="form-group" style="margin: 0px 10px 0px 10px;">
+											<div class="input-group">
+												<div class="input-group-addon" style="background-color:#FFFFFF">搜索关键字</div>
+												<input type="text" id="flowTreeKey" value="" class="empty form-control" />
+												<span class="input-group-btn">
+													<button class="btn btn-default" type="button" id="removeFlowTreeKeyBtn"><span class="glyphicon glyphicon-remove"></span></button>
+												</span>
+											</div>
+										</div>
+									</form>
+									<ul id="flowTree" class="ztree" style="min-width:240px;OVERFLOW-Y: auto;"></ul>
 								</ul>
 								<button id="flowClearBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-remove-sign"></span>&nbsp;清空</button>
 								<button id="flowDataSourceBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-copyright-mark"></span>&nbsp;数据源</button>
@@ -141,7 +160,7 @@
 					<!-- 功能按钮操作区结束 -->
 					<!-- 绘制流程区开始 -->
 					<div class="row autoHeight">
-		    			<div class="demo flowarea autoHeight" id="flowarea" style="overflow:scroll;"></div>
+		    			<div class="demo flowarea autoHeight" id="flowarea" style="min-width:400px;overflow:scroll;"></div>
 		    		</div>
 		    		<!-- 绘制流程区结束 -->
 		    		<!-- 控制台区开始 -->

@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.alibaba.fastjson.JSON;
 import com.mcg.entity.global.topology.Topology;
 import com.mcg.plugin.build.McgProduct;
 
@@ -46,6 +47,8 @@ public class ExecuteStruct implements Serializable {
     /* 当前执行流程是否为子流程 */
     @XmlElement
     private Boolean subFlag;
+    @XmlElement
+    private JSON parentParam;
     /* 正在执行的流程实例 */
     @XmlElement
     private Topology topology;
@@ -129,6 +132,12 @@ public class ExecuteStruct implements Serializable {
 	}
 	public void setFlowTaskFutureList(CopyOnWriteArrayList<Future<RunStatus>> flowTaskFutureList) {
 		this.flowTaskFutureList = flowTaskFutureList;
+	}
+	public JSON getParentParam() {
+		return parentParam;
+	}
+	public void setParentParam(JSON parentParam) {
+		this.parentParam = parentParam;
 	}
 
 }

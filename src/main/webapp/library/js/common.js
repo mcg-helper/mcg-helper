@@ -180,6 +180,7 @@ Message.prototype.build = function() {
 					    html += '&nbsp;&nbsp;' + filesData.availableFileMap[key] + '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onClick="downFlowGenFile(this)" eleId="' + key + '" path="' + filesData.availableFileMap[key] + '">下载</a></br>';
 					}
 					html += '</div>';
+					
 				}
 				if(this.msg.body.eleType == "finish") {
 					$("#flowStopBtn span").removeClass("text-danger");

@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.SpringContextHelper;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
@@ -102,6 +103,8 @@ public class FlowSqlExecuteStrategy implements ProcessStrategy {
         
         int rows = mcgBizAdapter.executeUpdate(flowSqlExecute.getSqlExecuteCore().getSource(), null);
      
+        JSONObject runResultJson = (JSONObject)parentParam;
+        runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
         runResult.setSourceCode("成功执行，影响行数【" + rows  + "】行");
 		executeStruct.getRunStatus().setCode("success");
 		
