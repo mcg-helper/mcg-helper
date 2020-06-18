@@ -27,6 +27,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.kevinsawicki.http.HttpRequest;
 import com.mcg.common.Constants;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.wonton.FlowWonton;
@@ -69,6 +70,7 @@ public class FlowWontonStrategy implements ProcessStrategy {
         flowBody.setFlowId(flowWonton.getFlowId());
         flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setOrderNum(flowWonton.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.WONTON.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.WONTON.getName() + "--》" + flowWonton.getWontonProperty().getName());
         flowBody.setEleId(flowWonton.getId());
@@ -81,7 +83,7 @@ public class FlowWontonStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message);
+        MessagePlugin.push(flowWonton.getMcgWebScoketCode(), executeStruct.getSession().getId(), message);
         
         WontonData wontonData = (WontonData)LevelDbUtil.getObject(Constants.WONTON_KEY, WontonData.class);
         if(wontonData != null && wontonData.getWontonHeartMap() != null) {

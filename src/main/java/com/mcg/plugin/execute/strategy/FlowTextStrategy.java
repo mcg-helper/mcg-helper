@@ -26,6 +26,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.FlowTextOutModeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.text.FlowText;
@@ -62,6 +63,7 @@ public class FlowTextStrategy implements ProcessStrategy {
         flowBody.setFlowId(flowText.getFlowId());
         flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setOrderNum(flowText.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.TEXT.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.TEXT.getName() + "--》" + flowText.getTextProperty().getName());
         flowBody.setEleId(flowText.getTextId());
@@ -77,7 +79,7 @@ public class FlowTextStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message);
+        MessagePlugin.push(flowText.getMcgWebScoketCode(), executeStruct.getSession().getId(), message);
 		
 		TplEngine tplEngine = new TplEngine(new FreeMakerTpLan());
 		String outPath = flowText.getTextProperty().getOutPutPath();
@@ -93,6 +95,7 @@ public class FlowTextStrategy implements ProcessStrategy {
         contentFlowBody.setFlowId(flowText.getFlowId());
         contentFlowBody.setSubFlag(executeStruct.getSubFlag());
         contentFlowBody.setEleType(EletypeEnum.TEXT.getValue());
+        contentFlowBody.setLogOutType(LogOutTypeEnum.TEXT.getValue());
         contentFlowBody.setEleTypeDesc(EletypeEnum.TEXT.getName() + "--》" + flowText.getTextProperty().getName());
         contentFlowBody.setEleId(flowText.getTextId());
         if(FlowTextOutModeEnum.OVERRIDE.getValue().equals(flowText.getTextProperty().getOutMode())) {
@@ -104,7 +107,7 @@ public class FlowTextStrategy implements ProcessStrategy {
         contentFlowBody.setLogType(LogTypeEnum.INFO.getValue());
         contentFlowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         contentMessage.setBody(contentFlowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), contentMessage);
+        MessagePlugin.push(flowText.getMcgWebScoketCode(), executeStruct.getSession().getId(), contentMessage);
 
         JSONObject runResultJson = (JSONObject)parentParam;
 		result.setJsonVar(JSON.toJSONString(runResultJson, true));

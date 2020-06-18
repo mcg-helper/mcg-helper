@@ -518,7 +518,7 @@ function initFlowData(flowId) {
 	common.ajax({
 		url : "/flow/getFlowData",
 		type : "POST",
-		data : "flowId=" + flowId
+		data : "mcgWebScoketCode=" + mcgWebScoketCode + "&flowId=" + flowId
 	}, function(data) {
 		if(data != null && data != undefined && data.webElement != undefined && data.webElement.length > 0) {
 			for(var i=0; i<data.webElement.length; i++) {
@@ -616,20 +616,30 @@ function initFunc() {
 		});
 	});
 	$('#flowImpBtn').click(function(){
-		var form = $("<form id='flowUploadForm' />");
+		var uuid = Math.uuid();
+		var form = $("<form id='" + uuid + "flowUploadForm' />");
 		form.attr("style", "display:none");
 		form.attr("method", "post");
-//		form.attr("target", "");
 		form.attr("enctype", "multipart/form-data");
 		form.attr("action", baseUrl + "/tool/upload");
-		var input = $("<input id='flowFile' name='flowFile'  type='file' onchange='uploadFlow()' style='display: none;'/>");
+		var input = $("<input id='" + uuid + "flowFile' name='flowFile'  type='file' onchange='uploadFlow(\"" + uuid + "\")' style='display: none;'/>");
 		var flowIdInput = $("<input name='flowId'  type='hidden' value='" + $("#flowSelect").attr("flowId") + "' />");
+		var mcgWebScoketCodeInput = $("<input name='mcgWebScoketCode'  type='hidden' value='" + mcgWebScoketCode + "' />");
 		form.append(input);
 		form.append(flowIdInput);
-		form.append($("#flowFile"));
+		form.append(mcgWebScoketCodeInput);
+		form.append($("#" + uuid + "flowFile"));
 		$("body").append(form);
 		
-		$("#flowFile").click();
+		/*
+		console.log(document.getElementById("flowUploadForm"));
+		document.getElementById("flowUploadForm").reset();
+		//$("#flowUploadForm")[0].reset();
+		$("#test_flowId").val($("#flowSelect").attr("flowId"));
+		$("#test_mcgWebScoketCode").val(mcgWebScoketCode);
+		*/
+		$("#" + uuid + "flowFile").click();
+		
 	});
 	$('#flowExpBtn').click(function(){
 		var form = $("<form>");
@@ -675,7 +685,7 @@ function initFunc() {
 			    		common.ajax({
 			    			url : "/flow/clearFlowData",
 			    			type : "POST",
-			    			data : "flowId=" + $("#flowSelect").attr("flowId")
+			    			data : "mcgWebScoketCode=" + mcgWebScoketCode + "&flowId=" + $("#flowSelect").attr("flowId")
 			    		}, function(data) {
 			    			if(data.statusCode == 1) {
 			    				clearAll($("#flowarea"));
@@ -726,7 +736,6 @@ function initFunc() {
 
 /* 将elementMap中的缓存数据转换成WebStruct*/
 function convertFlowObject() {
-	var webStruct = "";
 	var webElementArray = new Array();
 	var webConnectorArray = new Array();
 	var array = elementMap.keySet();
@@ -756,7 +765,12 @@ function convertFlowObject() {
 	 		}));
 		}
 	}
-	var webStruct = new $.WebStruct({flowId:$("#flowSelect").attr("flowId"), webElement:webElementArray, webConnector:webConnectorArray});
+	var webStruct = new $.WebStruct({
+		    "mcgWebScoketCode":mcgWebScoketCode,
+			"flowId":$("#flowSelect").attr("flowId"), 
+			"webElement":webElementArray, 
+			"webConnector":webConnectorArray
+		});
 	return webStruct;
 }
 
@@ -929,8 +943,8 @@ function initConnectLine() {
     baseMap.put("instance", instance);
 }
 
-function uploadFlow() {
-	var form = $("#flowUploadForm");
+function uploadFlow(uuid) {
+	var form = $("#" + uuid + "flowUploadForm");
 	form.ajaxSubmit({  
     	url : baseUrl + "/tool/upload",  
     	type : "post",  
@@ -944,7 +958,7 @@ function uploadFlow() {
     	},
     	error : function(data) {  
 			Messenger().post({
-				message: "上传流程失败！",
+				message: "导入流程失败！",
 				type: "error",
 				hideAfter: 5,
 			 	showCloseButton: true

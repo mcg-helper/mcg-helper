@@ -31,7 +31,7 @@ public class Constants {
     /*   字符编码        */
     public static final Charset CHARSET = Charset.forName("utf-8");
     /*   版本号        */
-    public static final String VERSION = "mcg-helper_V1.6.3-Release";
+    public static final String VERSION = "mcg-helper_V1.6.4-Release";
     /*   全局变量key   */
     public static final String GLOBAL_KEY = "mcgGlobal";
     /*   流程文件扩展名        */
@@ -50,8 +50,8 @@ public class Constants {
 	public final static long DEFAULT_TIME = 2000L;	
 	/*   SSH Linux控件 结束符        */
 	public final static String LINUX_EOF = "exit";
-	/*   SSH Linux控件 换行符        */
-	public final static String LINUX_ENTER = "\n";
+	/*   SSH Linux控件 执行符        */
+	public final static String LINUX_ENTER = "\r";
 	/*   混沌客户端数据key   */
 	public final static String WONTON_KEY = "mcgWontonData";
 	/* 请求混沌客户端超时设置 */

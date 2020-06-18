@@ -35,6 +35,7 @@ $.WebConnector = function (args) {
 };
 
 $.WebStruct = function (args) {
+	this.mcgWebScoketCode = args.mcgWebScoketCode;
 	this.flowId = args.flowId;
 	this.webElement = args.webElement; 
 	this.webConnector = args.webConnector;

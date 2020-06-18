@@ -49,6 +49,7 @@ import com.mcg.entity.generate.RunResult;
 import com.mcg.entity.generate.RunStatus;
 import com.mcg.entity.global.McgGlobal;
 import com.mcg.entity.global.datasource.McgDataSource;
+import com.mcg.entity.global.serversource.ServerSource;
 import com.mcg.entity.global.topology.Topology;
 import com.mcg.entity.message.Message;
 import com.mcg.entity.message.NotifyBody;
@@ -92,6 +93,17 @@ public class FlowServiceImpl implements FlowService {
 		return mcgDataSourceList;
 	}
 	
+
+	@Override
+	public List<ServerSource> getMcgServerSources() throws ClassNotFoundException, IOException {
+		List<ServerSource> serverSourceList = null;
+		McgGlobal mcgGlobal = (McgGlobal)dbService.query(Constants.GLOBAL_KEY, McgGlobal.class);
+		if(mcgGlobal != null) {
+			serverSourceList = mcgGlobal.getServerSources();
+		}
+		return serverSourceList;
+	}
+
 	@Override
 	public List<DataRecord> getTableInfo(McgDataSource mcgDataSource, String tableName) {
 	    
@@ -196,6 +208,7 @@ public class FlowServiceImpl implements FlowService {
         	ConcurrentHashMap<String, RunResult> runResultMap = new ConcurrentHashMap<String, RunResult>();
             FlowRunSort flowRunSort = new FlowRunSort();
             ExecuteStruct executeStruct = new ExecuteStruct();
+            executeStruct.setMcgWebScoketCode(webStruct.getMcgWebScoketCode());
             executeStruct.setFlowId(flowStruct.getMcgId());
             executeStruct.setFlowInstanceId(flowInstanceId);
             executeStruct.setDataMap(flowRunSort.init(flowStruct));
@@ -209,10 +222,10 @@ public class FlowServiceImpl implements FlowService {
             notifyBody.setContent("【" + curTopology.getName() + "】流程执行开始！");
             notifyBody.setType(LogTypeEnum.INFO.getValue());
             message.setBody(notifyBody);
-            MessagePlugin.push(session.getId(), message);
+            MessagePlugin.push(webStruct.getMcgWebScoketCode(), session.getId(), message);
             
             try {
-	            FlowTask flowTask = new FlowTask(session.getId(), flowStruct, executeStruct, subFlag);
+	            FlowTask flowTask = new FlowTask(webStruct.getMcgWebScoketCode(), session.getId(), flowStruct, executeStruct, subFlag);
 	            
 	            FlowInstancesUtils.executeStructMap.put(flowInstanceId, executeStruct);
 	            Future<RunStatus> future = ThreadPoolUtils.FLOW_WORK_EXECUTOR.submit(flowTask);
@@ -241,7 +254,7 @@ public class FlowServiceImpl implements FlowService {
             notifyBody.setContent("请先绘制流程！");
             notifyBody.setType(LogTypeEnum.ERROR.getValue());
             message.setBody(notifyBody);
-            MessagePlugin.push(session.getId(), message);
+            MessagePlugin.push(webStruct.getMcgWebScoketCode(), session.getId(), message);
         }
         return runStatus;
     }

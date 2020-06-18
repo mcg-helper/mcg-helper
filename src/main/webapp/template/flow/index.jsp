@@ -130,7 +130,6 @@
 				<div class="col-md-10 autoHeight" style="border-left: 1px solid #e5e5e5;">
 					<!-- 功能按钮操作区开始 -->
 					<div id="mcg_func" class="row">
-					     
 						<div class="btn-group no_width_center">
 								<button id="flowSelect" value="" flowId="" flowName="" flowPid="" class="btn btn-default" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								   我的流程&nbsp;<span class="caret"></span>

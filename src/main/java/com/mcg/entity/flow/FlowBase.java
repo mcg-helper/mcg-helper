@@ -20,6 +20,7 @@ import com.mcg.plugin.build.McgProduct;
 public abstract class FlowBase extends McgProduct {
     
     private static final long serialVersionUID = -7660980819340679924L;
+    private String mcgWebScoketCode;
     /* 流程实例ID */
     private String flowId;
     /* 执行的次序号 */
@@ -107,6 +108,12 @@ public abstract class FlowBase extends McgProduct {
 	}
 	public void setSign(String sign) {
 		this.sign = sign;
+	}
+	public String getMcgWebScoketCode() {
+		return mcgWebScoketCode;
+	}
+	public void setMcgWebScoketCode(String mcgWebScoketCode) {
+		this.mcgWebScoketCode = mcgWebScoketCode;
 	}
     
 }

@@ -32,22 +32,22 @@ import com.mcg.util.Tools;
 
 public class Console {
 
-    public String info(String httpSessionId, String flowId, Object content) {
-        pushMessage(httpSessionId, flowId, content, LogTypeEnum.INFO);
+    public String info(String mcgWebScoketCode, String httpSessionId, String flowId, Object content) {
+        pushMessage(mcgWebScoketCode, httpSessionId, flowId, content, LogTypeEnum.INFO);
         return "";
     }
     
-    public String success(String httpSessionId, String flowId, Object content) {
-        pushMessage(httpSessionId, flowId, content, LogTypeEnum.SUCCESS);
+    public String success(String mcgWebScoketCode, String httpSessionId, String flowId, Object content) {
+        pushMessage(mcgWebScoketCode, httpSessionId, flowId, content, LogTypeEnum.SUCCESS);
         return "";
     }
     
-    public String error(String httpSessionId, String flowId, Object content) {
-        pushMessage(httpSessionId, flowId, content, LogTypeEnum.ERROR);
+    public String error(String mcgWebScoketCode, String httpSessionId, String flowId, Object content) {
+        pushMessage(mcgWebScoketCode, httpSessionId, flowId, content, LogTypeEnum.ERROR);
         return "";
     }
     
-    public static void pushMessage(String httpSessionId, String flowId, Object content, LogTypeEnum logType) {
+    public static void pushMessage(String mcgWebScoketCode, String httpSessionId, String flowId, Object content, LogTypeEnum logType) {
     	String flowInstanceId = Tools.genFlowInstanceId(httpSessionId, flowId);
     	ExecuteStruct executeStruct = FlowInstancesUtils.executeStructMap.get(flowInstanceId);
         Message message = MessagePlugin.getMessage();
@@ -75,6 +75,6 @@ public class Console {
         }    
         flowBody.setEleId(executeId);
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message);
+        MessagePlugin.push(mcgWebScoketCode, executeStruct.getSession().getId(), message);
     }
 }

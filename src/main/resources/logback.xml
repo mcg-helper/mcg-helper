@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>   
   <configuration scan="true" scanPeriod="60 seconds">
-  	 <property name="LOG_HOME" value="/mcg/logs" />  
+  	
+  	<define name="MCG_PATH" class="com.mcg.plugin.logback.McgPropertyDefiner"/>
+  	<property name="LOG_HOME" value="${MCG_PATH}" />  
   	 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder charset="UTF-8">

@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.SpringContextHelper;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
@@ -62,6 +63,7 @@ public class FlowSqlExecuteStrategy implements ProcessStrategy {
         flowBody.setFlowId(flowSqlExecute.getFlowId());
         flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setOrderNum(flowSqlExecute.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.SQLEXECUTE.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.SQLEXECUTE.getName() + "--》" + flowSqlExecute.getSqlExecuteProperty().getName());
         flowBody.setEleId(flowSqlExecute.getId());
@@ -75,7 +77,7 @@ public class FlowSqlExecuteStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message);		
+        MessagePlugin.push(flowSqlExecute.getMcgWebScoketCode(), executeStruct.getSession().getId(), message);		
 		
         
         
@@ -99,7 +101,7 @@ public class FlowSqlExecuteStrategy implements ProcessStrategy {
         sqlFlowBody.setLogType(LogTypeEnum.INFO.getValue());
         sqlFlowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         sqlMessage.setBody(sqlFlowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), sqlMessage);
+        MessagePlugin.push(flowSqlExecute.getMcgWebScoketCode(), executeStruct.getSession().getId(), sqlMessage);
         
         int rows = mcgBizAdapter.executeUpdate(flowSqlExecute.getSqlExecuteCore().getSource(), null);
      

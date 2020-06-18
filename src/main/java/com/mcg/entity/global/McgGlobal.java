@@ -38,6 +38,7 @@ import com.mcg.entity.global.var.FlowVar;
 public class McgGlobal implements Serializable {
 
 	private static final long serialVersionUID = -1997376482852765213L;
+	private String mcgWebScoketCode;
 	//系统参数
 	@XmlElement
 	private List<FlowVar> sysVars;
@@ -65,6 +66,18 @@ public class McgGlobal implements Serializable {
 		
 		sysVars.add(flowVar);
 		return sysVars;
+	}
+
+	public void setSysVars(List<FlowVar> sysVars) {
+		this.sysVars = sysVars;
+	}
+
+	public String getMcgWebScoketCode() {
+		return mcgWebScoketCode;
+	}
+
+	public void setMcgWebScoketCode(String mcgWebScoketCode) {
+		this.mcgWebScoketCode = mcgWebScoketCode;
 	}
 
 	public List<FlowVar> getFlowVars() {

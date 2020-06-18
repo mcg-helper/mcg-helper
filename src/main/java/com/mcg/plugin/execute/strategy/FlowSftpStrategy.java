@@ -25,6 +25,7 @@ import com.jcraft.jsch.UserInfo;
 import com.mcg.common.Constants;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.FlowLinuxConnModeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.sftp.FlowSftp;
@@ -69,6 +70,7 @@ public class FlowSftpStrategy implements ProcessStrategy {
         flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setFlowId(flowSftp.getFlowId());
         flowBody.setOrderNum(flowSftp.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.SFTP.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.SFTP.getName() + "--》" + flowSftp.getSftpProperty().getName());
         flowBody.setEleId(flowSftp.getId());
@@ -81,7 +83,7 @@ public class FlowSftpStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message);
+        MessagePlugin.push(flowSftp.getMcgWebScoketCode(), executeStruct.getSession().getId(), message);
         
         ServerSource serverSource = null;
         if(FlowLinuxConnModeEnum.DEPENDENCY.getValue().equals(flowSftp.getSftpProperty().getConnMode())) {
@@ -148,7 +150,7 @@ public class FlowSftpStrategy implements ProcessStrategy {
 		            shellFlowBody.setLogType(LogTypeEnum.INFO.getValue());
 		            shellFlowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
 		            shellMessage.setBody(shellFlowBody);
-		            MessagePlugin.push(executeStruct.getSession().getId(), shellMessage);
+		            MessagePlugin.push(flowSftp.getMcgWebScoketCode(), executeStruct.getSession().getId(), shellMessage);
 		        }
 	        }
 	    } finally {

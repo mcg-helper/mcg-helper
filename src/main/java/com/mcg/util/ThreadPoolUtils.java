@@ -18,6 +18,7 @@ package com.mcg.util;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -28,18 +29,31 @@ public class ThreadPoolUtils {
 	/**
 	 * 执行流程线程池
 	 */
-	public static final ExecutorService FLOW_WORK_EXECUTOR = createExecutorService(10, "flow-execute-pool-%d", 50);
+	public static final ExecutorService FLOW_WORK_EXECUTOR = createExecutorService(10, "flow-execute-pool-%d", 100);
 	
-	public static ExecutorService createExecutorService(int size,String threadNamingPattern, int capacity){
-        if (size < 1){
-            throw new IllegalArgumentException("线程池最小数量不能小于1");
+	public static final ExecutorService WSSH_WORK_EXECUTOR = createCacheExecutorService(10, 1000, "wssh-execute-pool-%d");
+	
+	public static ExecutorService createExecutorService(int corePoolSize,String threadNamingPattern, int workQueue){
+        if (corePoolSize < 1){
+        	corePoolSize = 5;
         }
 
-        if (capacity < 1){
-            throw new IllegalArgumentException("线程任务队列最小数量不能小于1");
+        if (workQueue < 1){
+        	workQueue = 50;
         }
 
-        return new ThreadPoolExecutor(size,size * 10,100L, TimeUnit.MICROSECONDS, new LinkedBlockingQueue<Runnable>(capacity),
+        return new ThreadPoolExecutor(corePoolSize, corePoolSize * 10, 100L, TimeUnit.MICROSECONDS, new LinkedBlockingQueue<Runnable>(workQueue),
                 new BasicThreadFactory.Builder().namingPattern(threadNamingPattern).daemon(true).build(), new ThreadPoolExecutor.AbortPolicy());
     }
+	
+	public static ExecutorService createCacheExecutorService(int corePoolSize, int maximumPoolSize, String threadNamingPattern) {
+		if(corePoolSize < 1) {
+			corePoolSize = 5;
+		}
+		if(maximumPoolSize < 1) {
+			maximumPoolSize = 100;
+		}
+		return new ThreadPoolExecutor(corePoolSize, maximumPoolSize, 100L, TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>(),
+				new BasicThreadFactory.Builder().namingPattern(threadNamingPattern).daemon(true).build(), new ThreadPoolExecutor.AbortPolicy());
+	}
 }

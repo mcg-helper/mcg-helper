@@ -29,6 +29,7 @@ import com.mcg.entity.flow.data.DataRecord;
 import com.mcg.entity.flow.web.WebStruct;
 import com.mcg.entity.generate.RunStatus;
 import com.mcg.entity.global.datasource.McgDataSource;
+import com.mcg.entity.global.serversource.ServerSource;
 
 /**
  * 
@@ -45,6 +46,8 @@ public interface FlowService {
 	McgDataSource getMcgDataSourceById(String dataSourceId) throws ClassNotFoundException, IOException;
 	
 	List<McgDataSource> getMcgDataSources() throws ClassNotFoundException, IOException;
+	
+	List<ServerSource> getMcgServerSources() throws ClassNotFoundException, IOException;
 	
 	List<DataRecord> getTableInfo(McgDataSource mcgDataSource, String tableName);
 	

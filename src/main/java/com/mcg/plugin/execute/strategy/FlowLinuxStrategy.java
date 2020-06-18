@@ -27,6 +27,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.Constants;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.FlowLinuxConnModeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.linux.FlowLinux;
@@ -70,6 +71,7 @@ public class FlowLinuxStrategy implements ProcessStrategy {
         flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setFlowId(flowLinux.getFlowId());
         flowBody.setOrderNum(flowLinux.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.LINUX.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.LINUX.getName() + "--》" + flowLinux.getLinuxProperty().getName());
         flowBody.setEleId(flowLinux.getId());
@@ -82,7 +84,7 @@ public class FlowLinuxStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message);
+        MessagePlugin.push(flowLinux.getMcgWebScoketCode(), executeStruct.getSession().getId(), message);
         
         ServerSource serverSource = null;
         if(FlowLinuxConnModeEnum.DEPENDENCY.getValue().equals(flowLinux.getLinuxCore().getConnMode())) {
@@ -124,10 +126,11 @@ public class FlowLinuxStrategy implements ProcessStrategy {
         shellFlowBody.setEleId(flowLinux.getId());
         shellFlowBody.setComment("shell执行");
         shellFlowBody.setContent(text);
+        shellFlowBody.setLogOutType(LogOutTypeEnum.SSH.getValue());
         shellFlowBody.setLogType(LogTypeEnum.INFO.getValue());
         shellFlowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         shellMessage.setBody(shellFlowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), shellMessage);
+        MessagePlugin.push(flowLinux.getMcgWebScoketCode(), executeStruct.getSession().getId(), shellMessage);
 		
 		runResult.setElementId(flowLinux.getId());
 		

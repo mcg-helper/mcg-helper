@@ -26,6 +26,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.FlowGitModeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.git.FlowGit;
@@ -65,6 +66,7 @@ public class FlowGitStrategy implements ProcessStrategy {
         flowBody.setFlowId(flowGit.getFlowId());
         flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setOrderNum(flowGit.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.GIT.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.GIT.getName() + "--》" + flowGit.getGitProperty().getName());
         flowBody.setEleId(flowGit.getId());
@@ -77,7 +79,7 @@ public class FlowGitStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message);
+        MessagePlugin.push(flowGit.getMcgWebScoketCode(), executeStruct.getSession().getId(), message);
 		
         if(FlowGitModeEnum.HTTP.getValue().equals(flowGit.getGitProperty().getMode())) {
 			File file = new File(flowGit.getGitProperty().getProjectPath() + "/.git");

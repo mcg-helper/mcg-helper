@@ -221,7 +221,7 @@ public class WontonController extends BaseController {
     		mcgResult.setStatusMes(reason);
 		} finally {
 			message.setBody(notifyBody);
-	        MessagePlugin.push(session.getId(), message);
+	        MessagePlugin.push(wontonPublish.getMcgWebScoketCode(), session.getId(), message);
 		}
 
         return mcgResult;

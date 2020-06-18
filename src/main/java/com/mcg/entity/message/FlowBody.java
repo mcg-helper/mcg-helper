@@ -25,6 +25,8 @@ public class FlowBody extends Body {
 	private String flowInstanceId;
 	/* 日志类型  */
 	private String logType;
+	/* 日志输出类型   param、normal、result、ssh 对应EletypeEnum */
+	private String logOutType;
 	/* 日志类型说明  */
 	private String logTypeDesc;
 	/* 控件类型  */
@@ -107,6 +109,12 @@ public class FlowBody extends Body {
 	}
 	public void setSubFlag(Boolean subFlag) {
 		this.subFlag = subFlag;
+	}
+	public String getLogOutType() {
+		return logOutType;
+	}
+	public void setLogOutType(String logOutType) {
+		this.logOutType = logOutType;
 	}
 
 }

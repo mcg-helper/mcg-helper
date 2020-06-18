@@ -56,6 +56,7 @@
 						<ul class="nav nav-pills" role="tablist" id="mcgTab">
 							<li role="presentation" class="active"><a href="#mcg_home" data-toggle="tab">主页</a></li>
 							<li role="presentation"><a href="#mcg_flow" data-toggle="tab">工作台</a></li>
+							<li role="presentation"><a href="#mcg_wssh" data-toggle="tab">SSH</a></li>
 							<li role="presentation"><a href="#mcg_wonton" data-toggle="tab">混沌工程</a></li>
 						</ul>
 
@@ -68,6 +69,7 @@
 				<div class="tab-content autoHeight">
 					<div id="mcg_home" class="tab-pane active mcg_main_highlight autoHeight" style="overflow-x: auto;overflow-y: auto;"></div>
 					<div id="mcg_flow" class="tab-pane mcg_main_highlight autoHeight"style="overflow-x: auto;overflow-y: auto;"></div>
+					<div id="mcg_wssh" class="tab-pane mcg_main_highlight autoHeight"style="overflow-x: auto;overflow-y: auto;"></div>
 					<div id="mcg_wonton" class="tab-pane mcg_main_highlight autoHeight"  style="overflow-x: auto;overflow-y: auto;"></div>
 				</div>
 			</div>

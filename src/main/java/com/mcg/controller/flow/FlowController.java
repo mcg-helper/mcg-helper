@@ -118,7 +118,7 @@ public class FlowController extends BaseController {
         }
         
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
+        MessagePlugin.push(flowStart.getMcgWebScoketCode(), session.getId(), message);        
         return mcgResult;
     }	
 	
@@ -138,7 +138,7 @@ public class FlowController extends BaseController {
         }
         
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
+        MessagePlugin.push(flowSqlQuery.getMcgWebScoketCode(), session.getId(), message);
         return mcgResult;
     }
     
@@ -157,7 +157,7 @@ public class FlowController extends BaseController {
         }
         
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
+        MessagePlugin.push(flowSqlExecute.getMcgWebScoketCode(), session.getId(), message);
         return mcgResult;
     }
     
@@ -177,7 +177,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
+        MessagePlugin.push(flowJson.getMcgWebScoketCode(), session.getId(), message);        
 		return mcgResult;
 	}	
     
@@ -197,7 +197,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
+        MessagePlugin.push(flowText.getMcgWebScoketCode(), session.getId(), message);        
 		return mcgResult;
 	}  
 	
@@ -217,7 +217,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
+        MessagePlugin.push(flowScript.getMcgWebScoketCode(), session.getId(), message);        
 		return mcgResult;
 	}  	
 	
@@ -237,7 +237,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
+        MessagePlugin.push(flowJava.getMcgWebScoketCode(), session.getId(), message);        
 		return mcgResult;
 	}  	
 	
@@ -257,7 +257,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
+        MessagePlugin.push(flowPython.getMcgWebScoketCode(), session.getId(), message);        
 		return mcgResult;
 	}
 	
@@ -277,7 +277,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
+        MessagePlugin.push(flowLinux.getMcgWebScoketCode(), session.getId(), message);        
 		return mcgResult;
 	}	
 	
@@ -297,7 +297,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
+        MessagePlugin.push(flowWonton.getMcgWebScoketCode(), session.getId(), message);
 		return mcgResult;
 	}
 	
@@ -317,7 +317,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
+        MessagePlugin.push(flowProcess.getMcgWebScoketCode(), session.getId(), message);
 		return mcgResult;
 	}
 	
@@ -337,7 +337,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
+        MessagePlugin.push(flowLoop.getMcgWebScoketCode(), session.getId(), message);
 		return mcgResult;
 	}
 	
@@ -357,7 +357,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
+        MessagePlugin.push(flowGit.getMcgWebScoketCode(), session.getId(), message);
 		return mcgResult;
 	}
 	
@@ -377,7 +377,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);
+        MessagePlugin.push(flowSftp.getMcgWebScoketCode(), session.getId(), message);
 		return mcgResult;
 	}
 	
@@ -397,7 +397,7 @@ public class FlowController extends BaseController {
         }
         
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);         
+        MessagePlugin.push(flowData.getMcgWebScoketCode(), session.getId(), message);         
 		return mcgResult;
 	}
 	
@@ -417,7 +417,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
+        MessagePlugin.push(flowEnd.getMcgWebScoketCode(), session.getId(), message);        
         return mcgResult;
     }	
     
@@ -438,7 +438,7 @@ public class FlowController extends BaseController {
     
     @RequestMapping(value="saveDataSource", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public McgResult saveDataSource(@Valid @RequestBody List<McgDataSource> flowDataSources, BindingResult result, HttpSession session) throws IOException, ClassNotFoundException {
+    public McgResult saveDataSource(@Valid @RequestBody List<McgDataSource> flowDataSources, String mcgWebScoketCode, BindingResult result, HttpSession session) throws IOException, ClassNotFoundException {
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
         NotifyBody notifyBody = new NotifyBody();       
@@ -453,7 +453,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
+        MessagePlugin.push(mcgWebScoketCode, session.getId(), message);        
         return mcgResult;
     }    
 	
@@ -472,7 +472,7 @@ public class FlowController extends BaseController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);          
+        MessagePlugin.push(webStruct.getMcgWebScoketCode(), session.getId(), message);          
         return mcgResult;
     }
 
@@ -533,7 +533,7 @@ public class FlowController extends BaseController {
             message.getHeader().setMesType(MessageTypeEnum.NOTIFY); 
             
             message.setBody(notifyBody);
-            MessagePlugin.push(session.getId(), message);
+            MessagePlugin.push(webStruct.getMcgWebScoketCode(), session.getId(), message);
         }
 
         return mcgResult;
@@ -541,7 +541,7 @@ public class FlowController extends BaseController {
     
     @RequestMapping(value="getFlowData", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public WebStruct getFlowData(String flowId, HttpSession session) throws ClassNotFoundException, IOException {
+    public WebStruct getFlowData(String mcgWebScoketCode, String flowId, HttpSession session) throws ClassNotFoundException, IOException {
         WebStruct webStruct = null;
         if(StringUtils.isBlank(flowId)) {
             Message message = MessagePlugin.getMessage();
@@ -550,7 +550,7 @@ public class FlowController extends BaseController {
             notifyBody.setContent("获取流程失败");
             notifyBody.setType(LogTypeEnum.ERROR.getValue()); 
             message.setBody(notifyBody);
-            MessagePlugin.push(session.getId(), message);               
+            MessagePlugin.push(mcgWebScoketCode, session.getId(), message);               
         } else {
             webStruct = DataConverter.flowStructToWebStruct(flowId);
         }
@@ -559,7 +559,7 @@ public class FlowController extends BaseController {
     
     @RequestMapping(value="clearFlowData", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public McgResult clearFlowData(String flowId, HttpSession session) {
+    public McgResult clearFlowData(String mcgWebScoketCode, String flowId, HttpSession session) {
     	
         McgResult mcgResult = new McgResult();
         Message messageComplete = MessagePlugin.getMessage();
@@ -569,7 +569,7 @@ public class FlowController extends BaseController {
     	notifyBody.setContent("清空流程成功！");
     	notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
         messageComplete.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), messageComplete);
+        MessagePlugin.push(mcgWebScoketCode, session.getId(), messageComplete);
         
     	return mcgResult;
     }

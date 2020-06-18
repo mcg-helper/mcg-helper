@@ -179,6 +179,7 @@ function setDialogBtns(param) {
 					var result = JSON.parse(data);
 					result["startProperty"] = rowsData;
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveStart",
 						type : "POST",
@@ -210,6 +211,7 @@ function setDialogBtns(param) {
 					var data = $("#" + param.modalId　+ "_endForm").serializeJSON();
 					var result = JSON.parse(data);
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveFlowEnd",
 						type : "POST",
@@ -244,6 +246,7 @@ function setDialogBtns(param) {
 					jsonCore["source"] = param.editor.getValue();
 					result["jsonCore"] = jsonCore; 
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveJson",
 						type : "POST",
@@ -276,6 +279,7 @@ function setDialogBtns(param) {
 					var result = JSON.parse(data);
 					result.sqlQueryCore["source"] = param.editor.getValue(); 
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveSqlQuery",
 						type : "POST",
@@ -308,6 +312,7 @@ function setDialogBtns(param) {
 					var result = JSON.parse(data);
 					result.sqlExecuteCore["source"] = param.editor.getValue(); 
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveSqlExecute",
 						type : "POST",
@@ -404,6 +409,7 @@ function setDialogBtns(param) {
 					var result = JSON.parse(data);
 					result.dataField["dataRecord"] = rowsData;
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveData",
 						type : "POST",
@@ -439,6 +445,7 @@ function setDialogBtns(param) {
 					scriptCore["source"] = param.editor.getValue();
 					result["scriptCore"] = scriptCore; 
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveScript",
 						type : "POST",
@@ -475,6 +482,7 @@ function setDialogBtns(param) {
 					javaCore["source"] = param.editor.getValue();
 					result["javaCore"] = javaCore; 
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveJava",
 						type : "POST",
@@ -511,6 +519,7 @@ function setDialogBtns(param) {
 							pythonCore["source"] = param.editor.getValue();
 							result["pythonCore"] = pythonCore; 
 							result["flowId"] = getCurrentFlowId();
+							result["mcgWebScoketCode"] = mcgWebScoketCode;
 							common.ajax({
 								url : "/flow/savePython",
 								type : "POST",
@@ -546,6 +555,7 @@ function setDialogBtns(param) {
 							result.linuxCore["connMode"] = $("#" + param.modalId + "_connMode").val();
 							result.linuxCore["serverSourceId"] = $("#" + param.modalId + "_serverSourceId").val();
 							result["flowId"] = getCurrentFlowId();
+							result["mcgWebScoketCode"] = mcgWebScoketCode;
 							common.ajax({
 								url : "/flow/saveLinux",
 								type : "POST",
@@ -583,6 +593,7 @@ function setDialogBtns(param) {
 					result.wontonNetRule["targetProtos"] = result.wontonNetRule.TargetProtos.split(",");
 					result.wontonNetRule.TargetProtos = result.wontonNetRule.TargetProtos.split(",");
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveWonton",
 						type : "POST",
@@ -617,6 +628,7 @@ function setDialogBtns(param) {
 					textCore["source"] = param.editor.getValue();
 					result["textCore"] = textCore; 
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveText",
 						type : "POST",
@@ -725,7 +737,7 @@ function setDialogBtns(param) {
 				text: "保存",
 				click: function() {
 					var _this = this;
-					var global = {"flowVars":[], "flowDataSources":[], "serverSources":[]};
+					var global = {"mcgWebScoketCode":mcgWebScoketCode, "flowVars":[], "flowDataSources":[], "serverSources":[]};
 					
 					var tableData = $("#" + param.modalId + "_flowVarTable").bootstrapTable('getData');
 					for(var i=0; i<tableData.length; i++) {
@@ -802,6 +814,7 @@ function setDialogBtns(param) {
 					var data = $("#" + param.modalId + "_processForm").serializeJSON();
 					var result = JSON.parse(data);
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveProcess",
 						type : "POST",
@@ -834,6 +847,7 @@ function setDialogBtns(param) {
 					var data = $("#" + param.modalId + "_loopForm").serializeJSON();
 					var result = JSON.parse(data);
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveLoop",
 						type : "POST",
@@ -867,6 +881,7 @@ function setDialogBtns(param) {
 					var result = JSON.parse(data);
 					var gitCore = {};
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					common.ajax({
 						url : "/flow/saveGit",
 						type : "POST",
@@ -937,6 +952,7 @@ function setDialogBtns(param) {
 					result.sftpProperty["connMode"] = $("#" + param.modalId + "_connMode").val();
 					result.sftpProperty["serverSourceId"] = $("#" + param.modalId + "_serverSourceId").val();
 					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
 					result["sftpUpload"] = {"sftpUploadRecords":[]};
 					
 					var rowsData = {var:[]};

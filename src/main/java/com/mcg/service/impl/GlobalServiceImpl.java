@@ -95,7 +95,8 @@ public class GlobalServiceImpl implements GlobalService {
 					serverSource.getPwd(), serverSource.getSecretKey(), "");
 			result = true;
 		} catch (Exception e) {
-			logger.error("测试连接服务器出错，服务器信息：{}，异常信息：{}", JSON.toJSONString(serverSource), e.getMessage());
+			serverSource.setSecretKey("不显示");
+			logger.error("测试连接服务器出错，服务器信息：{}，异常信息：", JSON.toJSONString(serverSource), e);
 		}
 		return result;		
 	}

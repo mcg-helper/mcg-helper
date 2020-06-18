@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.script.FlowScript;
@@ -66,6 +67,7 @@ public class FlowScriptStrategy implements ProcessStrategy {
         flowBody.setFlowId(flowScript.getFlowId());
         flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setOrderNum(flowScript.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.SCRIPT.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.SCRIPT.getName() + "--》" + flowScript.getScriptProperty().getScriptName());
         flowBody.setEleId(flowScript.getScriptId());
@@ -78,9 +80,9 @@ public class FlowScriptStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message); 		
+        MessagePlugin.push(flowScript.getMcgWebScoketCode(), executeStruct.getSession().getId(), message); 		
 		
-		String dataJson = resolve(executeStruct.getSession().getId(), flowScript.getFlowId(), flowScript.getScriptCore().getSource(), parentParam);
+		String dataJson = resolve(executeStruct.getMcgWebScoketCode(), executeStruct.getSession().getId(), flowScript.getFlowId(), flowScript.getScriptCore().getSource(), parentParam);
 		runResult.setElementId(flowScript.getScriptId());
 		
 		JSONObject runResultJson = (JSONObject)parentParam;
@@ -92,11 +94,11 @@ public class FlowScriptStrategy implements ProcessStrategy {
 		return runResult;
 	}
 	
-	public String resolve(String httpSessionId, String flowId, String script, JSON param) throws ScriptException, NoSuchMethodException {
+	public String resolve(String mcgWebScoketCode, String httpSessionId, String flowId, String script, JSON param) throws ScriptException, NoSuchMethodException {
 		if(StringUtils.isNotEmpty(script)) {
-			script = script.replace("console.info(", "console.info(\"" + httpSessionId + "\", \"" + flowId + "\", ")
-					.replace("console.success(", "console.success(\"" + httpSessionId + "\", \"" + flowId + "\", ")
-					.replace("console.error(", "console.error(\"" + httpSessionId + "\", \"" + flowId + "\", ");
+			script = script.replace("console.info(", "console.info(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ")
+					.replace("console.success(", "console.success(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ")
+					.replace("console.error(", "console.error(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ");
 		}
 		String dataJson = null;
 	    ScriptEngineManager scriptEngineManager = new ScriptEngineManager();  

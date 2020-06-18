@@ -17,6 +17,8 @@
 package com.mcg.entity.auth;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.Session;
 
@@ -25,8 +27,8 @@ public class McgUser implements Serializable {
     private static final long serialVersionUID = -8405945101445634563L;
     
     private String userKey;
-	/** 用户的websocket会话 */
-	private Session session;
+    /** 用户的所有websocket会话 */
+    private Map<String, Session> webSocketMap = new ConcurrentHashMap<>();
     
     public String getUserKey() {
         return userKey;
@@ -34,11 +36,11 @@ public class McgUser implements Serializable {
     public void setUserKey(String userKey) {
         this.userKey = userKey;
     }
-	public Session getSession() {
-		return session;
+	public Map<String, Session> getWebSocketMap() {
+		return webSocketMap;
 	}
-	public void setSession(Session session) {
-		this.session = session;
+	public void setWebSocketMap(Map<String, Session> webSocketMap) {
+		this.webSocketMap = webSocketMap;
 	}
-    
+
 }

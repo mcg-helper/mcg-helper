@@ -67,6 +67,41 @@ Message.prototype.output = function() {
 			}
 		}
 	};
+	var textEditor = {
+		"make" : {
+			"options" : {
+
+			},
+			execute:function(container, param) {
+				$("#" + container).html('<pre style="background:#fff;border-radius:0px;border:0px solid #ccc;"><code><xmp>' + param + '</xmp></code></pre>');
+			}
+		}
+	};
+	var linuxEditor = {
+			"make" : {
+				"options" : {
+
+				},
+				execute:function(container, param) {
+					var length = param.split("\n").length;
+					var screenRows = 25;
+					if(length < 24) {
+						screenRows = length + 1;
+					}
+			        var term = new Terminal({
+			            cols: 120,
+			            rows: screenRows,
+			            cursorBlink: true, // 光标闪烁
+			            cursorStyle: "block", // 光标样式  null | 'block' | 'underline' | 'bar'
+			            scrollback: 800, //回滚
+			            tabStopWidth: 8, //制表宽度
+			            screenKeys: true
+			        });
+			        term.open(document.getElementById(container));
+			        term.write(param);
+				}
+			}
+	};
 	var jsonEditor = {
 		"make" : {
 			"options" : {
@@ -81,7 +116,15 @@ Message.prototype.output = function() {
 						var editor = new JSONEditor(document.getElementById(container), this.options, result);
 					//	editor.setMode("code");
 					} catch (e) {
-						$("#" + container).html('<pre style="background:#fff;border-radius:0px;border:0px solid #ccc;"><code>' + param + '</code></pre>');
+						$("#" + container).html('<pre style="background:#fff;border-radius:0px;border:0px solid #ccc;"><code><xmp>' + param + '</xmp></code></pre>');
+						/*
+						Messenger().post({
+							message: "控制台接收到非JSON数据，异常：" + e,
+							type: "error",
+							hideAfter: 5,
+						 	showCloseButton: true
+						});
+						*/
 					}
 				}
 			}
@@ -133,8 +176,17 @@ Message.prototype.output = function() {
 		html = log[self.msg.body.logType].html;
 		$(self.continer).append(html);
 		
+		//控制台日志输出
 		if(this.msg.body.eleType != "finish") {
-			jsonEditor["make"].execute(self.msg.id, log[self.msg.body.logType].value);
+			console.log(self.msg.body.eleType + "--" + self.msg.body.logOutType);
+			if(self.msg.body.eleType == "linux" && self.msg.body.logOutType == "ssh") {
+				linuxEditor["make"].execute(self.msg.id, log[self.msg.body.logType].value);
+			} else if(self.msg.body.eleType == "text" && self.msg.body.logOutType == "text") {
+				textEditor["make"].execute(self.msg.id, log[self.msg.body.logType].value);
+			} else {
+				jsonEditor["make"].execute(self.msg.id, log[self.msg.body.logType].value);
+			}
+			
 		}
 		if(self.msg.body.logType == "error") {
 			baseMap.put("selector", self.msg.body.eleId);
@@ -165,6 +217,7 @@ Message.prototype.output = function() {
 Message.prototype.build = function() {
 	var html = "";
 	if (this.msg.header.mesType == "FLOW") {
+		//   console.log(this);  输出日志
 		/*  控件初次产生的日志  */
 		if($("#console").children("#log" + this.msg.body.eleId).length <= 0) {
 			html += '<div id="log' + this.msg.body.eleId + '" class="alert alert-info alert-dismissible" role="alert">';
@@ -178,7 +231,7 @@ Message.prototype.build = function() {
 					var filesData = JSON.parse(this.msg.body.content);
 					for (var key in filesData.availableFileMap) {
 					    html += '&nbsp;&nbsp;' + filesData.availableFileMap[key] + '&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" onClick="downFlowGenFile(this)" eleId="' + key + '" path="' + filesData.availableFileMap[key] + '">下载</a></br>';
-					}
+			 		}
 					html += '</div>';
 					
 				}
@@ -249,6 +302,51 @@ function downFlowGenFile(obj) {
 	    	
 	    };	
 	}
+}
+
+/*
+ * websocket
+ * param : {"operation":"init", "mcgWebScoketCode":"xxxx-xxxx-xxxx-xxxx"}
+ */
+var WSSHClient = function(param) {
+
+}
+
+WSSHClient.prototype._generateEndpoint = function () {
+    var endPoint = "ws:" + baseUrl.replace("http:", "") + "/wssh";
+    return endPoint;
+};
+
+WSSHClient.prototype.connect = function (options) {
+    var endpoint = this._generateEndpoint();
+
+    this._connection = new WebSocket(endpoint);
+    
+    this._connection.onopen = function () {
+        options.onConnect();
+    };
+
+    this._connection.onmessage = function (evt) {
+        var data = evt.data.toString();
+        options.onData(data);
+    };
+
+
+    this._connection.onclose = function (evt) {
+        options.onClose();
+    };
+};
+
+WSSHClient.prototype.send = function (data) {
+    this._connection.send(JSON.stringify(data));
+};
+
+WSSHClient.prototype.sendInitData = function (options) {
+    this._connection.send(JSON.stringify(options));
+}
+
+WSSHClient.prototype.sendClientData = function (data) {
+    this._connection.send(JSON.stringify({"operation": "shell", "shell":data}))
 }
 
 //消息通知提示框插件

@@ -37,6 +37,8 @@ public class ExecuteStruct implements Serializable {
 
     private static final long serialVersionUID = -677740433314925325L;
     @XmlElement
+    private String mcgWebScoketCode;
+    @XmlElement
     private HttpSession session;
     /* 流程id */
     @XmlElement
@@ -67,7 +69,14 @@ public class ExecuteStruct implements Serializable {
     @XmlElement
     private ExecuteStruct childExecuteStruct;
     
-    public String getFlowId() {
+    
+    public String getMcgWebScoketCode() {
+		return mcgWebScoketCode;
+	}
+	public void setMcgWebScoketCode(String mcgWebScoketCode) {
+		this.mcgWebScoketCode = mcgWebScoketCode;
+	}
+	public String getFlowId() {
 		return flowId;
 	}
 	public void setFlowId(String flowId) {

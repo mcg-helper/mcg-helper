@@ -23,12 +23,22 @@ import com.mcg.entity.flow.wonton.WontonNetRule;
 
 public class WontonPublish {
 
+	private String mcgWebScoketCode;
 	private WontonHeart wontonHeart;
 	private WontonNetRule netRule;
 	private WontonCpuRule cpuRule;
 	private WontonMemRule memRule;
 	private WontonIoRule ioRule;
 	
+	
+	public String getMcgWebScoketCode() {
+		return mcgWebScoketCode;
+	}
+
+	public void setMcgWebScoketCode(String mcgWebScoketCode) {
+		this.mcgWebScoketCode = mcgWebScoketCode;
+	}
+
 	public WontonHeart getWontonHeart() {
 		return wontonHeart;
 	}

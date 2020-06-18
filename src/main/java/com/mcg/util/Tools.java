@@ -89,4 +89,11 @@ public class Tools {
         return flag;
 	}
 	
+	public static String genWsshConnUniqueId(String httpSessionId, String webSocketSessionId) {
+		return String.format("%s#%s", httpSessionId, webSocketSessionId);
+	}
+	
+	public static String genMcgWsConnUniqueId(String mcgWebScoketCode, String httpSessionId) {
+		return String.format("%s#%s", mcgWebScoketCode, httpSessionId);
+	}
 }

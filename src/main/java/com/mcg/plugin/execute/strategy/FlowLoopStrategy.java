@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.FlowLoopTypeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.common.LoopStatus;
@@ -64,6 +65,7 @@ public class FlowLoopStrategy implements ProcessStrategy {
         flowBody.setFlowId(flowLoop.getFlowId());
         flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setOrderNum(flowLoop.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.LOOP.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.LOOP.getName() + "--》" + flowLoop.getLoopProperty().getName());
         flowBody.setEleId(flowLoop.getId());
@@ -76,7 +78,7 @@ public class FlowLoopStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message);
+        MessagePlugin.push(flowLoop.getMcgWebScoketCode(), executeStruct.getSession().getId(), message);
         
         JSONObject jsonObject = new JSONObject();
         LoopStatus loopStatusLast = executeStruct.getRunStatus().getLoopStatusMap().get(flowLoop.getId());

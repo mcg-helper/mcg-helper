@@ -28,6 +28,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.mcg.common.SpringContextHelper;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
@@ -65,6 +66,7 @@ public class FlowSqlQueryStrategy implements ProcessStrategy {
         flowBody.setFlowId(flowSqlQuery.getFlowId());
         flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setOrderNum(flowSqlQuery.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.SQLQUERY.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.SQLQUERY.getName() + "--》" + flowSqlQuery.getSqlQueryProperty().getName());
         flowBody.setEleId(flowSqlQuery.getId());
@@ -78,7 +80,7 @@ public class FlowSqlQueryStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message);		
+        MessagePlugin.push(flowSqlQuery.getMcgWebScoketCode(), executeStruct.getSession().getId(), message);		
 		
         flowSqlQuery = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowSqlQuery);		
 		RunResult runResult = new RunResult();
@@ -100,7 +102,7 @@ public class FlowSqlQueryStrategy implements ProcessStrategy {
         sqlFlowBody.setLogType(LogTypeEnum.INFO.getValue());
         sqlFlowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         sqlMessage.setBody(sqlFlowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), sqlMessage);
+        MessagePlugin.push(flowSqlQuery.getMcgWebScoketCode(), executeStruct.getSession().getId(), sqlMessage);
         
         List<Map<String, Object>> result = null;
         result = mcgBizAdapter.tableQuery(flowSqlQuery.getSqlQueryCore().getSource(), null);

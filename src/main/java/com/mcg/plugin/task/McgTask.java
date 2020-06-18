@@ -88,9 +88,11 @@ public class McgTask {
                 	Set<String> keys = mapSU.keySet();
                 	for(String key : keys) {
                 		UserCacheBean ucb = mapSU.get(key);
-                		Session session = ucb.getUser().getSession();
-                		if(!session.isOpen()) {
-                			mapSU.remove(ucb.getSessionID());
+                		for(String mcgWebScoketCode : ucb.getUser().getWebSocketMap().keySet()) {
+                			Session session = ucb.getUser().getWebSocketMap().get(mcgWebScoketCode);
+                    		if(!session.isOpen()) {
+                    			mapSU.remove(ucb.getSessionID());
+                    		}
                 		}
                 	}
             	}

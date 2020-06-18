@@ -36,7 +36,7 @@
 	<body>
 		<div id="mcg_body" class="container-fluid autoHeight">
 			<div class="row autoHeight">
-				<div class="col-md-12">
+				<div class="col-md-12 autoHeight">
 			        <table id="wontonListTable"
 			               data-toggle="table"
 			               data-height="460"
@@ -342,6 +342,7 @@ function setWontonPublishDialogBtns(param) {
 				data.netRule["targetProtos"] = data.netRule.TargetProtos.split(",");
 				data.netRule.TargetProtos = data.netRule.TargetProtos.split(",");
 				data["wontonHeart"] = param.wontonHeart;
+				data["mcgWebScoketCode"] = mcgWebScoketCode;
 				var _this = this;
 		
 				common.ajax({

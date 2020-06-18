@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.java.FlowJava;
@@ -62,6 +63,7 @@ public class FlowJavaStrategy implements ProcessStrategy {
         flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setFlowId(flowJava.getFlowId());
         flowBody.setOrderNum(flowJava.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.JAVA.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.JAVA.getName() + "--》" + flowJava.getJavaProperty().getName());
         flowBody.setEleId(flowJava.getId());
@@ -74,9 +76,9 @@ public class FlowJavaStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message); 		
+        MessagePlugin.push(flowJava.getMcgWebScoketCode(), executeStruct.getSession().getId(), message); 		
 		
-		String dataJson = resolve(executeStruct.getSession().getId(), flowJava.getFlowId(), flowJava.getJavaCore().getSource(), parentParam);
+		String dataJson = resolve(executeStruct.getMcgWebScoketCode(), executeStruct.getSession().getId(), flowJava.getFlowId(), flowJava.getJavaCore().getSource(), parentParam);
 		runResult.setElementId(flowJava.getId());
 		
 		JSONObject runResultJson = (JSONObject)parentParam;
@@ -89,11 +91,11 @@ public class FlowJavaStrategy implements ProcessStrategy {
 		return runResult;
 	}
 	
-	public String resolve(String httpSessionId, String flowId, String source, JSON param) throws Exception {
+	public String resolve(String mcgWebScoketCode, String httpSessionId, String flowId, String source, JSON param) throws Exception {
 		if(StringUtils.isNotEmpty(source)) {
-			source = source.replace("console.info(", "console.info(\"" + httpSessionId + "\", \"" + flowId + "\", ")
-					.replace("console.success(", "console.success(\"" + httpSessionId + "\", \"" + flowId + "\", ")
-					.replace("console.error(", "console.error(\"" + httpSessionId + "\", \"" + flowId + "\", ");
+			source = source.replace("console.info(", "console.info(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ")
+					.replace("console.success(", "console.success(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ")
+					.replace("console.error(", "console.error(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ");
 		}
 		String dataJson = null;
         DynamicEngine de = DynamicEngine.getInstance();

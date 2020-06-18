@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.FlowStruct;
@@ -67,6 +68,7 @@ import com.mcg.util.Tools;
 public class FlowTask implements Callable<RunStatus> {
 	
 	private Logger logger = LoggerFactory.getLogger(FlowTask.class);
+	private String mcgWebScoketCode;
     private String httpSessionId;
     private FlowStruct flowStruct;
     private ExecuteStruct executeStruct;
@@ -76,7 +78,8 @@ public class FlowTask implements Callable<RunStatus> {
     	
     }
     
-    public FlowTask(String httpSessionId, FlowStruct flowStruct, ExecuteStruct executeStruct, Boolean subFlag) {
+    public FlowTask(String mcgWebScoketCode, String httpSessionId, FlowStruct flowStruct, ExecuteStruct executeStruct, Boolean subFlag) {
+    	this.mcgWebScoketCode = mcgWebScoketCode;
         this.httpSessionId = httpSessionId;
         this.flowStruct = flowStruct;
         this.executeStruct = executeStruct;
@@ -116,7 +119,9 @@ public class FlowTask implements Callable<RunStatus> {
 		                    FlowStart flowStart = (FlowStart)mcgProduct.clone();
 		                    flowStart.setOrderNum(orderNum);
 		                    flowStart.setFlowId(flowStruct.getMcgId());
+		                    flowStart.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowStartProduct(flowStart).build(executeStruct);
+		                    flowBody.setLogOutType(LogOutTypeEnum.RESULT.getValue());
 		                    flowBody.setEleType(EletypeEnum.START.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.START.getName());
 		                    flowBody.setEleId(flowStart.getStartId());
@@ -126,6 +131,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                    FlowJson flowJson =(FlowJson)mcgProduct.clone();
 		                    flowJson.setOrderNum(orderNum);
 		                    flowJson.setFlowId(flowStruct.getMcgId());
+		                    flowJson.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowJsonProduct(flowJson).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.JSON.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.JSON.getName() + "--》" + flowJson.getJsonProperty().getName());
@@ -135,6 +141,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                    FlowSqlQuery flowSqlQuery =(FlowSqlQuery)mcgProduct.clone();
 		                    flowSqlQuery.setOrderNum(orderNum);
 		                    flowSqlQuery.setFlowId(flowStruct.getMcgId());
+		                    flowSqlQuery.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowSqlQueryProduct(flowSqlQuery).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.SQLQUERY.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.SQLQUERY.getName() + "--》" + flowSqlQuery.getSqlQueryProperty().getName());
@@ -144,6 +151,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                    FlowSqlExecute flowSqlExecute =(FlowSqlExecute)mcgProduct.clone();
 		                    flowSqlExecute.setOrderNum(orderNum);
 		                    flowSqlExecute.setFlowId(flowStruct.getMcgId());
+		                    flowSqlExecute.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowSqlExecuteProduct(flowSqlExecute).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.SQLEXECUTE.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.SQLEXECUTE.getName() + "--》" + flowSqlExecute.getSqlExecuteProperty().getName());
@@ -153,6 +161,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                    FlowData flowData = (FlowData)mcgProduct.clone();
 		                    flowData.setOrderNum(orderNum);
 		                    flowData.setFlowId(flowStruct.getMcgId());
+		                    flowData.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowDataProduct(flowData).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.DATA.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.DATA.getName() + "--》" + flowData.getDataProperty().getName());
@@ -162,6 +171,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                    FlowText flowText = (FlowText) mcgProduct.clone();
 		                    flowText.setOrderNum(orderNum);
 		                    flowText.setFlowId(flowStruct.getMcgId());
+		                    flowText.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowTextProduct(flowText).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.TEXT.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.TEXT.getName() + "--》" + flowText.getTextProperty().getName());
@@ -171,6 +181,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                    FlowScript flowScript = (FlowScript)mcgProduct.clone();
 		                    flowScript.setOrderNum(orderNum);
 		                    flowScript.setFlowId(flowStruct.getMcgId());
+		                    flowScript.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowScriptProduct(flowScript).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.SCRIPT.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.SCRIPT.getName() + "--》" + flowScript.getScriptProperty().getScriptName());
@@ -180,6 +191,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                    FlowJava flowJava = (FlowJava)mcgProduct.clone();
 		                    flowJava.setOrderNum(orderNum);
 		                    flowJava.setFlowId(flowStruct.getMcgId());
+		                    flowJava.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowJavaProduct(flowJava).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.JAVA.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.JAVA.getName() + "--》" + flowJava.getJavaProperty().getName());
@@ -189,6 +201,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                    FlowPython flowPython = (FlowPython)mcgProduct.clone();
 		                    flowPython.setOrderNum(orderNum);
 		                    flowPython.setFlowId(flowStruct.getMcgId());
+		                    flowPython.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowPythonProduct(flowPython).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.PYTHON.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.PYTHON.getName() + "--》" + flowPython.getPythonProperty().getName());
@@ -198,6 +211,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                	FlowLinux flowLinux = (FlowLinux)mcgProduct.clone();
 		                	flowLinux.setOrderNum(orderNum);
 		                	flowLinux.setFlowId(flowStruct.getMcgId());
+		                	flowLinux.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowLinuxProduct(flowLinux).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.LINUX.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.LINUX.getName() + "--》" + flowLinux.getLinuxProperty().getName());
@@ -207,6 +221,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                	FlowWonton flowWonton = (FlowWonton)mcgProduct.clone();
 		                	flowWonton.setOrderNum(orderNum);
 		                	flowWonton.setFlowId(flowStruct.getMcgId());
+		                	flowWonton.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowWontonProduct(flowWonton).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.WONTON.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.WONTON.getName() + "--》" + flowWonton.getWontonProperty().getName());
@@ -216,6 +231,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                	FlowProcess flowProcess = (FlowProcess)mcgProduct.clone();
 		                	flowProcess.setOrderNum(orderNum);
 		                	flowProcess.setFlowId(flowStruct.getMcgId());
+		                	flowProcess.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowProcessProduct(flowProcess).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.PROCESS.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.PROCESS.getName() + "--》" + flowProcess.getProcessProperty().getName());
@@ -225,6 +241,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                	FlowLoop flowLoop = (FlowLoop)mcgProduct.clone();
 		                	flowLoop.setOrderNum(orderNum);
 		                	flowLoop.setFlowId(flowStruct.getMcgId());
+		                	flowLoop.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowLoopProduct(flowLoop).build(executeStruct);
 		                    swicth = executeStruct.getRunStatus().getLoopStatusMap().get(flowLoop.getId()).getSwicth();
 		                    flowBody.setEleType(EletypeEnum.LOOP.getValue());
@@ -235,6 +252,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                	FlowGit flowGit = (FlowGit)mcgProduct.clone();
 		                	flowGit.setOrderNum(orderNum);
 		                	flowGit.setFlowId(flowStruct.getMcgId());
+		                	flowGit.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowGitProduct(flowGit).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.GIT.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.GIT.getName() + "--》" + flowGit.getGitProperty().getName());
@@ -244,6 +262,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                	FlowSftp flowSftp = (FlowSftp)mcgProduct.clone();
 		                	flowSftp.setOrderNum(orderNum);
 		                	flowSftp.setFlowId(flowStruct.getMcgId());
+		                	flowSftp.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowSftpProduct(flowSftp).build(executeStruct);
 		                    flowBody.setEleType(EletypeEnum.SFTP.getValue());
 		                    flowBody.setEleTypeDesc(EletypeEnum.SFTP.getName() + "--》" + flowSftp.getSftpProperty().getName());
@@ -253,6 +272,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                    FlowEnd flowEnd = (FlowEnd)mcgProduct.clone();
 		                    flowEnd.setOrderNum(orderNum);
 		                    flowEnd.setFlowId(flowStruct.getMcgId());
+		                    flowEnd.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
 		                    result = director.getFlowEndProduct(flowEnd).build(executeStruct);
 		                    flowBody.setOrderNum(orderNum);
 		                    flowBody.setEleType(EletypeEnum.END.getValue());
@@ -275,10 +295,11 @@ public class FlowTask implements Callable<RunStatus> {
 		                    flowBody.setContent("控件运行值异常");
 		                }
 		                
+		                flowBody.setLogOutType(LogOutTypeEnum.RESULT.getValue());
 		                flowBody.setLogType(LogTypeEnum.INFO.getValue());
 		                flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
 		                message.setBody(flowBody);
-		                MessagePlugin.push(httpSessionId, message);
+		                MessagePlugin.push(mcgWebScoketCode, httpSessionId, message);
 		                
 		                if(!"success".equals(executeStruct.getRunStatus().getCode()) ) {
 		                    break;
@@ -303,7 +324,7 @@ public class FlowTask implements Callable<RunStatus> {
 	            }
 	            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
 	            messageComplete.setBody(notifyBody);
-	            MessagePlugin.push(httpSessionId, messageComplete);     
+	            MessagePlugin.push(mcgWebScoketCode, httpSessionId, messageComplete);     
 	          
 	            RunStatus runStatus = executeStruct.getRunStatus();
 	            //流程实例执行时有产生文件
@@ -333,7 +354,7 @@ public class FlowTask implements Callable<RunStatus> {
 	                fileFlowBody.setLogType(LogTypeEnum.INFO.getValue());
 	                fileFlowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
 	                fileMessage.setBody(fileFlowBody);
-	                MessagePlugin.push(httpSessionId, fileMessage);
+	                MessagePlugin.push(mcgWebScoketCode, httpSessionId, fileMessage);
 		            
 	            } else {
 	                Message fileMessage = MessagePlugin.getMessage();
@@ -351,7 +372,7 @@ public class FlowTask implements Callable<RunStatus> {
 	                fileFlowBody.setLogType(LogTypeEnum.INFO.getValue());
 	                fileFlowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
 	                fileMessage.setBody(fileFlowBody);
-	                MessagePlugin.push(httpSessionId, fileMessage);
+	                MessagePlugin.push(mcgWebScoketCode, httpSessionId, fileMessage);
 	            }
 	            
 	            String flowInstanceId = Tools.genFlowInstanceId(httpSessionId, flowStruct.getMcgId());
@@ -368,7 +389,7 @@ public class FlowTask implements Callable<RunStatus> {
         	e.printStackTrace(new PrintStream(baos));  
         	String exception = baos.toString();  
         	logger.error("流程执行发生错误，异常信息：", e);
-			ExceptionProcess.execute(httpSessionId, flowStruct.getMcgId(), executeStruct.getDataMap().get(executeStruct.getRunStatus().getExecuteId()), exception);
+			ExceptionProcess.execute(mcgWebScoketCode, httpSessionId, flowStruct.getMcgId(), executeStruct.getDataMap().get(executeStruct.getRunStatus().getExecuteId()), exception);
 		}
 		
 		return executeStruct.getRunStatus();

@@ -56,7 +56,7 @@ public class FlowDataAdapterImpl implements McgBizAdapter {
             try {
 				mysqlDataSource.setConnectTimeout(3000);
 			} catch (SQLException e) {
-				logger.debug("mysql数据源适配失败，异常信息：{}", e.getMessage());
+				logger.error("mysql数据源适配失败，异常信息：", e);
 			}
             mcgConnect = new MysqlConnectImpl(mysqlDataSource);
         } else if(DatabaseTypeEnum.ORACLE.getValue().equals(mcgDataSource.getDbType())) {
@@ -72,7 +72,7 @@ public class FlowDataAdapterImpl implements McgBizAdapter {
                 oracleDataSource.setLoginTimeout(3000);
                 mcgConnect = new OracleConnectImpl(oracleDataSource);
             } catch (SQLException e) {
-            	logger.debug("oracle数据源适配失败，异常信息：{}", e.getMessage());
+            	logger.error("oracle数据源适配失败，异常信息：", e);
             }
         } else if(DatabaseTypeEnum.MSSQL.getValue().equals(mcgDataSource.getDbType())) {
         	try {
@@ -85,7 +85,7 @@ public class FlowDataAdapterImpl implements McgBizAdapter {
 	            sqlServerDataSource.setLoginTimeout(3000);
 	            mcgConnect = new MssqlConnectImpl(sqlServerDataSource);
         	} catch (Exception e) {
-        		logger.debug("oracle数据源适配失败，异常信息：{}", e.getMessage());
+        		logger.error("oracle数据源适配失败，异常信息：", e);
 			}
         } else if(DatabaseTypeEnum.POSTGRESQL.getValue().equals(mcgDataSource.getDbType())) {
         	PGPoolingDataSource pgDataSource = new PGPoolingDataSource();
@@ -98,7 +98,7 @@ public class FlowDataAdapterImpl implements McgBizAdapter {
             
 				pgDataSource.setLoginTimeout(3000);
 			} catch (SQLException e) {
-				logger.debug("postgresql数据源适配失败，异常信息：{}", e.getMessage());
+				logger.error("postgresql数据源适配失败，异常信息：", e);
 			}
             mcgConnect = new PostgresqlConnectImpl(pgDataSource);
             
@@ -135,7 +135,7 @@ public class FlowDataAdapterImpl implements McgBizAdapter {
     	try {
     		flag = mcgConnect.testConnect();
     	} catch (Exception e) {
-    		logger.debug("数据连接测试失败，异常信息：{}", e.getMessage());
+    		logger.error("数据连接测试失败，异常信息：", e);
 		}
         return flag;
     }

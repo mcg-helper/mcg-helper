@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.json.FlowJson;
@@ -57,6 +58,7 @@ public class FlowJsonStrategy implements ProcessStrategy {
         flowBody.setSubFlag(executeStruct.getSubFlag());
         flowBody.setFlowId(flowJson.getFlowId());
         flowBody.setOrderNum(flowJson.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.JSON.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.JSON.getName() + "--》" + flowJson.getJsonProperty().getName());
         flowBody.setEleId(flowJson.getId());
@@ -69,7 +71,7 @@ public class FlowJsonStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message);		
+        MessagePlugin.push(flowJson.getMcgWebScoketCode(), executeStruct.getSession().getId(), message);		
 		
 		flowJson = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowJson);		
 		RunResult runResult = new RunResult();

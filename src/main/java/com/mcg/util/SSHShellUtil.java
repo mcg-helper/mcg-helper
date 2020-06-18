@@ -67,8 +67,8 @@ public class SSHShellUtil {
 		shellPipedOutputStream.connect(receiveStream);
 		
 		channel.setOutputStream(shellPipedOutputStream);
-		((ChannelShell)channel).setPtyType("dumb", 160, 24, 1000, 480);
-		//((ChannelShell)channel).setTerminalMode("binary".getBytes());
+		((ChannelShell)channel).setPtyType("vt100", 160, 24, 1000, 480);   // dumb
+		//((ChannelShell)channel).setTerminalMode("binary".getBytes(Constants.CHARSET));
 	//	((ChannelShell)channel).setEnv("LANG", "zh_CN.UTF-8");
 		try {
 			channel.connect();
@@ -211,7 +211,7 @@ class MonitorShellUser implements Runnable {
 	public void run() {
 		
 		try {
-			String[] commands = shell.split(Constants.LINUX_ENTER);
+			String[] commands = shell.split("\n");
 			for(String command : commands) {
 				command = command.trim();
 				if(command.startsWith(Constants.LINUX_INTERACT)) {
@@ -226,17 +226,17 @@ class MonitorShellUser implements Runnable {
 						continue;
 					} catch (Exception e) {
 						monitorShellUserLogger.error("执行linux命令失败，命令：{}，异常信息：", command, e);
-						pipedOutputStream.write((command + Constants.LINUX_ENTER).getBytes());
+						pipedOutputStream.write((command + Constants.LINUX_ENTER).getBytes(Constants.CHARSET));
 						break;
 					}
 					
 				}
-				pipedOutputStream.write((command + Constants.LINUX_ENTER).getBytes());
+				pipedOutputStream.write((command + Constants.LINUX_ENTER).getBytes(Constants.CHARSET));
 			}
 
 			while (!channel.isClosed()) {
-				this.pipedOutputStream.write((Constants.LINUX_EOF + Constants.LINUX_ENTER).getBytes());
-				Thread.sleep(500);
+				this.pipedOutputStream.write((Constants.LINUX_EOF + Constants.LINUX_ENTER).getBytes(Constants.CHARSET));
+				Thread.sleep(1000);
 			}
 			
 			pipedOutputStream.flush();

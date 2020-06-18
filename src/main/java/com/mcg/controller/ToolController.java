@@ -89,7 +89,7 @@ public class ToolController extends BaseController {
     
     @RequestMapping(value="upload", method=RequestMethod.POST)
     @ResponseBody
-    public McgResult upload(@RequestParam(value = "flowFile", required = false) MultipartFile file, @RequestParam String flowId, HttpSession session) {
+    public McgResult upload(@RequestParam(value = "flowFile", required = false) MultipartFile file, @RequestParam String flowId, @RequestParam String mcgWebScoketCode, HttpSession session) {
         Message messageComplete = MessagePlugin.getMessage();
         messageComplete.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
         NotifyBody notifyBody = new NotifyBody();    	
@@ -102,7 +102,7 @@ public class ToolController extends BaseController {
             notifyBody.setContent("导入文件丢失，请刷新页面后重试！");
             notifyBody.setType(LogTypeEnum.ERROR.getValue());    
             messageComplete.setBody(notifyBody);
-            MessagePlugin.push(session.getId(), messageComplete);          
+            MessagePlugin.push(mcgWebScoketCode, session.getId(), messageComplete);          
             return result;    	    
     	}
     	
@@ -136,7 +136,7 @@ public class ToolController extends BaseController {
     	}
 
         messageComplete.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), messageComplete);          
+        MessagePlugin.push(mcgWebScoketCode, session.getId(), messageComplete);          
         return result;
     }
 }

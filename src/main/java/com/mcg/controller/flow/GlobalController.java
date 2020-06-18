@@ -47,6 +47,7 @@ public class GlobalController {
     @RequestMapping(value="saveDataSource", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public McgResult saveDataSource(@Valid @RequestBody McgGlobal mcgGlobal, BindingResult result, HttpSession session) throws IOException, ClassNotFoundException {
+    	
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
         NotifyBody notifyBody = new NotifyBody();       
@@ -63,7 +64,7 @@ public class GlobalController {
         }
 
         message.setBody(notifyBody);
-        MessagePlugin.push(session.getId(), message);        
+        MessagePlugin.push(mcgGlobal.getMcgWebScoketCode(), session.getId(), message);        
         return mcgResult;
     }	
     

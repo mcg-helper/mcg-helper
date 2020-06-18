@@ -51,7 +51,7 @@ public class ExceptionProcess {
 	
 	private static Logger logger = LoggerFactory.getLogger(ExceptionProcess.class);
 
-	public static void execute(String httpSessionId, String flowId, McgProduct mcgProduct, String exceptionMsg) {
+	public static void execute(String mcgWebScoketCode, String httpSessionId, String flowId, McgProduct mcgProduct, String exceptionMsg) {
 		String flowInstanceId = Tools.genFlowInstanceId(httpSessionId, flowId);
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);
@@ -161,7 +161,7 @@ public class ExceptionProcess {
         flowBody.setLogType(LogTypeEnum.ERROR.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.ERROR.getName());
         message.setBody(flowBody);
-        MessagePlugin.push(executeStruct.getSession().getId(), message);
+        MessagePlugin.push(mcgWebScoketCode, executeStruct.getSession().getId(), message);
         
         logger.error("流程组件运行错误，httpSessionId:{}，异常信息：{}", executeStruct.getSession().getId(), JSON.toJSONString(message));
         
