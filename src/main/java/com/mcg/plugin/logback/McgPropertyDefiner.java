@@ -11,7 +11,7 @@ public class McgPropertyDefiner extends PropertyDefinerBase {
 	
 	@Override
 	public String getPropertyValue() {
-		String webPath = this.getClass().getClassLoader().getResource("/").getPath().replace("mcg/WEB-INF/classes/", "");
+		String webPath = this.getClass().getClassLoader().getResource("/").getPath().replace("mcg/WEB-INF/classes/", "../");
 		logger.info("mcg-helper日志输出路径：{}", webPath);
 		return webPath;
 	}
