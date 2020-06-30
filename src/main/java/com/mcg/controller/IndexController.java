@@ -16,6 +16,8 @@
 
 package com.mcg.controller;
 
+import java.util.UUID;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
@@ -43,6 +45,7 @@ public class IndexController extends BaseController {
         ModelAndView mv = this.getModelAndView();
         mv.addObject("js", Constants.js);
         mv.addObject("version", Constants.VERSION);
+        mv.addObject("mcgWebScoketCode", UUID.randomUUID().toString());
         mv.setViewName("index");
         return mv;
     }

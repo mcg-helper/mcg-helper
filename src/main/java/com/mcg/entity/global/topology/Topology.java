@@ -17,12 +17,19 @@
 package com.mcg.entity.global.topology;
 
 import java.io.Serializable;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * 
+ * @ClassName:   Topology   
+ * @Description: TODO(流程下拉树状态数据) 
+ * @author:      缪聪(mcg-helper@qq.com)
+ * @date:        2018年7月28日 下午22:49:39  
+ *
+ */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement
 public class Topology implements Serializable {

@@ -18,6 +18,9 @@ package com.mcg.plugin.execute.strategy;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
 import com.mcg.entity.flow.end.FlowEnd;
 import com.mcg.entity.generate.ExecuteStruct;
@@ -28,6 +31,8 @@ import com.mcg.util.DataConverter;
 
 public class FlowEndStrategy implements ProcessStrategy {
 
+	private static Logger logger = LoggerFactory.getLogger(FlowEndStrategy.class);
+	
 	@Override
 	public void prepare(ArrayList<String> sequence, McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
 		FlowEnd flowEnd = (FlowEnd)mcgProduct;
@@ -41,8 +46,11 @@ public class FlowEndStrategy implements ProcessStrategy {
 		flowEnd = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowEnd);
         RunResult result = new RunResult();
         result.setElementId(flowEnd.getEndId());
-        result.setJsonVar(flowEnd.getEndProperty().getComment());		
+        result.setJsonVar(flowEnd.getEndProperty().getComment());	
+
         executeStruct.getRunStatus().setCode("success");
+        
+        logger.debug("结束控件：{}，执行完毕！流程执行当前状态：{}", JSON.toJSONString(flowEnd), JSON.toJSONString(executeStruct.getRunStatus()));
 		return result;
 	}
 	

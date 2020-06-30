@@ -20,6 +20,13 @@ import com.mcg.plugin.build.McgProduct;
 public abstract class FlowBase extends McgProduct {
     
     private static final long serialVersionUID = -7660980819340679924L;
+    private String mcgWebScoketCode;
+    /* 流程实例ID */
+    private String flowId;
+    /* 执行的次序号 */
+    private Integer orderNum;
+    /* 控件名称 */
+    private String name;
     private String label;
     private String width;
     private String height;
@@ -28,10 +35,21 @@ public abstract class FlowBase extends McgProduct {
     private String clone;
     private String left;
     private String top;
-    private String name;
     private String sign;
     
-    public String getLabel() {
+	public String getFlowId() {
+		return flowId;
+	}
+	public void setFlowId(String flowId) {
+		this.flowId = flowId;
+	}
+	public Integer getOrderNum() {
+		return orderNum;
+	}
+	public void setOrderNum(Integer orderNum) {
+		this.orderNum = orderNum;
+	}
+	public String getLabel() {
         return label;
     }
     public void setLabel(String label) {
@@ -90,6 +108,12 @@ public abstract class FlowBase extends McgProduct {
 	}
 	public void setSign(String sign) {
 		this.sign = sign;
+	}
+	public String getMcgWebScoketCode() {
+		return mcgWebScoketCode;
+	}
+	public void setMcgWebScoketCode(String mcgWebScoketCode) {
+		this.mcgWebScoketCode = mcgWebScoketCode;
 	}
     
 }

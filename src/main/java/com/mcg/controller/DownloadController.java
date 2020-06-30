@@ -26,6 +26,8 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -44,6 +46,8 @@ import com.mcg.util.LevelDbUtil;
 @Controller
 public class DownloadController {
 
+	private static Logger logger = LoggerFactory.getLogger(DownloadController.class);
+	
 	@RequestMapping("download")
 	public String download(String filePath, String fileName, HttpServletRequest request, HttpServletResponse response) {
 	    
@@ -51,28 +55,29 @@ public class DownloadController {
 		response.setContentType("multipart/form-data");
 		response.setHeader("Content-Disposition", "attachment;fileName=" + convertCharacterEncoding(request, fileName));
 		OutputStream os = null;
-		
+		InputStream inputStream = null;
         try {
             os = response.getOutputStream();
-            InputStream inputStream = new FileInputStream(new File(filePath));            
+            inputStream = new FileInputStream(new File(filePath));            
   
             byte[] b = new byte[1024];
             int length;
             while ((length = inputStream.read(b)) > 0) {
                 os.write(b, 0, length);
             }
-            os.close();
-
-            inputStream.close();            
+                        
         }catch (IOException e) {
-            e.printStackTrace();
+        	logger.error("文件下载出错，异常信息：{}", e.getMessage());
         }finally {
             try {
             	if(os != null) {
             		os.close();
             	}
+            	if(inputStream != null) {
+            		inputStream.close();
+            	}
             } catch (IOException e) {
-                e.printStackTrace();
+            	logger.error("文件下载后关闭流出错，异常信息：{}", e.getMessage());
             }
         }
         
@@ -94,14 +99,14 @@ public class DownloadController {
             os.write(bytes);
             os.close();
         }catch (Exception e) {
-            e.printStackTrace();
+        	logger.error("导入流程文件出错，异常信息：{}", e.getMessage());
         }finally {
             try {
                 if(os != null) {
                     os.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+            	logger.error("导入流程文件后关闭流出错，异常信息：{}", e.getMessage());
             }
         }
         
@@ -115,13 +120,13 @@ public class DownloadController {
 	         try {
 				fileName = java.net.URLEncoder.encode(fileName, Constants.CHARSET.toString());
 			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
+				logger.error("设置浏览器下载文件名的编码为utf-8，异常信息：{}", e.getMessage());
 			}
 	     }else{
 	         try {
 				fileName = new String(fileName.getBytes(Constants.CHARSET), "ISO8859-1");
 			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
+				logger.error("设置浏览器下载文件名的编码为ISO8859-1，异常信息：{}", e.getMessage());
 			}
 	     }	
 	     return fileName;

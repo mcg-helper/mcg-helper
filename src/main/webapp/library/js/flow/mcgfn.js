@@ -17,7 +17,9 @@
 
 
 /* 基本数据Map
- * selector: 当前拖拽元素id
+ * selector: 当前拖拽控件id
+ * runnerFlowId: 当前执行的流程id
+ * runnerFlowElementId: 当前执行流程正在执行控件id
  * status: 0:流程区正常操作  1:重绘流程区时
  * highlight: 当前控制台日志高亮显示的id
  * flowDataSourceModalId 数据源弹出框的id，点击数据源时触发保存id
@@ -55,17 +57,29 @@ var setting = {
     };
 
 $(function() {
-	setAutoHeight($("body"),500);
-	
-	$.bootstrapLoading.start({ "loadingTips": "正在处理数据，请稍候...", "borderWidth":0, "opacity":0.5 });
+	setAutoHeight($("body"), 500);
+/*	
 	$('#mcg_toolbar').affix({
 	   offset: {
-		  top: 150, 
-		  bottom: function () {
-			 return (this.bottom = $('#mcg_footer').outerHeight(true))}
-		  }
+		   bottom: 0
+	  },
+	  target: $("#flowarea")
 	});
 	
+	$('#console_header').affix({
+		offset: {
+			bottom: 0
+		},
+		target: $("#flowarea")
+	});
+*/
+	if($("#mcg_flow").height() <= 0) {
+		$("#mcg_flow").height(500);
+		$("#flowarea").height(460);
+	}
+
+	/* 设置流程管理树高度为流程区的高度 */
+	$("#flowTree").height($("#flowarea").height() - 60);
 	common.ajax({
 		url : "/flowTree/getDatas",
 		type : "GET",
@@ -78,19 +92,60 @@ $(function() {
     	
     	var rootNode = treeObj.getNodeByParam("id", data.selected.id, null);
     	nodeSelected(rootNode);
+    	
+    	fuzzySearch('flowTree','#flowTreeKey', null, true);
     	//  系统初始化
     	initFlowSystem();
-    	$.bootstrapLoading.end();
 	});
 
 });
 
 /*
- *  流程组件，拖拽事件绑定
+ * 初始化流程控制台，主要以下：
+ * 绑定按钮功能
+ */
+function initFlowConsole() {
+	
+	$("#flowStopBtn").click(function(){
+		
+		if($("#flowStopBtn span").is(".text-danger")) {
+			common.ajax({
+				url : "/flow/stop",
+				type : "POST",
+				data : "flowId=" + $("#flowSelect").attr("flowId")
+			}, function(data) {
+				if(data.statusCode == 1) {
+					$("#flowStopBtn span").removeClass("text-danger");
+				} else {
+					Messenger().post({
+						message: "停止流程失败！",
+						type: "error",
+						hideAfter: 5,
+					 	showCloseButton: true
+					});
+				}
+			});
+		} else {
+			Messenger().post({
+				message: "流程未执行，无法停止！",
+				type: "error",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});
+		}
+	});
+
+	$("#flowLogCleanBtn").click(function() {
+		$("#console").html("");
+	});
+}
+
+/*
+ *  绑定流程控件拖拽事件
  */
 function flowDropBind() {
 	baseMap.put("selector", "");
-	baseMap.put("status",0);
+	baseMap.put("status", 0);
 	$("#flowarea").droppable({
 		drop: function( event, ui ) {
 			//排除流程区中，非流程控件的html对象拖拽事件
@@ -103,7 +158,6 @@ function flowDropBind() {
 		    	var element = new $.DragWidget({ id:ui.draggable.attr("id")+Math.uuid(), label:$("#"+ui.draggable.attr("id")).text() ,name:$("#"+ui.draggable.attr("id")).text(), classname:"w eletype",eletype:ui.draggable.attr("eletype"), clone:'true',left:ui.offset.left,top:ui.offset.top,sign:"false" });
 		    	var divNode = $("<div data-toggle='popover' id=" + element.getId() + " name='' eletype=" + element.getEletype() + " class='" + element.getClassname() +"' clone='" + element.getClone() + "'>工具<div class='ep'></div></div>");
 		 		divNode.css("left", element.getLeft()+"px");
-		 	//	alert(elementMap.get(element.getId()).getLeft());
 		 		divNode.css("top", element.getTop()+"px");
 		 		$(this).append(divNode);
 		 		var xy = getXY(element.getId(),"false");
@@ -123,10 +177,8 @@ function flowDropBind() {
 				var element = elementMap.get(ui.draggable.attr("id"));
 				element.setLeft(xy.x);
 				element.setTop(xy.y);
-			//	alert("xy={"+xy.x+","+xy.y+"}" + "\n" +"element="+element.getLeft() + ","+element.getTop());
 				saveXY(ui.draggable.attr("id"), xy);
 				elementMap.put(ui.draggable.attr("id"), element);
-			//	alert(xy.x + "---" + elementMap.get(ui.draggable.attr("id")).getLeft());
 			}
 			$(".draggable").draggable({containment: "parent", zIndex: 100 }); //grid: [ 50, 20 ]
 		}
@@ -166,32 +218,23 @@ function bindEvent(id) {
 		removePopover(); //删除所有流程节点悬浮工具层
 		$("#"+id).popover('show'); //显示流程节点悬浮工具层
 	});
-	/*
-	$("#"+id).hover(
-		//当鼠标放上去的时触发	
-		function(){
-		},
-		//当鼠标离开的时触发
-		function(){
-		}
-	);
-*/
+
 }
-//删除流程节点县浮工具层
+//删除所有流程节点县浮工具层
 function removePopover() {
-	$("div.popover").each(function() {
-		$(this).remove();
+	$("#flowarea").children("div[data-toggle='popover']").each(function() {
+		$(this).popover('hide');
 	});
 }
 //初始化流程节点工具层
 function initPopover() {
-	$("[data-toggle='popover']").popover({
+	$("#flowarea").children("[data-toggle='popover']").popover({
 //		delay:{ show: 0, hide: 1000 },
-		trigger:"manual",//manual,focus
+		trigger:"manual",//manual,focus,click
 		placement:"bottom",
 //		title:"流程节点工具层",
 		html:true,
-		container: 'body',
+		container: $("#flowarea"),
 		animation: false,
 		content:baseMap.get("popoverContent")
 	}).on("mouseenter", function () {
@@ -212,20 +255,6 @@ function initPopover() {
     	var _this = this;
     	baseMap.put("selector", $(_this).attr("id"));
     });
-/*	
-	.on("mouseup", function () {
-        $(this).popover("show");
-        $(this).siblings(".popover").on("mouseleave", function () {
-            $(this).popover('hide');
-        });
-    }).on("show.bs.popover", function() {
-    	
-    }).on("hide.bs.popover", function() {
-    //	$(this).remove();
-    }).on("mouseenter", function () {
-        
-    });
-	*/
 }
 
 /**
@@ -249,7 +278,7 @@ function suspend(operate) {
 			    baseMap.put("highlight", "highlight" + baseMap.get("selector")); //把当前被高亮标记div的id放入缓存
 			    var pos = $("#log" + baseMap.get("selector")).offset().top;
 			//    $("html,body").animate({scrollTop: pos}, 100);
-			    $("#mcg_nav_body").animate({scrollTop: (pos - 40)}, 100);
+			    $("#mcg_flow").animate({scrollTop: (pos - 40)}, 100);
 			//    return false;
 			}
 		}		
@@ -296,7 +325,7 @@ function repaint(object) {
 	//重新创建当前所有节点
  	for(var i=0; i<array.length; i++) {
  		var name = elementMap.get(array[i]).getSign() == "true" || elementMap.get(array[i]).getSign() == undefined ? elementMap.get(array[i]).getName() : "";
- 		var divNode = $("<div data-toggle='popover' id=" + elementMap.get(array[i]).getId() + " name='' eletype=" + elementMap.get(array[i]).getEletype() + " class='" + elementMap.get(array[i]).getClassname() +"' clone='" + elementMap.get(array[i]).getClone() + "'>" + elementMap.get(array[i]).getLabel() + "<div class='ep'></div><div id='name_" + elementMap.get(array[i]).getId() + "' style='position:absolute;top:55px;left:0px;width:100px;'>" + name + "</div></div>");
+ 		var divNode = $("<div data-toggle='popover' id=" + elementMap.get(array[i]).getId() + " name='' eletype=" + elementMap.get(array[i]).getEletype() + " class='" + elementMap.get(array[i]).getClassname() +"' clone='" + elementMap.get(array[i]).getClone() + "'>" + elementMap.get(array[i]).getLabel() + "<div class='ep'></div><div id='name_" + elementMap.get(array[i]).getId() + "' style='position:absolute;top:55px;left:0px;width:135px;'>" + name + "</div></div>");
  		divNode.css("left", elementMap.get(array[i]).getLeft()+"px");
  		divNode.css("top", elementMap.get(array[i]).getTop()+"px");
  		$(object).append(divNode);
@@ -408,12 +437,16 @@ function removeConnectorElement(instance, info) {
 		}
 	}
 }
-/* 流程节点A已连接流程节点B, 当B去连接A时, 删除该连接线 */
+/* 流程节点A已连接流程节点B, 当B去连接A时, 删除该连接线 , 当B为循环控件时除外*/
 function removeReverse(instance, info) {
 	var connectors = getConnectors(elementMap);
 	for(var i=0; i<connectors.length; i++) {
 		if(connectors[i].getConnectorId() == (info.targetId+info.sourceId)) {
-			instance.detach(info);
+			if("loop" == $("#" + info.sourceId).attr("eletype")) {
+				return true;
+			} else {
+				instance.detach(info);
+			}
 			return false;
 		}
 	}
@@ -476,6 +509,7 @@ function initFlowSystem() {
 	initFunc();
 	initHtmlTools();
 	flowDropBind();
+	initFlowConsole();
 }
 
 /* 初始化流程数据,从后台读取数据装配到elementMap中 */
@@ -484,7 +518,7 @@ function initFlowData(flowId) {
 	common.ajax({
 		url : "/flow/getFlowData",
 		type : "POST",
-		data : "flowId=" + flowId
+		data : "mcgWebScoketCode=" + mcgWebScoketCode + "&flowId=" + flowId
 	}, function(data) {
 		if(data != null && data != undefined && data.webElement != undefined && data.webElement.length > 0) {
 			for(var i=0; i<data.webElement.length; i++) {
@@ -516,8 +550,26 @@ function initToolbarDrag() {
 	});
 }
 
+function flowSelectTreeHide() {
+	$("#flowSelectTree").fadeOut("fast");
+	$("body").unbind("mousedown", onBodyDown);
+}
+function onBodyDown(event) {
+	if (!(event.target.id == "flowSelect" || event.target.id == "flowSelectTree" || $(event.target).parents("#flowSelectTree").length>0)) {
+		flowSelectTreeHide();
+	}
+}
+
 /* 初始化功能区按钮 */
 function initFunc() {
+	$('#flowSelect').click(function(){
+		$("#flowSelectTree").slideDown("fast");
+		$("body").bind("mousedown", onBodyDown);
+	});
+	$('#removeFlowTreeKeyBtn').click(function(){
+		$("#flowTreeKey").val("").trigger('propertychange');
+	});
+	
 	$('#flowSaveBtn').click(function(){
 		var webStruct = convertFlowObject();
 		common.ajax({
@@ -526,41 +578,68 @@ function initFunc() {
 			data : JSON.stringify(webStruct),
 			contentType : "application/json"
 		}, function(data) {
-			if(data.statusCode == 1) {
-			//	alert(data.statusMes);
+			if(data.statusCode != 1) {
+				Messenger().post({
+					message: "保存流程失败！",
+					type: "error",
+					hideAfter: 5,
+				 	showCloseButton: true
+				});
 			}
 		});
 	});
 	$('#flowGenBtn').click(function(){
 		//清空控制台
 		$("#console").html("");
+		var array = elementMap.keySet();
+		for(var i in array) {
+			$("#name_" + array[i]).children("span").remove();
+			$("#name_" + array[i]).removeClass("run_state");
+		}	 
 		var webStruct = convertFlowObject();
+		$("#flowStopBtn span").addClass("text-danger");
 		common.ajax({
+			isLoading : true,
 			url : "/flow/generate",
 			type : "POST",
 			data : JSON.stringify(webStruct),
 			contentType : "application/json"
 		}, function(data) {
 			if(data.statusCode != 1) {
-				alert("清空流程失败");
+				Messenger().post({
+					message: "执行流程失败！",
+					type: "error",
+					hideAfter: 5,
+				 	showCloseButton: true
+				});
 			}
 		});
 	});
 	$('#flowImpBtn').click(function(){
-		var form = $("<form id='flowUploadForm' />");
+		var uuid = Math.uuid();
+		var form = $("<form id='" + uuid + "flowUploadForm' />");
 		form.attr("style", "display:none");
 		form.attr("method", "post");
-//		form.attr("target", "");
 		form.attr("enctype", "multipart/form-data");
 		form.attr("action", baseUrl + "/tool/upload");
-		var input = $("<input id='flowFile' name='flowFile'  type='file' onchange='uploadFlow()' style='display: none;'/>");
+		var input = $("<input id='" + uuid + "flowFile' name='flowFile'  type='file' onchange='uploadFlow(\"" + uuid + "\")' style='display: none;'/>");
 		var flowIdInput = $("<input name='flowId'  type='hidden' value='" + $("#flowSelect").attr("flowId") + "' />");
+		var mcgWebScoketCodeInput = $("<input name='mcgWebScoketCode'  type='hidden' value='" + mcgWebScoketCode + "' />");
 		form.append(input);
 		form.append(flowIdInput);
-		form.append($("#flowFile"));
+		form.append(mcgWebScoketCodeInput);
+		form.append($("#" + uuid + "flowFile"));
 		$("body").append(form);
 		
-		$("#flowFile").click();
+		/*
+		console.log(document.getElementById("flowUploadForm"));
+		document.getElementById("flowUploadForm").reset();
+		//$("#flowUploadForm")[0].reset();
+		$("#test_flowId").val($("#flowSelect").attr("flowId"));
+		$("#test_mcgWebScoketCode").val(mcgWebScoketCode);
+		*/
+		$("#" + uuid + "flowFile").click();
+		
 	});
 	$('#flowExpBtn').click(function(){
 		var form = $("<form>");
@@ -581,26 +660,7 @@ function initFunc() {
 		$("body").append(form);
 		
 		form.submit();
-		form.remove();
-		webSocket = new WebSocket(websocketUrl);
-	    webSocket.onerror = function(event) { 
-	    	
-	    };
-		 
-	    webSocket.onopen = function(event) { 
-	    	
-	    };
-	 
-	    webSocket.onmessage = function(event) {
-  			var message = new Message({
-				msg : JSON.parse(event.data)
-			});
-			message.output();
-	    };
-	    
-	    webSocket.onclose = function(event) { 
-	    	
-	    };		
+		form.remove();		
 
 	});
 	$('#flowClearBtn').click(function(){
@@ -625,13 +685,18 @@ function initFunc() {
 			    		common.ajax({
 			    			url : "/flow/clearFlowData",
 			    			type : "POST",
-			    			data : "flowId=" + $("#flowSelect").attr("flowId")
+			    			data : "mcgWebScoketCode=" + mcgWebScoketCode + "&flowId=" + $("#flowSelect").attr("flowId")
 			    		}, function(data) {
 			    			if(data.statusCode == 1) {
 			    				clearAll($("#flowarea"));
 			    				$( _this ).dialog( "destroy" );
 			    			} else {
-			    				alert("清空流程失败");
+			    				Messenger().post({
+			    					message: "清空流程失败！",
+			    					type: "error",
+			    					hideAfter: 5,
+			    				 	showCloseButton: true
+			    				});
 			    			}
 			    		});							
 					}
@@ -648,51 +713,29 @@ function initFunc() {
         	$(this).dialog( "destroy" );
     	});		            	
     	$(parentdiv).dialog("open");
-    //	callback.call();//方法回调
-		
-		/*
-		bootbox.confirm({
-		    title: "清空当前流程数据？",
-		    message: "清空数据不可恢复，您确定清空当前流程数据吗？",
-		    buttons: {
-		        confirm: {
-		            label: '确定'
-		        },	    	
-		        cancel: {
-		            label: '取消'
-		        }
-		    },
-		    callback: function (result) {
-		    	if(result) {
-    		
-		    	}		        
-		    }
-		});	*/
-		
 	
 	});	
 	$('#flowDataSourceBtn').click(function(data){
 		var modalId = createModalId("dataSource");
 		var param = {};
 		var option = {};
-		option["title"] = "数据源控件";
-		option["width"] = 1100;		
+		option["title"] = "数据源管理";
+		option["width"] = 1100;
 		param["modalId"] = modalId.replace(/_Modal/g, "");
 		param["eletype"] = "dataSource";
 		param["option"] = option;
-		common.showAjaxDialog("/html/flowDataSourceModal", null, 
+		common.showAjaxDialog("/html/flowDataSourceModal", setDialogBtns(param), 
 			function (data) {
 				baseMap.put("flowDataSourceModalId", param.modalId);
 				initFlowDataSourceModal(param.modalId);
 			},
-		null, param);	
+		null, param);
 		
 	});	
 }
 
 /* 将elementMap中的缓存数据转换成WebStruct*/
 function convertFlowObject() {
-	var webStruct = "";
 	var webElementArray = new Array();
 	var webConnectorArray = new Array();
 	var array = elementMap.keySet();
@@ -722,7 +765,12 @@ function convertFlowObject() {
 	 		}));
 		}
 	}
-	var webStruct = new $.WebStruct({flowId:$("#flowSelect").attr("flowId"), webElement:webElementArray, webConnector:webConnectorArray});
+	var webStruct = new $.WebStruct({
+		    "mcgWebScoketCode":mcgWebScoketCode,
+			"flowId":$("#flowSelect").attr("flowId"), 
+			"webElement":webElementArray, 
+			"webConnector":webConnectorArray
+		});
 	return webStruct;
 }
 
@@ -793,13 +841,6 @@ function eventInterceptor(id) {
 	});  	
 }
 
-function ccd() {
-	alert("功能研发中，请等待更新");
-}
-function ddc() {
-	alert("功能研发中，请等待更新");
-}
-
 function initConnectLine() {
     // setup some defaults for jsPlumb.
     var instance = jsPlumb.getInstance({
@@ -849,7 +890,7 @@ function initConnectLine() {
     	//流程节点连接自己时删除该连接线
         if(info.sourceId == info.targetId) {      
         	instance.detach(info); 
-        } else{      
+        } else {      
         	/* 流程节点连接节点只能有一条，否则删除第二条连接线 
         	 * baseMap.get("status")=1 属于流程区重绘时,不用删除连接线
         	 * */
@@ -858,6 +899,7 @@ function initConnectLine() {
         		if(!removeReverse(instance, info))
         			return ;
         	} 
+        	
         	var connector = new $.Connector({
         		connectorId:info.sourceId+info.targetId,
         		sourceId:info.sourceId,
@@ -876,7 +918,13 @@ function initConnectLine() {
             connectorStyle: { strokeStyle: "#5c96bc", lineWidth: 2, outlineColor: "transparent", outlineWidth: 4 },
             maxConnections: 5,
             onMaxConnections: function (info, e) {
-                alert("Maximum connections (" + info.maxConnections + ") reached");
+    			Messenger().post({
+    				message: "达到连接数上限" + info.maxConnections + "！",
+    				type: "error",
+    				hideAfter: 5,
+    			 	showCloseButton: true
+    			});
+                console.log("Maximum connections (" + info.maxConnections + ") reached");
             }
         });
 
@@ -894,8 +942,9 @@ function initConnectLine() {
     jsPlumb.fire("jsPlumbDemoLoaded", instance);
     baseMap.put("instance", instance);
 }
-function uploadFlow() {
-	var form = $("#flowUploadForm");
+
+function uploadFlow(uuid) {
+	var form = $("#" + uuid + "flowUploadForm");
 	form.ajaxSubmit({  
     	url : baseUrl + "/tool/upload",  
     	type : "post",  
@@ -908,10 +957,21 @@ function uploadFlow() {
     		}
     	},
     	error : function(data) {  
-    		alert("error:" + data);  
+			Messenger().post({
+				message: "导入流程失败！",
+				type: "error",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});
+    		
     	}  
 	});  
 	return false;
+}
+
+/* 获取当前流程树选中流程id */
+function getCurrentFlowId() {
+	return $("#flowSelect").attr("flowId");
 }
 
 /*------------------流程树方法开始 ---------------------*/
@@ -967,20 +1027,78 @@ function setRemoveBtn(treeId, treeNode) {
 function beforeRemove(treeId, treeNode) {
 	var isParent = treeNode.isParent;
 	var ids = new Array();
-		ids = getChildren(ids,treeNode);
-	common.ajax({
-		url : "/flowTree/deleteNode",
-		type : "GET",
-		data : "ids=" + ids,  
-		contentType : "application/json"
-	}, function(data) {
-     	var treeObj = $.fn.zTree.getZTreeObj("flowTree");
-    	var rootNode = treeObj.getNodeByParam("id", "root", null);
-    	nodeSelected(rootNode);
-		return true;
-	});
+	ids = getChildren(ids,treeNode);
+
+    var parentdiv=$('<div></div>');       
+    parentdiv.attr('id', "flowDelete_" + treeId);
+    $(parentdiv).html("<div style='height:50px;line-height:50px;'>删除当前流程以及所有子流程，您确定需要删除吗？</div>");
+	$(parentdiv).dialog({
+		title: "删除当前流程？",
+		resizable: false,
+		autoOpen: false,
+		closeOnEscape: false,
+		modal: true,
+		width: 350,
+		height: "auto",
+		position: { my: "center", at: "center", of: window  },
+		buttons: [
+			{
+				class: "btn btn-primary",			
+				text: "确定",
+				click: function() {
+					var _this = this;
+					common.ajax({
+						url : "/flowTree/deleteNode",
+						type : "GET",
+						data : "ids=" + ids,
+						async: false,
+						contentType : "application/json"
+					}, function(data) {
+		    			if(data.statusCode == 1) {
+					     	var treeObj = $.fn.zTree.getZTreeObj("flowTree");
+					     	treeObj.removeNode(treeNode, false);
+					    	var rootNode = treeObj.getNodeByParam("id", "root", null);
+					    	nodeSelected(rootNode);
+					    	$( _this ).dialog( "destroy" );
+					    	
+		    				Messenger().post({
+		    					message: "删除流程成功！",
+		    					type: "success",
+		    					hideAfter: 5,
+		    				 	showCloseButton: true
+		    				});
+		    				
+		    			} else {
+		    				Messenger().post({
+		    					message: "清空流程失败！",
+		    					type: "error",
+		    					hideAfter: 5,
+		    				 	showCloseButton: true
+		    				});
+		    			}
+						
+
+					});
+		    								
+				}
+			},
+			{
+				class: "btn btn-default",			
+				text: "关闭",
+				click: function() {
+					$( this ).dialog( "destroy" );
+				}
+			}
+		]	    	
+	}).on( "dialogclose", function( event, ui ) {
+    	$(this).dialog( "destroy" );
+	});		            	
+	$(parentdiv).dialog("open");
+
+	return false;
 }
 
+/* 获取流程树选中的节点id及递归包含的所有子节点id */
 function getChildren(ids,treeNode){
 	ids.push(treeNode.id);
 	 if (treeNode.isParent){
@@ -993,19 +1111,13 @@ function getChildren(ids,treeNode){
 
 /* 用于捕获节点被点击的事件回调函数  */
 function onClick(event, treeId, treeNode) {
-	common.ajax({
-		url : "/flowTree/selected",
-		type : "GET",
-		data : "id=" + treeNode.id,  
-		contentType : "application/json"
-	}, function(data) {
-		nodeSelected(treeNode);
-	});        
+	nodeSelected(treeNode);
 };
 
 /* 节点被选中时，更新下拉按钮的值 */
 function nodeSelected(treeNode) {
  	var treeObj = $.fn.zTree.getZTreeObj("flowTree");
+ 	treeNode.name = treeNode.name.replace(/<[^>]+>/g, "");
 	treeObj.selectNode(treeNode);
 	$("#flowSelect").html(treeNode.name+"&nbsp;<span class='caret'></span>");
 	$("#flowSelect").attr("flowId", treeNode.id);
@@ -1013,5 +1125,6 @@ function nodeSelected(treeNode) {
 	$("#flowSelect").attr("flowPid", treeNode.pId);
 	clearAll($("#flowarea"));
 	initFlowData($("#flowSelect").attr("flowId"));
+	flowSelectTreeHide();
 }	
 /*------------------流程树方法结束 ---------------------*/

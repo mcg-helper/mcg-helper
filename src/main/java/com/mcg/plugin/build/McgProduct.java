@@ -21,19 +21,24 @@ import java.util.ArrayList;
 import com.mcg.entity.generate.ExecuteStruct;
 import com.mcg.entity.generate.RunResult;
 
-public abstract class McgProduct implements Serializable{
+public abstract class McgProduct implements Serializable,Cloneable { 
 
     private static final long serialVersionUID = 8626194290037166978L;
     // 各个基本方法执行的顺序
     private ArrayList<String> sequence = new ArrayList<String>();
     
     // 准备工作
-    public abstract void prepare(ArrayList<String> sequence, ExecuteStruct executeStruct);
+    public abstract void prepare(ArrayList<String> sequence, ExecuteStruct executeStruct) throws Exception;
 
     // 执行组件算法
-    public abstract RunResult execute(ExecuteStruct executeStruct); 
+    public abstract RunResult execute(ExecuteStruct executeStruct) throws Exception; 
     
-    final public RunResult build(ExecuteStruct executeStruct) {
+    @Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	final public RunResult build(ExecuteStruct executeStruct) throws Exception {
         this.prepare(sequence, executeStruct);
         
         return this.execute(executeStruct);

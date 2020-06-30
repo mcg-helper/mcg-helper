@@ -23,12 +23,20 @@ import org.hibernate.validator.constraints.NotBlank;
 
 public class WebStruct {
 
+	private String mcgWebScoketCode;
     @NotBlank(message = "{webStruct.flowId.NotBlank}")
     private String flowId;
     private List<WebElement> webElement;
     private List<WebConnector> webConnector;
     
-    public List<WebElement> getWebElement() {
+    
+    public String getMcgWebScoketCode() {
+		return mcgWebScoketCode;
+	}
+	public void setMcgWebScoketCode(String mcgWebScoketCode) {
+		this.mcgWebScoketCode = mcgWebScoketCode;
+	}
+	public List<WebElement> getWebElement() {
         return webElement;
     }
     public void setWebElement(List<WebElement> webElement) {

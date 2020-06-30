@@ -21,8 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.data.DataRecord;
@@ -33,12 +38,13 @@ import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.execute.ProcessStrategy;
-import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.util.DataConverter;
 
 public class FlowDataStrategy implements ProcessStrategy {
 
+	private static Logger logger = LoggerFactory.getLogger(FlowDataStrategy.class);
+	
 	@Override
 	public void prepare(ArrayList<String> sequence, McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
 		FlowData flowData = (FlowData)mcgProduct;
@@ -53,6 +59,10 @@ public class FlowDataStrategy implements ProcessStrategy {
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);		
         FlowBody flowBody = new FlowBody();
+        flowBody.setSubFlag(executeStruct.getSubFlag());
+        flowBody.setFlowId(flowData.getFlowId());
+        flowBody.setOrderNum(flowData.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.DATA.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.DATA.getName() + "--》" + flowData.getDataProperty().getName());
         flowBody.setEleId(flowData.getId());
@@ -65,8 +75,8 @@ public class FlowDataStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        FlowTask flowTask = FlowTask.executeLocal.get();    
-        MessagePlugin.push(flowTask.getHttpSessionId(), message); 		
+          
+        MessagePlugin.push(flowData.getMcgWebScoketCode(), executeStruct.getSession().getId(), message); 		
 		
 		flowData = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowData);
         RunResult result = new RunResult();
@@ -79,8 +89,12 @@ public class FlowDataStrategy implements ProcessStrategy {
         map.put("record", dataRecordList);
         value.put(flowData.getDataProperty().getKey(), map);
         
-        result.setJsonVar(JSON.toJSONString(value, true));
+		JSONObject runResultJson = (JSONObject)parentParam;
+		runResultJson.put(flowData.getDataProperty().getKey(), map);
+        result.setJsonVar(JSON.toJSONString(runResultJson, true));
         executeStruct.getRunStatus().setCode("success");
+        
+        logger.debug("data控件：{}，执行完毕！流程执行当前状态：{}", JSON.toJSONString(flowData), JSON.toJSONString(executeStruct.getRunStatus()));
 		return result;
 	}
 	

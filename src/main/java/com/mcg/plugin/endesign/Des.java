@@ -21,12 +21,17 @@ import java.security.Security;
 
 import javax.crypto.Cipher;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mcg.common.Constants;
 
 /**
  * DES加密和解密工具,可以对字符串进行加密和解密操作  。 
  */
 public class Des {
+	
+  private static Logger logger = LoggerFactory.getLogger(Des.class);
   
   /** 字符串默认键值     */
   private static String strDefaultKey = "national";
@@ -106,6 +111,7 @@ public class Des {
    *            指定的密钥  
    * @throws Exception  
    */
+  @SuppressWarnings("restriction")
   public Des(String strKey) {
     Security.addProvider(new com.sun.crypto.provider.SunJCE());
 	try {
@@ -116,9 +122,8 @@ public class Des {
 	    decryptCipher = Cipher.getInstance("DES");
 	    decryptCipher.init(Cipher.DECRYPT_MODE, key);		
 	} catch (Exception e) {
-		e.printStackTrace();
+		logger.error(e.getMessage());
 	}
-
 
   }
 
@@ -147,7 +152,7 @@ public class Des {
     try {
     	 result = byteArr2HexStr(encrypt(strIn.getBytes(Constants.CHARSET)));
 	} catch (Exception e) {
-		e.printStackTrace();
+		logger.error(e.getMessage());
 	}
      return result;
   }
@@ -177,7 +182,7 @@ public class Des {
 	  try {
 		  result = new String(decrypt(hexStr2ByteArr(strIn)), Constants.CHARSET);
 	  } catch (Exception e) {
-		  e.printStackTrace();
+		  logger.error(e.getMessage());
 	  }  
     return result;
   }

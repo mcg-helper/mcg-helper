@@ -16,8 +16,8 @@
 
 package com.mcg.entity.auth;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PermissionCollection {
 	private static PermissionCollection instance = new PermissionCollection();
@@ -26,11 +26,10 @@ public class PermissionCollection {
 		return instance;
 	}
 
-	private PermissionCollection() {
-	}
+	private PermissionCollection() {}
 
 	/** 登录Key和用户缓存信息的集合 */
-	private Map<String, UserCacheBean> mapSU = new HashMap<String, UserCacheBean>();
+	private Map<String, UserCacheBean> mapSU = new ConcurrentHashMap<String, UserCacheBean>();
 
 	public void addSessionUserCache(String sessionID, UserCacheBean uc) {
 		mapSU.put(sessionID, uc);
@@ -43,5 +42,9 @@ public class PermissionCollection {
 	public UserCacheBean getUserCache(String sessionID) {
 		return mapSU.get(sessionID);
 	}
-	
+
+	public Map<String, UserCacheBean> getMapSU() {
+		return mapSU;
+	}
+
 }

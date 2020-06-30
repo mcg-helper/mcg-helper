@@ -26,6 +26,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 
  * @ClassName:   JDBCTypesUtils   
@@ -36,6 +39,7 @@ import java.util.TreeMap;
  */
 public class JDBCTypesUtils {
 
+	private static Logger logger = LoggerFactory.getLogger(JDBCTypesUtils.class);
     private static Map<String, Integer> jdbcTypes; 
     private static Map<Integer, String> jdbcTypeValues; 
     private static Map<Integer, Class<?>> jdbcJavaTypes; 
@@ -45,17 +49,18 @@ public class JDBCTypesUtils {
         jdbcTypeValues = new TreeMap<Integer, String>();
         jdbcJavaTypes = new TreeMap<Integer, Class<?>>();
         Field[] fields = java.sql.Types.class.getFields();
-        for (int i = 0, len = fields.length; i < len; ++i) {
-            if (Modifier.isStatic(fields[i].getModifiers())) {
-                try {
+        try {
+	        for (int i = 0, len = fields.length; i < len; ++i) {
+	            if (Modifier.isStatic(fields[i].getModifiers())) {
+	                
                     String name = fields[i].getName();
                     Integer value = (Integer) fields[i].get(java.sql.Types.class);
                     jdbcTypes.put(name, value);
                     jdbcTypeValues.put(value, name);
-                } catch (IllegalArgumentException e) {
-                } catch (IllegalAccessException e) {
-                }
-            }
+	            }
+	        }
+        } catch (Exception e) {
+        	logger.error(e.getMessage());
         }
         // 初始化jdbcJavaTypes：
         jdbcJavaTypes.put(new Integer(Types.LONGNVARCHAR), String.class); // -16 字符串

@@ -42,11 +42,13 @@ import com.mcg.util.LevelDbUtil;
  *
  */
 public class StartFilter implements Filter {
-	protected final Logger log = LoggerFactory.getLogger(getClass());
-    private FilterConfig   filterConfig;
+	
+	private static Logger logger = LoggerFactory.getLogger(StartFilter.class);
+	
+    private FilterConfig filterConfig;
 
     /**
-     * 初始化filter。
+     * 初始化filter
      * @param filterConfig filter的配置信息
      * @throws ServletException 如果初始化失败
      */
@@ -62,8 +64,9 @@ public class StartFilter implements Filter {
         try {
             LevelDbUtil.init();
         } catch (IOException e) {
-            e.printStackTrace();
+        	logger.error("初始化levelDb失败，异常信息：{}", e.getMessage());
         }
+
     }
 
     /**

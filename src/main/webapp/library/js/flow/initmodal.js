@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 var _fieldName_ = "", _tableName_="";
 
 function checkboxFormatter(value, row, index) {
@@ -27,16 +26,36 @@ function checkboxFormatter(value, row, index) {
 }
 
 function checkboxChange(obj, index) {
+	
+	$("#" + _tableName_).bootstrapTable("updateCell", {"index":index, "field":_fieldName_, "value":obj.checked, "reinit":false });
+/*	
 	var updateData =  '{"'+ _fieldName_ + '":' + $(obj).is(':checked') + '}';
-	$("#" + _tableName_).bootstrapTable('updateRow', {"index":index, "row":JSON.parse(updateData)  });	
+	$("#" + _tableName_).bootstrapTable('updateRow', {"index":index, "row":JSON.parse(updateData) });
+	*/
 }
 
 function inputFormatter(value, row, index) {
 	return '<input class="form-control input-sm" type="text" value="' + value + '" onfocus="inputFocus(this)" onChange="inputBlur(this, ' + index+ ')"/>';
 }
 
+function inputPwdFormatter(value, row, index) {
+	return '<input class="form-control input-sm" type="password" value="' + value + '" onfocus="inputFocus(this)" onChange="inputBlur(this, ' + index+ ')"/>';
+}
+
+function inputDataSourceFormatter(value, row, index) {
+	
+	if(row.type == "system") {
+		return '<input class="form-control input-sm" readonly="readonly" type="text" value="' + value + '"/>';
+	}
+	return '<input class="form-control input-sm" type="text" value="' + value + '" onfocus="inputFocus(this)" onChange="inputBlur(this, ' + index+ ')"/>';
+}
+
 function dsCommandsFormatter(value, row, index) {
 	return '<button type="button" onClick="dbTest(' + index + ');" class="btn btn-default">测试</button>';
+}
+
+function ssCommandsFormatter(value, row, index) {
+	return '<button type="button" onClick="serverTest(' + index + ');" class="btn btn-default">测试</button>';
 }
 
 function dbTest(index) {
@@ -67,6 +86,34 @@ function dbTest(index) {
 	});
 }
 
+function serverTest(index) {
+	var tableData = $("#" + baseMap.get("flowDataSourceModalId") + "_flowServerSourceTable").bootstrapTable('getData');
+	var row = tableData[index];
+	common.ajax({
+		url : "/global/testServerConnect",
+		type : "POST",
+		data : JSON.stringify(row),
+		contentType : "application/json"
+	}, function(data) {
+		if(data.statusCode == 1) {
+			Messenger().post({
+				message: row.name +"【" + row.ip + ":" + row.port + "】连接成功！",
+				type: "success",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});	
+		} else {
+			Messenger().post({
+				message: row.name +"【" + row.ip + ":" + row.port + "】连接失败！",
+				type: "error",
+				hideAfter: 5,
+			 	showCloseButton: true
+			});	
+		}
+		
+	});
+}
+
 function inputFocus(obj) {
 	$(obj).click();
 }
@@ -84,7 +131,7 @@ function getSelectData(cellValue, index, url, param) {
 		async : false,
 		contentType : "application/json"
 	}, function(data) {
-		var selectStr = '<select onChange="selectChange(this, ' + index + ');">';
+		var selectStr = '<select style="width:100%;" onChange="selectChange(this, ' + index + ');">';
 		for(var key in data){
 			selectStr += '<option value="' + data[key] + '"';
 			if(cellValue == data[key]) {
@@ -103,6 +150,11 @@ function dbTypeSelectFormatter(value, row, index) {
 	return selectStr;	
 }
 
+function serverTypeSelectFormatter(value, row, index) {
+	var selectStr = getSelectData(value, index, "/common/getServerTypes", null);
+	return selectStr;	
+}
+
 function selectChange(obj, index) {
 	var rowData =  '{"'+ _fieldName_ + '":"' + $(obj).val() + '"}';
 	$("#" + _tableName_).bootstrapTable('updateRow', {"index":index, "row":JSON.parse(rowData)  });
@@ -112,23 +164,51 @@ function getElementDataById(id, func) {
 	common.ajax({
 		url : "/common/getMcgProductById",
 		type : "POST",
-		data : "id="+id
+		data : "flowId=" + $("#flowSelect").attr("flowId") + "&id="+id
 	}, func);
 }
 
 function initFlowDataSourceModal(modalId) {
 	common.ajax({
-		url : "/common/getMcgDataSources",
+		url : "/global/getMcgGlobal",
 		type : "POST",
 		data : null
 	}, function(data){
-		if(data != null && data != "" && data != undefined && data.length > 0) {
+		var flowVarRows = [];
+		for(var i=0; i<data.sysVars.length; i++){
+			var sysVar = data.sysVars[i];
+			flowVarRows.push({
+					"id":sysVar.id, "_bTableName_":modalId + "_flowVarTable", "type":sysVar.type,
+					"key":sysVar.key, "value":sysVar.value, "note":sysVar.note
+				});
+		}
+		
+		if(data != null && data != undefined && data.flowVars != null && data.flowVars.length > 0) {
+			for(var i=0; i<data.flowVars.length; i++){
+				var flowVar = data.flowVars[i];
+				flowVarRows.push({
+						"id":flowVar.id, "_bTableName_":modalId + "_flowVarTable", "type":flowVar.type,
+						"key":flowVar.key, "value":flowVar.value, "note":flowVar.note
+					});
+			}
+			
+		}
+		
+		$("#" + modalId + "_flowVarTable").bootstrapTable({"data":flowVarRows});
+		$("#" + modalId + "_flowVarTable").on('click-cell.bs.table', function ($element, field, value, row) {
+			_fieldName_ = field;
+			_tableName_ = modalId + "_flowVarTable";
+		});
+		
+		if(data != null && data != undefined && data.flowDataSources != null && data.flowDataSources.length > 0) {
 			var rows = [];
-			for(var i=0; i<data.length; i++){
+			for(var i=0; i<data.flowDataSources.length; i++){
+				var dataSource = data.flowDataSources[i];
+				var port = dataSource.dbPort == "" || dataSource.dbPort == undefined ? "": dataSource.dbPort;
 				rows.push({
-						"id":data[i].dataSourceId, "_bTableName_":modalId + "_flowDataSourceTable", "name":data[i].name, "dbType":data[i].dbType,  
-						"dbServer":data[i].dbServer, "dbPort":data[i].dbPort, "dbName":data[i].dbName, "dbUserName":data[i].dbUserName, 
-						"dbPwd":data[i].dbPwd, "note":data[i].note 
+						"id":dataSource.dataSourceId, "_bTableName_":modalId + "_flowDataSourceTable", "name":dataSource.name, "dbType":dataSource.dbType,  
+						"dbServer":dataSource.dbServer, "dbPort":port, "dbName":dataSource.dbName, "dbUserName":dataSource.dbUserName, 
+						"dbPwd":dataSource.dbPwd, "note":dataSource.note 
 					});
 			}
 			$("#" + modalId + "_flowDataSourceTable").bootstrapTable({"data":rows});
@@ -138,14 +218,42 @@ function initFlowDataSourceModal(modalId) {
 					"id":Math.uuid(), "_bTableName_":modalId + "_flowDataSourceTable", "name":"", "dbType":"MYSQL",  
 					"dbServer":"", "dbPort":"", "dbName":"", "dbUserName":"", 
 					"dbPwd":"", "note":""
-				}			                                                 
+				}    
 			]});
 		}
 		
 		$("#" + modalId + "_flowDataSourceTable").on('click-cell.bs.table', function ($element, field, value, row) {
 			_fieldName_ = field;
 			_tableName_ = modalId + "_flowDataSourceTable";
+		});		
+		
+		if(data != null && data != undefined && data.serverSources != null && data.serverSources.length > 0) {
+			var rows = [];
+			for(var i=0; i<data.serverSources.length; i++){
+				var serverSource = data.serverSources[i];
+				var port = serverSource.port == "undefined" || serverSource.port == undefined ? "": serverSource.port;
+				var secretKey = serverSource.secretKey == "undefined" || serverSource.secretKey == undefined ? "": serverSource.secretKey;
+				rows.push({
+						"id":serverSource.id, "_bTableName_":modalId + "_flowServerSourceTable", "name":serverSource.name, "type":serverSource.type,  
+						"ip":serverSource.ip, "port":port, "userName":serverSource.userName, 
+						"pwd":serverSource.pwd, "secretKey":secretKey, "note":serverSource.note 
+					});
+			}
+			$("#" + modalId + "_flowServerSourceTable").bootstrapTable({"data":rows});
+		} else {
+			$("#" + modalId + "_flowServerSourceTable").bootstrapTable({data: [
+       			{
+       				"id":Math.uuid(), "_bTableName_":modalId + "_flowServerSourceTable", "name":"", "type":"LINUX",  
+       				"ip":"", "port":"", "userName":"", "pwd":"", "secretKey":"", "note":""
+       			}
+       		]});		
+		}		
+		
+		$("#" + modalId + "_flowServerSourceTable").on('click-cell.bs.table', function ($element, field, value, row) {
+			_fieldName_ = field;
+			_tableName_ = modalId + "_flowServerSourceTable";
 		});
+		return ;
 	});		
 }
 
@@ -164,68 +272,21 @@ function initFlowStartModal(id) {
 	});
 }
 
-function initFlowModelModal(id) {
-	getElementDataById(id, function(data) {
-		if(data != null && data != "" && data != undefined && data.modelField != undefined && data.modelField.modelRecord.length > 0) {
-			var rows = [];
-			for(var i=0; i<data.modelField.modelRecord.length; i++){
-				rows.push({
-					"id":Math.uuid(), "classField":data.modelField.modelRecord[i].classField, "tableField":data.modelField.modelRecord[i].tableField, "comment":data.modelField.modelRecord[i].comment, "tableFieldType":data.modelField.modelRecord[i].tableFieldType, 
-					"dataType":data.modelField.modelRecord[i].dataType, "length":data.modelField.modelRecord[i].length, "precision":data.modelField.modelRecord[i].precision, "primary":data.modelField.modelRecord[i].primary, 
-					"autoincrement":data.modelField.modelRecord[i].autoincrement, "mandatory":data.modelField.modelRecord[i].mandatory, "show":data.modelField.modelRecord[i].show, "include":data.modelField.modelRecord[i].include 
-				});
-			}
-			$("#" + id + "_flowModelTable").bootstrapTable({"data":rows});
-			$("#" + id + "_key").val(data.modelProperty.key);
-			$("#" + id + "_modelName").val(data.modelProperty.modelName);
-			$("#" + id + "_className").val(data.modelProperty.className);
-			$("#" + id + "_tableName").val(data.modelProperty.tableName);
-			$("#" + id + "_packageName").val(data.modelProperty.packageName);
-			$("#" + id + "_modelDesc").val(data.modelProperty.modelDesc);
-		} else {
-			$("#" + id + "_flowModelTable").bootstrapTable({data: [{
-				"id":Math.uuid(), "classField":"", "tableField":"", "comment":"","tableFieldType":"",
-				"dataType":"", "length":0, "precision":0, "primary":false, "autoincrement":false, "mandatory":false, "show":false, "include":"" 
-			}]});
-		}		
-		
-	});	
-	
-}
-
-function initGmybatisModal(id) {
-	getElementDataById(id, function(data) {
-		if(data != null && data != "" && data != undefined && data.relation != undefined) {
-			if(data.relation.tables != undefined && data.relation.tables.length > 0) {
-				var rows = [];
-				for(var i=0; i<data.relation.tables.length; i++){
-					rows.push({"id":Math.uuid(), "tableName":data.relation.tables[i].tableName, "entityName":data.relation.tables[i].entityName,
-						"daoName":data.relation.tables[i].daoName, "xmlName":data.relation.tables[i].xmlName, "selected":true });
-				}
-				$("#" + id + "_flowGmybatisTable").bootstrapTable({"data":rows});
-			} else {
-				$("#" + id + "_flowGmybatisTable").bootstrapTable();
-			}
-			$("#" + id + "_name").val(data.gmybatisProperty.name);
-			$("#" + id + "_key").val(data.gmybatisProperty.key);
-			$("#" + id + "_pojoProjectPath").val(data.gmybatisProperty.pojoProjectPath);
-			$("#" + id + "_xmlProjectPath").val(data.gmybatisProperty.xmlProjectPath);
-			$("#" + id + "_daoProjectPath").val(data.gmybatisProperty.daoProjectPath);			
-			$("#" + id + "_pojoOutPath").val(data.gmybatisProperty.pojoOutPath);
-			$("#" + id + "_xmlOutPath").val(data.gmybatisProperty.xmlOutPath);
-			$("#" + id + "_daoOutPath").val(data.gmybatisProperty.daoOutPath);
-			$("#" + id + "_dataSourceId").selectpicker('val', data.relation.dataSourceId);
-		} else {
-			$("#" + id + "_flowGmybatisTable").bootstrapTable();
-		}
-		
-	});
-}
-
 function initDataModal(id) {
 	getElementDataById(id, function(data) {
-		if(data != null && data != "" && data != undefined && data.dataField != undefined && data.dataField.dataRecord.length > 0) {
+		if(data != null && data != "" && data != undefined) {
 			
+			$("#" + id + "_key").val(data.dataProperty.key);
+			$("#" + id + "_name").val(data.dataProperty.name);
+			$("#" + id + "_className").val(data.dataProperty.className);
+			$("#" + id + "_tableName").val(data.dataProperty.tableName);
+			$("#" + id + "_packageName").val(data.dataProperty.packageName);
+			$("#" + id + "_dataDesc").val(data.dataProperty.dataDesc);		
+			$("#" + id + "_dataSourceId").selectpicker('val', data.dataField.dataSourceId);
+			
+		}
+		
+		if(data.dataField != undefined && data.dataField.dataRecord.length > 0) {
 			var rows = [];
 			for(var i=0; i<data.dataField.dataRecord.length; i++){
 				rows.push({
@@ -235,13 +296,6 @@ function initDataModal(id) {
 				});
 			}			
 			$("#" + id + "_flowDataTable").bootstrapTable({"data":rows});
-			$("#" + id + "_key").val(data.dataProperty.key);
-			$("#" + id + "_name").val(data.dataProperty.name);
-			$("#" + id + "_className").val(data.dataProperty.className);
-			$("#" + id + "_tableName").val(data.dataProperty.tableName);
-			$("#" + id + "_packageName").val(data.dataProperty.packageName);
-			$("#" + id + "_dataDesc").val(data.dataProperty.dataDesc);		
-			$("#" + id + "_dataSourceId").selectpicker('val', data.dataField.dataSourceId);
 			
 			if(data.dataField.dataSourceId != null && data.dataField.dataSourceId != "" && data.dataField.tableName != null && data.dataField.tableName != "" ) {
 				common.ajax({
@@ -257,7 +311,7 @@ function initDataModal(id) {
 					$("#" + id + "_tableNameSelect").selectpicker('refresh');
 					$("#" + id + "_tableNameSelect").selectpicker('val', data.dataField.tableName);
 				});
-			}			
+			}
 		} else {
 			$("#" + id + "_flowDataTable").bootstrapTable();
 		}
@@ -322,7 +376,7 @@ function initScriptModal(id, editor) {
 		if(data != "" && data != undefined && data.scriptCore != null) {
 			editor.setValue(data.scriptCore.source);
 		} else {
-			editor.setValue("var Console = Java.type('com.mcg.plugin.assist.Console');\r\nvar console = new Console();\r\n\r\nfunction main(param) {\r\n    var result = {};\r\n    console.success({'myName':'mcg-helper', 'desc':'欢迎使用MCG小助手'});\r\n    \r\n    result = param;\r\n    return result;\r\n}");
+			editor.setValue("var Console = Java.type('com.mcg.plugin.assist.Console');\r\nvar console = new Console();\r\n\r\nfunction main(param) {\r\n    var result = {};\r\n    console.success({'name':'mcg-helper', 'desc':'欢迎使用mcg-helper研发助手'});\r\n    \r\n    return result;\r\n}");
 		}
 	});
 }
@@ -337,18 +391,170 @@ function initJavaModal(id, editor) {
 		if(data != "" && data != undefined && data.javaCore != null) {
 			editor.setValue(data.javaCore.source);
 		} else {
-			editor.setValue("import com.alibaba.fastjson.JSON;\r\nimport com.alibaba.fastjson.JSONArray;\r\nimport com.alibaba.fastjson.JSONObject;\r\nimport com.mcg.plugin.assist.Console;\r\n\r\npublic class Controller {\r\n    private Console console = new Console();\r\n\r\n    public JSON execute(JSON param) {\r\n        console.info(\"-----欢迎使用---------\");\r\n\r\n\r\n\r\n        return param;\r\n    }\r\n}\r\n");
+			editor.setValue("import com.alibaba.fastjson.JSON;\r\nimport com.alibaba.fastjson.JSONArray;\r\nimport com.alibaba.fastjson.JSONObject;\r\nimport com.mcg.plugin.assist.Console;\r\n\r\npublic class Controller {\r\n    private Console console = new Console();\r\n\r\n    public JSON execute(JSON param) {\r\n        console.info(\"-----欢迎使用---------\");\r\n\r\n        JSONObject result = new JSONObject();\r\n        return result;\r\n    }\r\n}\r\n");
 		}
+	});
+}
+
+function initPythonModal(id, editor) {
+	getElementDataById(id, function(data) {
+		if(data != null && data != "" && data != undefined && data.pythonProperty != undefined) {
+			$("#" + id + "_key").val(data.pythonProperty.key);
+			$("#" + id + "_name").val(data.pythonProperty.name);
+			$("#" + id + "_pythonDesc").val(data.pythonProperty.pythonDesc);
+		} 
+		if(data != "" && data != undefined && data.pythonCore != null) {
+			editor.setValue(data.pythonCore.source);
+		} else {
+			editor.setValue("#param为Dictionary类型\r\ndef main(param):\r\n\r\n    result = {}\r\n\r\n\r\n    return result");
+		}
+	});
+}
+
+function initLinuxModal(id, editor) {
+	
+	getElementDataById(id, function(data) {
+		
+		if(data != "" && data != undefined) {
+			common.formUtils.setValues(id + "_linuxForm", data);
+			
+			$("#" + id + "_connMode").selectpicker('refresh');
+			$("#" + id + "_connMode").selectpicker('val', data.linuxCore.connMode);
+			$("#" + id + "_serverSourceId").selectpicker('refresh');
+			$("#" + id + "_serverSourceId").selectpicker('val', data.linuxCore.serverSourceId);
+			
+			if(data.linuxCore != null) {
+				if(data.linuxCore.connMode == "dependency") {
+					$("#" + id + "_serverSourceId").prop("disabled", false);
+					$("#" + id + "_serverSourceId").selectpicker('refresh');
+					$("#" + id + "_ip_port").css("display", "none");
+					$("#" + id + "_user_pwd").css("display", "none");
+				} else if(data.linuxCore.connMode == "assign") {
+					$("#" + id + "_serverSourceId").prop("disabled", true);
+					$("#" + id + "_serverSourceId").selectpicker('refresh');
+					$("#" + id + "_ip_port").css("display", "block");
+					$("#" + id + "_user_pwd").css("display", "block");
+				}
+			}
+			editor.setValue(data.linuxCore.source);
+		} else {
+			editor.setValue("");
+		}
+		
+	});
+}
+
+function initWontonModal(id) {
+	
+	getElementDataById(id, function(data) {
+		if(data != null && data != "") {
+			common.formUtils.setValues(id + "_wontonForm", data);
+			if(data.wontonNetRule.TargetIp != null) {
+				$("#" + id + "_targetIps").val(data.wontonNetRule.TargetIps.join(","));
+			}
+			if(data.wontonNetRule.TargetPorts != null) {
+				$("#" + id + "_targetPorts").val(data.wontonNetRule.TargetPorts.join(","));
+			}
+			if(data.wontonNetRule.TargetProtos != null) {
+				$("#" + id + "_targetProtos").val(data.wontonNetRule.TargetProtos.join(","));
+			}
+		}
+
+	});
+}
+
+function initProcessModal(id, treeObj) {
+	getElementDataById(id, function(data) {
+		if(data != null && data != "" && data != undefined && data.processProperty != undefined) {
+			common.formUtils.setValues(id + "_processForm", data);
+	    	
+	    	if(data.processProperty.flowId != null || data.processProperty.flowId != "") {
+	    		var rootNode = treeObj.getNodeByParam("id", data.processProperty.flowId, null);
+	    		if(rootNode != null) {
+					$("#" + id + "_flowName").html(rootNode.name+"&nbsp;<span class='caret'></span>");
+			    	treeObj.selectNode(rootNode);
+	    		}
+	    	}
+
+		} 
+	});
+}
+
+function initLoopModal(id) {
+	getElementDataById(id, function(data) {
+		if(data != null && data != "" && data != undefined && data.loopProperty != undefined) {
+			
+			common.formUtils.setValues(id + "_loopForm", data);
+		} 
+	});
+}
+
+function initGitModal(id) {
+	getElementDataById(id, function(data) {
+		if(data != null && data != "" && data != undefined && data.gitProperty != undefined) {
+			
+			common.formUtils.setValues(id + "_gitForm", data);
+		} 
+	});
+}
+
+function initSftpModal(id, editor) {
+	
+	getElementDataById(id, function(data) {
+		
+		if(data != "" && data != undefined) {
+			common.formUtils.setValues(id + "_sftpForm", data);
+			
+			$("#" + id + "_connMode").selectpicker('refresh');
+			$("#" + id + "_connMode").selectpicker('val', data.sftpProperty.connMode);
+			$("#" + id + "_serverSourceId").selectpicker('refresh');
+			$("#" + id + "_serverSourceId").selectpicker('val', data.sftpProperty.serverSourceId);
+			
+			if(data.sftpProperty != null) {
+				if(data.sftpProperty.connMode == "dependency") {
+					$("#" + id + "_serverSourceId").prop("disabled", false);
+					$("#" + id + "_serverSourceId").selectpicker('refresh');
+					$("#" + id + "_ip_port").css("display", "none");
+					$("#" + id + "_user_pwd").css("display", "none");
+				} else if(data.sftpProperty.connMode == "assign") {
+					$("#" + id + "_serverSourceId").prop("disabled", true);
+					$("#" + id + "_serverSourceId").selectpicker('refresh');
+					$("#" + id + "_ip_port").css("display", "block");
+					$("#" + id + "_user_pwd").css("display", "block");
+				}
+			}
+			
+		}
+		
+		if(data != null && data != undefined && data.sftpUpload != null && data.sftpUpload.sftpUploadRecords != null && data.sftpUpload.sftpUploadRecords.length > 0) {
+			var rows = [];
+			for(var i=0; i<data.sftpUpload.sftpUploadRecords.length; i++){
+				var sftpRecord = data.sftpUpload.sftpUploadRecords[i];
+				rows.push({
+						"id":sftpRecord.id, "_bTableName_":id + "_flowSftpUploadTable", "filePath":sftpRecord.filePath, "uploadPath":sftpRecord.uploadPath, "note":sftpRecord.note 
+					});
+			}
+			$("#" + id + "_flowSftpUploadTable").bootstrapTable({"data":rows});
+		} else {
+			$("#" + id + "_flowSftpUploadTable").bootstrapTable({data: [
+				{
+					"id":Math.uuid(), "_bTableName_":id + "_flowSftpUploadTable", "filePath":"", "uploadPath":"", "note":""
+				}    
+			]});
+		}
+		
+		$("#" + id + "_flowSftpUploadTable").on('click-cell.bs.table', function ($element, field, value, row) {
+			_fieldName_ = field;
+			_tableName_ = id + "_flowSftpUploadTable";
+		});	
+		
 	});
 }
 
 function initTextModal(id, editor) {
 	getElementDataById(id, function(data) {
 		if(data != null && data != "" && data != undefined && data.textProperty != undefined) {
-			$("#" + id + "_name").val(data.textProperty.name);
-			$("#" + id + "_key").val(data.textProperty.key);
-			$("#" + id + "_fileName").val(data.textProperty.fileName);
-			$("#" + id + "_outPutPath").val(data.textProperty.outPutPath);
+			common.formUtils.setValues(id + "_textForm", data);
 		} 
 		if(data != null && data != undefined && data.textCore != undefined) {
 			editor.setValue(data.textCore.source);

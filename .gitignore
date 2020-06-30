@@ -1,33 +1,10 @@
-# Compiled class file
-*.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
 /target/
-.classpath
-.project
 .settings/.jsdtscope
+.classpath
 .settings/org.eclipse.core.resources.prefs
-.settings/org.eclipse.jdt.core.prefs
+.project
 *.prefs
-.settings/org.eclipse.wst.common.component
+*.component
 .settings/org.eclipse.wst.common.project.facet.core.xml
-.settings/org.eclipse.wst.jsdt.ui.superType.container
-.settings/org.eclipse.wst.jsdt.ui.superType.name
+*.container
+*.name

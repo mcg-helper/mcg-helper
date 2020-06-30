@@ -61,7 +61,7 @@ ul.messenger.messenger-fixed.messenger-on-top {
 }
 /* line 51, ../../src/sass/messenger.sass */
 ul.messenger.messenger-fixed.messenger-on-bottom {
-  bottom: 20px;
+  bottom: 50px;
 }
 /* line 54, ../../src/sass/messenger.sass */
 ul.messenger.messenger-fixed.messenger-on-top, ul.messenger.messenger-fixed.messenger-on-bottom {

@@ -17,16 +17,20 @@
 package com.mcg.plugin.execute.strategy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.script.FlowScript;
@@ -36,12 +40,13 @@ import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.execute.ProcessStrategy;
-import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.util.DataConverter;
 
 public class FlowScriptStrategy implements ProcessStrategy {
 
+	private static Logger logger = LoggerFactory.getLogger(FlowScriptStrategy.class);
+	
 	@Override
 	public void prepare(ArrayList<String> sequence, McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
 		FlowScript flowScript = (FlowScript)mcgProduct;
@@ -55,9 +60,14 @@ public class FlowScriptStrategy implements ProcessStrategy {
 		JSON parentParam = DataConverter.getParentRunResult(flowScript.getScriptId(), executeStruct);
 		flowScript = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct) ,flowScript);		
 		RunResult runResult = new RunResult();
+		
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);
         FlowBody flowBody = new FlowBody();
+        flowBody.setFlowId(flowScript.getFlowId());
+        flowBody.setSubFlag(executeStruct.getSubFlag());
+        flowBody.setOrderNum(flowScript.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.SCRIPT.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.SCRIPT.getName() + "--》" + flowScript.getScriptProperty().getScriptName());
         flowBody.setEleId(flowScript.getScriptId());
@@ -70,21 +80,26 @@ public class FlowScriptStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        FlowTask flowTask = FlowTask.executeLocal.get();    
-        MessagePlugin.push(flowTask.getHttpSessionId(), message); 		
+        MessagePlugin.push(flowScript.getMcgWebScoketCode(), executeStruct.getSession().getId(), message); 		
 		
-		String dataJson = resolve(flowScript.getScriptCore().getSource(), parentParam);
+		String dataJson = resolve(executeStruct.getMcgWebScoketCode(), executeStruct.getSession().getId(), flowScript.getFlowId(), flowScript.getScriptCore().getSource(), parentParam);
 		runResult.setElementId(flowScript.getScriptId());
 		
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put(flowScript.getScriptProperty().getKey(), JSON.parse(dataJson));
-		runResult.setJsonVar(JSON.toJSONString(map, true));
+		JSONObject runResultJson = (JSONObject)parentParam;
+		runResultJson.put(flowScript.getScriptProperty().getKey(), JSON.parse(dataJson));
+		runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
 		executeStruct.getRunStatus().setCode("success");
 		
+		logger.debug("js脚本控件：{}，执行完毕！执行状态：{}", JSON.toJSONString(flowScript), JSON.toJSONString(executeStruct.getRunStatus()));
 		return runResult;
 	}
 	
-	public String resolve(String script, JSON param) throws ScriptException, NoSuchMethodException {
+	public String resolve(String mcgWebScoketCode, String httpSessionId, String flowId, String script, JSON param) throws ScriptException, NoSuchMethodException {
+		if(StringUtils.isNotEmpty(script)) {
+			script = script.replace("console.info(", "console.info(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ")
+					.replace("console.success(", "console.success(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ")
+					.replace("console.error(", "console.error(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ");
+		}
 		String dataJson = null;
 	    ScriptEngineManager scriptEngineManager = new ScriptEngineManager();  
 	    ScriptEngine engine = scriptEngineManager.getEngineByName("nashorn");
@@ -96,100 +111,4 @@ public class FlowScriptStrategy implements ProcessStrategy {
 	    return dataJson;
 	}
 	
-/*
-	private static void check(Object obj) {
-	    if(obj instanceof JSONObject) {
-	        JSONObject json = (JSONObject)obj;
-            for (Map.Entry<String, Object> entry : json.entrySet()) {
-                if (entry.getValue() instanceof Bindings) {
-                    try {
-                        final Class<?> cls = Class.forName("jdk.nashorn.api.scripting.ScriptObjectMirror");
-                        if (cls.isAssignableFrom(entry.getValue().getClass())) {
-                            final Method isArray = cls.getMethod("isArray");
-                            final Object result = isArray.invoke(entry.getValue());
-                            if (result != null && result.equals(true)) {
-                                final Method values = cls.getMethod("values");
-                                final Object vals = values.invoke(entry.getValue());
-                                if (vals instanceof Collection<?>) {
-                                    final Collection<?> coll = (Collection<?>) vals;
-                                    entry.setValue(coll.toArray(new Object[0]));
-                                }
-                            }
-                        }
-                    } catch (ClassNotFoundException | NoSuchMethodException | SecurityException
-                            | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {}
-                } else if(entry.getValue() instanceof Object[]) {
-                    Object[] objectArray = (Object[])entry.getValue();
-                    for(int i=0; i<objectArray.length; i++) {
-                        check(objectArray[i]);
-                    }                    
-                } else if(entry.getValue() instanceof JSONArray) {
-                    JSONArray jsonArray = (JSONArray)entry.getValue();
-                    Iterator<Object> it = jsonArray.iterator();
-                    while (it.hasNext()) {
-                        check(it.next());
-                    }
-                }
-                
-                check(entry.getValue());
-            }
-        } else if(obj instanceof JSONArray) {
-            JSONArray json = (JSONArray)obj;
-            Iterator<Object> it = json.iterator();
-            while (it.hasNext()) {
-                check(it.next());
-            }
-        } else if(obj instanceof Object[]) {
-            Object[] objectArray = (Object[])obj;
-            for(int i=0; i<objectArray.length; i++) {
-                check(objectArray[i]);
-            }
-        } else if (obj instanceof Bindings) {
-            Class<?> cls;
-            try {
-                cls = Class.forName("jdk.nashorn.api.scripting.ScriptObjectMirror");
-                Method resultMethod = cls.getMethod("entrySet", cls.getClasses());
-                
-                Set<Map.Entry<String, Object>> set = (Set<Map.Entry<String, Object>>)resultMethod.invoke(obj);
-                Iterator<Map.Entry<String, Object>> itor = set.iterator();
-                while (itor.hasNext()) {
-                	Map.Entry<String, Object> me = itor.next();
-                	
-                    if (cls.isAssignableFrom(me.getValue().getClass())) {
-                        final Method isArray = cls.getMethod("isArray");
-                        final Object result = isArray.invoke(me.getValue());
-                        if (result != null && result.equals(true)) {
-                            final Method values = cls.getMethod("values");
-                            final Object vals = values.invoke(me.getValue());
-                            if (vals instanceof Collection<?>) {
-                                final Collection<?> coll = (Collection<?>) vals;
-                                me.setValue(coll.toArray(new Object[0]));
-                                
-                                
-                            }
-                        } else {
-                        	check(me.getValue());
-                        }
-                    } else {
-                        check(me.getValue());
-                    }                    
-                }                
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }       
-	}
-	
-	private static Object convert(Object obj) {
-	    check(obj);
-     	        
-	    return obj;
-	}	
-	*/
 }

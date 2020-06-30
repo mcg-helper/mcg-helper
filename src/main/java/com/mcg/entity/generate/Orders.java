@@ -30,14 +30,14 @@ public class Orders implements Serializable {
 
     private static final long serialVersionUID = 5143429468415654053L;
     @XmlElement
-    private List<Order> order;
+    private List<List<Order>> order;
     
-    public List<Order> getOrder() {
-        return order;
-    }
-    public void setOrder(List<Order> order) {
-        this.order = order;
-    }
-    
+	public List<List<Order>> getOrder() {
+		return order;
+	}
+	
+	public void setOrder(List<List<Order>> order) {
+		this.order = order;
+	}
     
 }

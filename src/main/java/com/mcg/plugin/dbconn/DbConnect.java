@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DbConnect {
     
-	Logger log = LoggerFactory.getLogger(getClass());
+	private static Logger logger = LoggerFactory.getLogger(DbConnect.class);
 	private DataSource dataSource;
 	private ThreadLocal<Connection> threadLocal = new ThreadLocal<Connection>();
 
@@ -67,7 +67,7 @@ public class DbConnect {
 				threadLocal.set(connection);
 			}
 		} catch (SQLException e) {
-			log.error(e.getMessage());
+			logger.error("获取数据库连接失败,异常信息：", e.getMessage());
 			throw new RuntimeException("获取数据库连接失败.....");
 		}
 		return connection;
@@ -81,7 +81,7 @@ public class DbConnect {
 	 * @return
 	 */
 	public List<Map<String, Object>> querySql(String sql, Object... para) throws SQLException {
-		log.info("querySql: {}, para: {}", sql, ToStringBuilder.reflectionToString(para));
+		logger.debug("查询Sql: {}, 查询参数: {}", sql, ToStringBuilder.reflectionToString(para));
 		QueryRunner runner = new QueryRunner();
 		Connection conn = null;
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
@@ -89,7 +89,7 @@ public class DbConnect {
 			conn = getConnection();
 			result = runner.query(conn, sql, new MapListHandler(), para);
 		} catch (SQLException e) {
-			log.error("------querySql error: {}------", e.getMessage());
+			logger.error("查询出错，异常信息: {}", e.getMessage());
 			throw e;
 		} finally {
 			if (conn != null && conn.getAutoCommit() == true) {
@@ -112,7 +112,7 @@ public class DbConnect {
 	 * @throws
 	 */
 	public <T> List querySql(T clazz, String sql, Object... para) throws SQLException {
-		log.info("querySql: {}, para: {}", sql, ToStringBuilder.reflectionToString(para));
+		logger.debug("查询Sql: {}, 查询参数: {}", sql, ToStringBuilder.reflectionToString(para));
 		QueryRunner runner = new QueryRunner();
 		Connection conn = null;
 		List<T> result = new ArrayList<T>();
@@ -123,7 +123,7 @@ public class DbConnect {
 			RowProcessor processor = new BasicRowProcessor(bean);
 			result = (List<T>) runner.query(conn, sql, new BeanListHandler((Class) clazz, processor), para);
 		} catch (SQLException e) {
-			log.error("------querySql error: {}------", e.getMessage());
+			logger.error("查询出错，异常信息: {}------", e.getMessage());
 			throw e;
 		} finally {
 			if (conn != null && conn.getAutoCommit() == true) {
@@ -145,7 +145,7 @@ public class DbConnect {
 	 * @throws
 	 */
 	public Long queryForLong(String countSql, Object... para) throws SQLException {
-		log.info("queryForLong: {}, para: {}", countSql, ToStringBuilder.reflectionToString(para));
+		logger.debug("queryForLong: {}, para: {}", countSql, ToStringBuilder.reflectionToString(para));
 		QueryRunner runner = new QueryRunner();
 		Long number = null;
 		Connection conn = null;
@@ -153,13 +153,12 @@ public class DbConnect {
 			conn = getConnection();
 			number = runner.query(conn, countSql, new ScalarHandler<Long>(), para);
 		} catch (SQLException e) {
-			log.error("------queryForLong error: {}------", e.getMessage());
+			logger.error("------queryForLong error: {}------", e.getMessage());
 			throw e;
 		} finally {
 			if (conn != null && conn.getAutoCommit() == true) {
 				freeConnection();
 			}
-			log.info("DB queryForLong end ");
 		}
 		return number;
 	}
@@ -176,7 +175,7 @@ public class DbConnect {
 	 * @throws
 	 */
 	public int executeUpdate(String sql, Object... para) throws SQLException {
-		log.info("executeUpdate: {}, para: {}", sql, ToStringBuilder.reflectionToString(para));
+		logger.debug("executeUpdate: {}, para: {}", sql, ToStringBuilder.reflectionToString(para));
 		QueryRunner runner = new QueryRunner();
 		Connection conn = null;
 		int count = 0;
@@ -184,13 +183,12 @@ public class DbConnect {
 			conn = getConnection();
 			count = runner.update(conn, sql, para);
 		} catch (SQLException e) {
-			log.error("------executeUpdate error: {}------", e.getMessage());
+			logger.error("------executeUpdate error: {}------", e.getMessage());
 			throw e;
 		} finally {
 			if (conn != null && conn.getAutoCommit() == true) {
 				freeConnection();
 			}
-			log.info("DB execSql end ");
 		}
 		return count;
 	}
@@ -207,7 +205,7 @@ public class DbConnect {
 	 * @throws
 	 */
 	public Long insertSql(String sql, Object... para) throws SQLException {
-		log.info("InsertSql: {}, para: {}", sql, ToStringBuilder.reflectionToString(para));
+		logger.debug("InsertSql: {}, para: {}", sql, ToStringBuilder.reflectionToString(para));
 		QueryRunner runner = new QueryRunner();
 		Connection conn = null;
 		Long id = null;
@@ -215,13 +213,12 @@ public class DbConnect {
 			conn = getConnection();
 			id = (Long) runner.insert(conn, sql, new ScalarHandler<Object>(), para);
 		} catch (SQLException e) {
-			log.error("------insertSql error: {}------", e.getMessage());
+			logger.error("------insertSql error: {}------", e.getMessage());
 			throw e;
 		} finally {
 			if (conn != null && conn.getAutoCommit() == true) {
 				freeConnection();
 			}
-			log.info("DB execute InsertSql end ");
 		}
 		return id;
 	}
@@ -237,20 +234,19 @@ public class DbConnect {
 	 * @throws
 	 */
 	public void executeBatch(String sql, Object[][] params) throws SQLException {
-		log.info("executeBatch: {}, params:{}", sql, ToStringBuilder.reflectionToString(params));
+		logger.debug("executeBatch: {}, params:{}", sql, ToStringBuilder.reflectionToString(params));
 		QueryRunner runner = new QueryRunner();
 		Connection conn = null;
 		try {
 			conn = getConnection();
 			runner.batch(conn, sql, params);
 		} catch (SQLException e) {
-			log.error("------executeBatch Error:{}------", e.getMessage());
+			logger.error("------executeBatch Error:{}------", e.getMessage());
 			throw e;
 		} finally {
 			if (conn != null && conn.getAutoCommit() == true) {
 				freeConnection();
 			}
-			log.info("DB executeBatch end ");
 		}
 	}
 
@@ -278,7 +274,7 @@ public class DbConnect {
 	 * @throws
 	 */
 	public void freeConnection() {
-		log.info("------释放数据库连接------");
+		logger.debug("------释放数据库连接------");
 		Connection conn = threadLocal.get();
 		if (conn != null) {
 			DbUtils.closeQuietly(conn);
@@ -297,7 +293,7 @@ public class DbConnect {
 	 * @throws
 	 */
 	public void startTransaction() {
-		log.info("------开启事务-------");
+		logger.debug("------开启事务-------");
 		try {
 			Connection conn = threadLocal.get();
 			if (conn == null) {
@@ -306,7 +302,7 @@ public class DbConnect {
 			}
 			conn.setAutoCommit(false);
 		} catch (SQLException e) {
-			log.error(e.getMessage());
+			logger.error("开启事务失败，异常信息：{}", e.getMessage());
 		}
 	}
 
@@ -319,14 +315,14 @@ public class DbConnect {
 	 * @throws
 	 */
 	public void commit() {
-		log.info("------提交事务-------");
+		logger.debug("------提交事务-------");
 		try {
 			Connection conn = threadLocal.get();
 			if (conn != null) {
 				conn.commit();
 			}
 		} catch (SQLException e) {
-			log.error(e.getMessage());
+			logger.error("提交事务失败，异常信息：{}", e.getMessage());
 		}
 	}
 
@@ -338,14 +334,14 @@ public class DbConnect {
 	 * @return:      void      
 	 */
 	public void rollback() {
-		log.info("------ 系统异常，回滚事务------");
+		logger.debug("------ 系统异常，回滚事务------");
 		try {
 			Connection conn = threadLocal.get();
 			if (conn != null) {
 				conn.rollback();
 			}
 		} catch (SQLException e) {
-			log.error(e.getMessage());
+			logger.error("回滚事务失败，异常信息：{}", e.getMessage());
 		}
 	}
 

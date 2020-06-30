@@ -26,16 +26,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.mcg.entity.flow.data.FlowDatas;
 import com.mcg.entity.flow.end.FlowEnd;
-import com.mcg.entity.flow.gmybatis.FlowGmybatises;
+import com.mcg.entity.flow.git.FlowGits;
 import com.mcg.entity.flow.java.FlowJavas;
 import com.mcg.entity.flow.json.FlowJsons;
-import com.mcg.entity.flow.model.FlowModels;
+import com.mcg.entity.flow.linux.FlowLinuxs;
+import com.mcg.entity.flow.loop.FlowLoops;
+import com.mcg.entity.flow.process.FlowProcesses;
+import com.mcg.entity.flow.python.FlowPythons;
 import com.mcg.entity.flow.script.FlowScripts;
 import com.mcg.entity.flow.sequence.FlowSequences;
+import com.mcg.entity.flow.sftp.FlowSftps;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecutes;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuerys;
 import com.mcg.entity.flow.start.FlowStart;
 import com.mcg.entity.flow.text.FlowTexts;
+import com.mcg.entity.flow.wonton.FlowWontons;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement
@@ -50,15 +55,11 @@ public class FlowStruct implements Serializable {
     @XmlElement
     private FlowStart flowStart;
     @XmlElement
-    private FlowModels flowModels;
-    @XmlElement
     private FlowJsons flowJsons;
     @XmlElement
-    private FlowSqlExecutes FlowSqlExecutes;    
+    private FlowSqlExecutes flowSqlExecutes;    
     @XmlElement
     private FlowSqlQuerys flowSqlQuerys;     
-    @XmlElement
-    private FlowGmybatises flowGmybatises;
     @XmlElement
     private FlowDatas flowDatas;
     @XmlElement
@@ -66,23 +67,31 @@ public class FlowStruct implements Serializable {
     @XmlElement
     private FlowScripts flowScripts;
     @XmlElement
-    private FlowJavas flowJavas;    
+    private FlowJavas flowJavas;
     @XmlElement
     private FlowEnd flowEnd;
     @XmlElement
     private FlowSequences flowSequences;
+	@XmlElement
+    private FlowPythons flowPythons;
+    @XmlElement
+    private FlowLinuxs flowLinuxs;
+    @XmlElement
+    private FlowWontons flowWontons;
+    @XmlElement
+    private FlowProcesses flowProcesses;
+    @XmlElement
+    private FlowLoops flowLoops;
+    @XmlElement
+    private FlowGits flowGits;
+    @XmlElement
+    private FlowSftps flowSftps;
     
     public String getMcgId() {
         return mcgId;
     }
     public void setMcgId(String mcgId) {
         this.mcgId = mcgId;
-    }
-    public FlowModels getFlowModels() {
-        return flowModels;
-    }
-    public void setFlowModels(FlowModels flowModels) {
-        this.flowModels = flowModels;
     }
     public FlowSequences getFlowSequences() {
         return flowSequences;
@@ -96,12 +105,6 @@ public class FlowStruct implements Serializable {
     public void setFlowStart(FlowStart flowStart) {
         this.flowStart = flowStart;
     }
-    public FlowGmybatises getFlowGmybatises() {
-		return flowGmybatises;
-	}
-	public void setFlowGmybatises(FlowGmybatises flowGmybatises) {
-		this.flowGmybatises = flowGmybatises;
-	}
 	public FlowTexts getFlowTexts() {
 		return flowTexts;
 	}
@@ -150,11 +153,56 @@ public class FlowStruct implements Serializable {
     public void setFlowSqlQuerys(FlowSqlQuerys flowSqlQuerys) {
         this.flowSqlQuerys = flowSqlQuerys;
     }
-    public FlowSqlExecutes getFlowSqlExecutes() {
-        return FlowSqlExecutes;
-    }
-    public void setFlowSqlExecutes(FlowSqlExecutes flowSqlExecutes) {
-        FlowSqlExecutes = flowSqlExecutes;
-    }
-    
+	public FlowSqlExecutes getFlowSqlExecutes() {
+		return flowSqlExecutes;
+	}
+	public void setFlowSqlExecutes(FlowSqlExecutes flowSqlExecutes) {
+		this.flowSqlExecutes = flowSqlExecutes;
+	}
+	public FlowPythons getFlowPythons() {
+		return flowPythons;
+	}
+	public void setFlowPythons(FlowPythons flowPythons) {
+		this.flowPythons = flowPythons;
+	}
+	
+    public FlowLinuxs getFlowLinuxs() {
+		return flowLinuxs;
+	}
+	public void setFlowLinuxs(FlowLinuxs flowLinuxs) {
+		this.flowLinuxs = flowLinuxs;
+	}
+
+	public FlowWontons getFlowWontons() {
+		return flowWontons;
+	}
+	public void setFlowWontons(FlowWontons flowWontons) {
+		this.flowWontons = flowWontons;
+	}
+
+	public FlowProcesses getFlowProcesses() {
+		return flowProcesses;
+	}
+	public void setFlowProcesses(FlowProcesses flowProcesses) {
+		this.flowProcesses = flowProcesses;
+	}
+	public FlowLoops getFlowLoops() {
+		return flowLoops;
+	}
+	public void setFlowLoops(FlowLoops flowLoops) {
+		this.flowLoops = flowLoops;
+	}
+	public FlowGits getFlowGits() {
+		return flowGits;
+	}
+	public void setFlowGits(FlowGits flowGits) {
+		this.flowGits = flowGits;
+	}
+	public FlowSftps getFlowSftps() {
+		return flowSftps;
+	}
+	public void setFlowSftps(FlowSftps flowSftps) {
+		this.flowSftps = flowSftps;
+	}
+
 }

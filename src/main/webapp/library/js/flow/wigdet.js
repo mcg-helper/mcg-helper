@@ -35,6 +35,7 @@ $.WebConnector = function (args) {
 };
 
 $.WebStruct = function (args) {
+	this.mcgWebScoketCode = args.mcgWebScoketCode;
 	this.flowId = args.flowId;
 	this.webElement = args.webElement; 
 	this.webConnector = args.webConnector;
@@ -139,8 +140,11 @@ $.DragWidget = function (option) {
     this.getSign = function() {
     	return sign;
     };
-    this.setSign = function (signa) {
-    	sign = signa;
+    this.setSign = function (p_sign) {
+    	sign = p_sign;
+    };
+    this.setName = function (p_name) {
+    	name = p_name;
     };
 };	
 

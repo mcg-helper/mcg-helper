@@ -16,12 +16,23 @@
 
 package com.mcg.entity.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
+
 public class McgResult {
 
-    //状态码 1：成功 0：失败
+    //状态码     1：成功          0：失败
     private Integer statusCode = 1;
     //执行结果消息
     private String statusMes = "执行成功";
+    //自定义属性
+    private Map<String, Object> resultMap = new HashMap<String, Object>();
+    
+	public McgResult addAttribute(String attributeName, Object attributeValue) {
+		resultMap.put(attributeName, attributeValue);
+		return this;
+	}
     
     public Integer getStatusCode() {
         return statusCode;
@@ -35,6 +46,9 @@ public class McgResult {
     public void setStatusMes(String statusMes) {
         this.statusMes = statusMes;
     }
-    
+
+	public Map<String, Object> getResultMap() {
+		return resultMap;
+	}
     
 }

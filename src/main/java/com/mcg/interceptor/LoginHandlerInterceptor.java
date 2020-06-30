@@ -37,6 +37,10 @@ public class LoginHandlerInterceptor extends HandlerInterceptorAdapter{
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		
+		if(request.getRequestURI().endsWith("/wonton/heartbeat")) {
+			return true;
+		}
+		
 		UserCacheBean ucb = PermissionCollection.getInstance().getUserCache(request.getSession().getId());
         if(request.getRequestURI().contains(".css") || request.getRequestURI().contains(".js") || request.getRequestURI().contains(".ico") ){
             return true;

@@ -26,7 +26,7 @@ package com.mcg.common.sysenum;
  */
 public enum LogTypeEnum {
 
-	INFO("信息", "info"),  ERROR("错误", "error"), SUCCESS("成功", "success");
+	INFO("信息", "info"),  ERROR("错误信息", "error"), SUCCESS("成功信息", "success");
     /*  类型描述  */
     private String name;
     /* bootstrap-alert组件的样式类名和Message组件log类的方法名 */

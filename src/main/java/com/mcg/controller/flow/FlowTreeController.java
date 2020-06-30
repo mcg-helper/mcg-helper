@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.mcg.controller.base.BaseController;
+import com.mcg.entity.common.McgResult;
 import com.mcg.plugin.flowtree.FlowTree;
 import com.mcg.service.FlowTreeService;
 
@@ -50,24 +51,30 @@ public class FlowTreeController extends BaseController {
         
         return flowTreeService.getDatas();
     }
-    
-    @RequestMapping(value="/selected")
-    @ResponseBody
-    public void selected(String id) throws ClassNotFoundException, IOException {
-        flowTreeService.selected(id);
-    }    
-    
+
     @RequestMapping(value="/addOrUpdateNode")
     @ResponseBody
-    public void updateNode(String id, String name, String pId) throws ClassNotFoundException, IOException {
+    public void addOrUpdateNode(String id, String name, String pId) throws ClassNotFoundException, IOException {
         flowTreeService.updateNode(id, name, pId);
     }
     
     @RequestMapping(value="/deleteNode")
     @ResponseBody
-    public void deleteNode(String ids) throws ClassNotFoundException, IOException {
+    public McgResult deleteNode(String ids) throws ClassNotFoundException, IOException {
+    	McgResult mcgResult = new McgResult();
     	List<String> idList = Arrays.asList(ids.split(","));
-        flowTreeService.deleteNode(idList);
+    	if(idList != null && idList.size() > 0 ) {
+    		if(flowTreeService.deleteNode(idList)) {
+    			mcgResult.setStatusMes("删除流程成功！");
+    		} else {
+    			mcgResult.setStatusMes("删除流程失败！");
+    			mcgResult.setStatusCode(0);
+    		}
+    	} else {
+			mcgResult.setStatusMes("没有流程id，删除流程失败！");
+			mcgResult.setStatusCode(0);
+    	}
+    	return mcgResult;
     }
     
 }

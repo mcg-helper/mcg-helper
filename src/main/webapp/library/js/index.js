@@ -16,15 +16,53 @@
 
 
 $(function () { 
-	setAutoHeight($("body"),500);
+	setAutoHeight($("body"), 500);
 	
-	$('#mcg_nav a:first').tab('show');//初始化显示"主页" 
-	loadNavBody($('#mcg_nav a:first').attr("id"));
-    $('#mcg_nav a').click(function (e) { 
-      e.preventDefault();//阻止a链接的跳转行为 
-      $(this).tab('show');
-      loadNavBody($(this).attr("id"));
-    });   
+	var tabState = {
+			"mcg_home":true,
+			"mcg_flow":true,
+			"mcg_wssh":true,
+			"mcg_wonton":true
+	};
+	loadNavBody("mcg_home");
+    $("#mcgTab a[href='#mcg_home']").on("shown.bs.tab", function (e) {
+    	if(tabState.mcg_home) {
+    		loadNavBody("mcg_home");
+    		tabState.mcg_home = false;
+    	}
+    	if(!tabState.mcg_flow) {
+    		removePopover();
+    	}
+    });
+    $("#mcgTab a[href='#mcg_flow']").on("shown.bs.tab", function (e) {
+    	if(tabState.mcg_flow) {
+    		setAutoHeight($("body"),500);
+    		loadNavBody("mcg_flow");
+    		tabState.mcg_flow = false;
+    	}
+    	
+    });	
+    $("#mcgTab a[href='#mcg_wssh']").on("shown.bs.tab", function (e) {
+    	if(tabState.mcg_wssh) {
+    		setAutoHeight($("body"),500);
+    		loadNavBody("mcg_wssh");
+    		tabState.mcg_wssh = false;
+    	}
+    	if(!tabState.mcg_flow) {
+    		removePopover();
+    	}
+    });	
+    $("#mcgTab a[href='#mcg_wonton']").on("shown.bs.tab", function (e) {
+    	if(tabState.mcg_wonton) {
+    		setAutoHeight($("body"),500);
+			loadNavBody("mcg_wonton");
+			tabState.mcg_wonton = false;
+    	}
+    	if(!tabState.mcg_flow) {
+    		removePopover();
+    	}
+    });	
+	
 });
 
 function loadNavBody(id) {
@@ -37,6 +75,11 @@ function loadNavBody(id) {
 			$(this).remove();
 		});		
 		url = "/flow/index";
+	} else if(id == "mcg_wssh") {
+		url = "/wssh/index";
+	}
+	else if(id == "mcg_wonton") {
+		url = "/wonton/index";
 	} else {
 		return ;
 	}
@@ -48,7 +91,7 @@ function loadNavBody(id) {
 			"dataType":"html"
 //			"data":param,
 		}, function(data){
-			$('#mcg_nav_body').html(data);
+			$("#"+ id).html(data);
 		}
 	);	
 }

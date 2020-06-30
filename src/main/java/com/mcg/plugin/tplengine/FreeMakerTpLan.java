@@ -21,6 +21,7 @@ import java.io.StringWriter;
 
 import com.alibaba.fastjson.JSON;
 import com.mcg.common.Constants;
+import com.mcg.common.sysenum.FlowTextOutModeEnum;
 import com.mcg.util.McgFileUtils;
 
 import freemarker.template.Template;
@@ -28,21 +29,20 @@ import freemarker.template.Template;
 public class FreeMakerTpLan implements TplLan {
 
 	@Override
-	public String generate(JSON json, String ftl, String outFileName, String outFilePath) throws Exception {
+	public String generate(JSON json, String ftl, String outFileName, String outFilePath, String outMode) throws Exception {
 		String result = null;
         Template t;
-/*		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFilePath+outFileName), "UTF-8"));
-		t = new Template(null, new StringReader(ftl), null);
-		t.process(json, out);
-        out.flush();
-        out.close();*/
         
         StringWriter stringWriter = new StringWriter();
         t = new Template(null, new StringReader(ftl), null);
         t.process(json, stringWriter);
         result = stringWriter.toString();
         stringWriter.close();    
-        McgFileUtils.writeByteArrayToFile(outFilePath, outFileName, result, Constants.CHARSET.toString());
+        if(FlowTextOutModeEnum.OVERRIDE.getValue().equals(outMode)) {
+        	McgFileUtils.writeStringToFile(outFilePath, outFileName, result, Constants.CHARSET.toString());
+        } else if(FlowTextOutModeEnum.APPEND.getValue().equals(outMode)) {
+        	McgFileUtils.writeStringAppendToFile(outFilePath, outFileName, result, Constants.CHARSET.toString());
+        }
 		return result;
 	}
 

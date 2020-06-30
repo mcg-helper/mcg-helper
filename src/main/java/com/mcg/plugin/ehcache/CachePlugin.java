@@ -18,6 +18,7 @@ package com.mcg.plugin.ehcache;
 
 import com.mcg.common.Constants;
 import com.mcg.common.SpringContextHelper;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -31,8 +32,8 @@ public class CachePlugin {
         Cache cache = cacheManager.getCache(cacheName);
         cache.getCacheConfiguration().setEternal(true);
         return cache;
-    }    
-    
+    }
+       
     public static void put(String key, Object value) {
         Cache cache = cacheManager.getCache(Constants.CACHE_NAME);
         if (cache != null) {
@@ -41,14 +42,25 @@ public class CachePlugin {
         }
     }
 
-    public static Object get(String key) {
+    @SuppressWarnings("unchecked")
+	public static <T> T get(String key) {
         Element element = cacheManager.getCache(Constants.CACHE_NAME).get(key);
         if (element == null) {
             return null;
         }
-        return element.getObjectValue();
+        return (T)element.getObjectValue();
     }
 
+    public static void putFlowEntity(String flowId, String entityId, Object value) {
+    	String key = String.format("%s#%s", flowId, entityId);
+    	put(key, value);
+    }
+    
+    public static <T> T getFlowEntity(String flowId, String entityId) {
+    	String key = String.format("%s#%s", flowId, entityId);
+        return  get(key);
+    }
+    
     public static void removeCache() {
         cacheManager.removeCache(Constants.CACHE_NAME);
     }

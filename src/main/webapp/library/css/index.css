@@ -34,7 +34,7 @@ body {
 // 	position:fixed; 
 	top:0;
 	left:0;
-	height:20px;
+	height:10px;
 //	border-bottom: 1px solid #e5e5e5;
 //	box-shadow: 0px 1px #eee;
 }
@@ -47,9 +47,9 @@ body {
     box-shadow: none;
     margin-left: 0;
     margin-right: 0;
-    border: 1px solid #e5e5e5;
+   /* border: 1px solid #e5e5e5; */
     border-bottom-style: none;
-    padding: 10px;
+    padding: 0;
 }
 
 .mcg_main_highlight {
@@ -59,6 +59,7 @@ body {
     margin-left: 0;
     margin-right: 0;
     border: 1px solid #e5e5e5;
+    border-radius: 4px;
 }
 
 .mcg_footer {
@@ -190,3 +191,18 @@ body {
     top: 25px;
     left: 100px; }
     
+.margin_top {
+	margin-top: 20px;
+}
+
+a:focus,a:hover,a:active{
+	outline:none;
+	noOutline:expression_r(this.onFocus=this.blur());
+}    
+    
+.btn:focus {
+	outline: none;
+}
+.remove_border {
+	border:none;
+}

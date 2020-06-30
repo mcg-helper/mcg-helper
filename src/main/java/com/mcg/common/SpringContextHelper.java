@@ -33,6 +33,7 @@ public class SpringContextHelper implements ApplicationContextAware, DisposableB
 	
 	private static ApplicationContext applicationContext = null;
 	
+	@SuppressWarnings("static-access")
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {

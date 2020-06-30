@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBFactory;
 import org.iq80.leveldb.DBIterator;
@@ -29,11 +30,10 @@ import org.iq80.leveldb.Snapshot;
 import org.iq80.leveldb.WriteBatch;
 import org.iq80.leveldb.WriteOptions;
 import org.iq80.leveldb.impl.Iq80DBFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtostuffIOUtil;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import com.mcg.common.Constants;
 
 /**
@@ -45,14 +45,37 @@ import com.mcg.common.Constants;
  *
  */
 public class LevelDbUtil {
-
+	private static Logger logger = LoggerFactory.getLogger(LevelDbUtil.class);
     static DBFactory factory = Iq80DBFactory.factory;
     static DB db;
     
+    /**
+     * leveldb 写CURRENT文件（内容为当前使用的文件名）时以\n结尾，从github下载zip没有问题，
+     * 但通过git拉取代码时CURRENT结尾变为\r\n，leveldb读取CURRENT文件全部数据再截掉\n，
+     * 导致文件名多出\r，本方法纠错，若存在\r就删除掉。
+     */
+    public static void errorRecovery(String path) {
+        File file = new File(path);  
+        String fileContent = null;  
+        try {  
+        	if(file.exists()) {
+        		fileContent = FileUtils.readFileToString(file, "UTF-8");
+        	}
+        	if(fileContent.contains("\r")) {
+        		fileContent = fileContent.replaceAll("\r", "");
+        		FileUtils.write(file, fileContent);
+        	}
+        } catch (IOException e) {  
+            logger.error(e.getMessage());
+        }     	
+    }
+    
     public static void init() throws IOException {
+    	errorRecovery(Constants.DATA_PATH + File.separator + "CURRENT");
+    	
         File dir = new File(Constants.DATA_PATH);
-        
         Options options = new Options().createIfMissing(true);
+        options.maxOpenFiles(100);
         db = factory.open(dir, options);
     }
     
@@ -73,18 +96,10 @@ public class LevelDbUtil {
     public static void close() throws IOException {
         db.close();
     }
-    
+   
     public static void delete(String key) {
     	db.delete(key.getBytes(Constants.CHARSET));
     }
-
-    public static <T> void putObject(String key, T t) throws IOException {
-        if(key != null && !"".equals(key)) {
-            RuntimeSchema poSchema = RuntimeSchema.createFrom(t.getClass());
-            WriteOptions writeOptions = new WriteOptions().sync(true);//write后立即进行磁盘同步写，且线程安全
-            db.put(key.getBytes(Constants.CHARSET), ProtostuffIOUtil.toByteArray(t, poSchema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE)), writeOptions);
-        }
-    }    
     
     public static byte[] get(byte[] key) {
         if(key != null) {
@@ -99,14 +114,20 @@ public class LevelDbUtil {
         }
     }
     
-    public static <T> Object getObject(String key, Class<T> classes) throws IOException, ClassNotFoundException {
+    public synchronized static <T> void putObject(String key, T t) throws IOException {
+    	
+        if(key != null && !"".equals(key)) {
+            WriteOptions writeOptions = new WriteOptions().sync(true);//write后立即进行磁盘同步写，且线程安全
+            db.put(key.getBytes(Constants.CHARSET), JSON.toJSONBytes(t), writeOptions);
+        }
+    }
+    
+    public synchronized static <T> T getObject(String key, Class<T> classes) throws IOException, ClassNotFoundException {
         if(key != null && !"".equals(key)) {
             byte[] bytes = db.get(key.getBytes(Constants.CHARSET));
             if(bytes != null) {
-                RuntimeSchema poSchema = RuntimeSchema.createFrom(classes);
-                Object obj = poSchema.newMessage();
-                ProtostuffIOUtil.mergeFrom(bytes, obj, poSchema);
-                return obj;
+            	//JSON.parseObject("", new TypeReference<T>(classes){});
+                return JSON.parseObject(bytes, classes);
             }
         }
         return null;
@@ -125,82 +146,10 @@ public class LevelDbUtil {
             Map.Entry<byte[],byte[]> item = iterator.next();
             String key = new String(item.getKey(), Constants.CHARSET);
             String value = new String(item.getValue(), Constants.CHARSET);
-            System.out.println(key + ":" + value);
+            logger.debug("key:{}，value:{}", key, value);
         }
-        iterator.close();//must be
+        iterator.close();
     }
     
-	public static void main(String[] args) throws IOException, ClassNotFoundException {
-	    
-	    LevelDbUtil.init();
-	    LevelDbUtil.print();
-//        McgUser mcg = new McgUser();
-//        mcg.setUserKey("1314");     
-        System.out.println(System.currentTimeMillis());
-//        LevelDbUtil.testPut("he", mcg);
-	    LevelDbUtil.putObject("he", "ccte");
-        String cctv = (String)LevelDbUtil.getObject("he", String.class);
-        System.out.println(System.currentTimeMillis());
-        System.out.println(JSON.toJSONString(cctv));
-        
-/*		 boolean cleanup = true;
-	        Charset charset = Charset.forName("utf-8");
-	        String path = "E:/temp/data/leveldb";
 
-	        //init
-	        DBFactory factory = Iq80DBFactory.factory;
-	        File dir = new File(Constants.DATA_PATH);  
-	        //如果数据不需要reload，则每次重启，尝试清理磁盘中path下的旧数据。
-
-	        Options options = new Options().createIfMissing(true);
-	        //重新open新的db        
-	        DB db = factory.open(dir,options);
-	        
-	   //   byte[] bytes = db.get("mcg".getBytes(charset));
-
-	        McgUser mcg = new McgUser();
-	        mcg.setUserKey("1314");
-	        
-	        ByteArrayOutputStream byt=new ByteArrayOutputStream();
-	        ObjectOutputStream obj=new ObjectOutputStream(byt);
-	        obj.writeObject(mcg);
-	        byte[] bytes=byt.toByteArray();
-
-	        db.put("mcg".getBytes(charset), bytes);
-	        
-	        ByteArrayInputStream byteInt=new ByteArrayInputStream(bytes);
-	        ObjectInputStream objInt = new ObjectInputStream(byteInt);
-	        McgUser mcgUser=(McgUser)objInt.readObject();	        
-	        System.out.println(JSON.toJSONString(mcgUser));
-	        //write
-	        db.put("key-01".getBytes(charset),"value-01".getBytes(charset));
-	        
-	        //write后立即进行磁盘同步写
-	        WriteOptions writeOptions = new WriteOptions().sync(true);//线程安全
-	        db.put("key-02".getBytes(charset),"value-02".getBytes(charset),writeOptions);
-
-	        //batch write
-	        WriteBatch writeBatch = db.createWriteBatch();
-	        writeBatch.put("key-03".getBytes(charset),"value-03".getBytes(charset));
-	        writeBatch.put("key-04".getBytes(charset),"value-04".getBytes(charset));
-	        //writeBatch.delete("key-01".getBytes(charset));
-	        db.write(writeBatch);
-	        writeBatch.close();
-
-	        //read
-	        byte[] bv = db.get("key-02".getBytes(charset));
-	        if(bv != null && bv.length > 0) {
-	            String value = new String(bv,charset);
-	            System.out.println(value);
-	        }
-
-
-
-	        //delete
-	        //db.delete("key-01".getBytes(charset));
-
-	        //compaction，手动
-//	        db.compactRange("key-".getBytes(charset),null);
-	        db.close();*/
-	}
 }

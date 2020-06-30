@@ -26,9 +26,10 @@ package com.mcg.common.sysenum;
  */
 public enum EletypeEnum {
 
-    START("开始控件", "start"), MODEL("model控件", "model"), GMYBATIS("gmybatis控件", "gmybatis"), 
-    DATA("data控件", "data"), JSON("json控件", "json"), TEXT("文本控件", "text"), SCRIPT("js脚本控件", "script"), JAVA("java控件", "java"), 
-    SQLQUERY("sql查询控件", "sqlQuery"), SQLEXECUTE("sql执行控件", "sqlExecute"), END("结束控件", "end");
+    START("开始控件", "start"), DATA("data控件", "data"), JSON("json控件", "json"), GIT("git控件", "git"), SFTP("sftp控件", "sftp"),
+    TEXT("文本控件", "text"), SCRIPT("js脚本控件", "script"), JAVA("java控件", "java"), PYTHON("python控件", "python"), 
+    LINUX("linux控件", "linux"), WONTON("混沌控件", "wonton"), SQLQUERY("sql查询控件", "sqlQuery"), 
+    SQLEXECUTE("sql执行控件", "sqlExecute"), LOOP("循环", "loop"), PROCESS("子流程", "process"), END("结束控件", "end");
     
     private String name;
     private String value;

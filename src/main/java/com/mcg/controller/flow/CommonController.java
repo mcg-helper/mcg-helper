@@ -28,9 +28,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.mcg.common.sysenum.DatabaseTypeEnum;
+import com.mcg.common.sysenum.SeverTypeEnum;
+import com.mcg.common.sysenum.SftpOperationTypeEnum;
 import com.mcg.controller.base.BaseController;
+import com.mcg.entity.common.Table;
 import com.mcg.entity.flow.data.DataRecord;
-import com.mcg.entity.flow.gmybatis.Table;
 import com.mcg.entity.global.datasource.McgDataSource;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.ehcache.CachePlugin;
@@ -80,9 +82,11 @@ public class CommonController extends BaseController {
     @ResponseBody    
     public McgProduct getMcgProductById() {
     	PageData pd = this.getPageData();
-        if(pd.get("id") == null)
+        if(pd.get("flowId") == null || pd.get("id") == null) {
         	return null;    	
-    	McgProduct mcgProduct = (McgProduct)CachePlugin.get(pd.getString("id"));
+        }
+        
+        McgProduct mcgProduct = CachePlugin.getFlowEntity(pd.getString("flowId"), pd.getString("id"));
     	return mcgProduct;
     }
     
@@ -95,5 +99,25 @@ public class CommonController extends BaseController {
         }       
         return map;
     }    
+    
+    @RequestMapping(value="/getServerTypes")
+    @ResponseBody   
+    public Map<String, String> getServerTypes() throws Exception{
+        Map<String, String> map = new HashMap<String, String>();
+        for (SeverTypeEnum dt : SeverTypeEnum.values()) {
+            map.put(dt.getName(), dt.getValue());
+        }       
+        return map;
+    }    
+    
+    @RequestMapping(value="/getSftpOperationTypes")
+    @ResponseBody
+    public Map<String, String> getSftpOperationTypes() throws ClassNotFoundException, IOException {
+        Map<String, String> map = new HashMap<String, String>();
+        for (SftpOperationTypeEnum dt : SftpOperationTypeEnum.values()) {
+            map.put(dt.getName(), dt.getValue());
+        }       
+        return map;
+    }
     
 }

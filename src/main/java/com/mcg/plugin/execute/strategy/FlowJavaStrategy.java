@@ -17,11 +17,15 @@
 package com.mcg.plugin.execute.strategy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.entity.flow.java.FlowJava;
@@ -31,13 +35,14 @@ import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
 import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.execute.ProcessStrategy;
-import com.mcg.plugin.generate.FlowTask;
 import com.mcg.plugin.javacompiler.DynamicEngine;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.util.DataConverter;
 
 public class FlowJavaStrategy implements ProcessStrategy {
 
+	private static Logger logger = LoggerFactory.getLogger(FlowJavaStrategy.class);
+	
 	@Override
 	public void prepare(ArrayList<String> sequence, McgProduct mcgProduct, ExecuteStruct executeStruct) throws Exception {
 		FlowJava flowJava = (FlowJava)mcgProduct;
@@ -51,9 +56,14 @@ public class FlowJavaStrategy implements ProcessStrategy {
 		JSON parentParam = DataConverter.getParentRunResult(flowJava.getId(), executeStruct);
 		flowJava = DataConverter.flowOjbectRepalceGlobal(DataConverter.addFlowStartRunResult(parentParam, executeStruct), flowJava);		
 		RunResult runResult = new RunResult();
+		
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);
         FlowBody flowBody = new FlowBody();
+        flowBody.setSubFlag(executeStruct.getSubFlag());
+        flowBody.setFlowId(flowJava.getFlowId());
+        flowBody.setOrderNum(flowJava.getOrderNum());
+        flowBody.setLogOutType(LogOutTypeEnum.PARAM.getValue());
         flowBody.setEleType(EletypeEnum.JAVA.getValue());
         flowBody.setEleTypeDesc(EletypeEnum.JAVA.getName() + "--》" + flowJava.getJavaProperty().getName());
         flowBody.setEleId(flowJava.getId());
@@ -66,21 +76,27 @@ public class FlowJavaStrategy implements ProcessStrategy {
         flowBody.setLogType(LogTypeEnum.INFO.getValue());
         flowBody.setLogTypeDesc(LogTypeEnum.INFO.getName());
         message.setBody(flowBody);
-        FlowTask flowTask = FlowTask.executeLocal.get();    
-        MessagePlugin.push(flowTask.getHttpSessionId(), message); 		
+        MessagePlugin.push(flowJava.getMcgWebScoketCode(), executeStruct.getSession().getId(), message); 		
 		
-		String dataJson = resolve(flowJava.getJavaCore().getSource(), parentParam);
+		String dataJson = resolve(executeStruct.getMcgWebScoketCode(), executeStruct.getSession().getId(), flowJava.getFlowId(), flowJava.getJavaCore().getSource(), parentParam);
 		runResult.setElementId(flowJava.getId());
 		
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put(flowJava.getJavaProperty().getKey(), JSON.parse(dataJson));
-		runResult.setJsonVar(JSON.toJSONString(map, true));
+		JSONObject runResultJson = (JSONObject)parentParam;
+		runResultJson.put(flowJava.getJavaProperty().getKey(), JSON.parse(dataJson));
+		runResult.setJsonVar(JSON.toJSONString(runResultJson, true));
 		
 		executeStruct.getRunStatus().setCode("success");
+		
+		logger.debug("JAVA控件：{}，执行完毕！流程执行当前状态：{}", JSON.toJSONString(flowJava), JSON.toJSONString(executeStruct.getRunStatus()));
 		return runResult;
 	}
 	
-	public String resolve(String source, JSON param) throws Exception {
+	public String resolve(String mcgWebScoketCode, String httpSessionId, String flowId, String source, JSON param) throws Exception {
+		if(StringUtils.isNotEmpty(source)) {
+			source = source.replace("console.info(", "console.info(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ")
+					.replace("console.success(", "console.success(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ")
+					.replace("console.error(", "console.error(\"" + mcgWebScoketCode + "\", \"" + httpSessionId + "\", \"" + flowId + "\", ");
+		}
 		String dataJson = null;
         DynamicEngine de = DynamicEngine.getInstance();
         Object instance =  de.execute("Controller", source, "execute",  new Class[]{JSON.class}, new Object[]{param});

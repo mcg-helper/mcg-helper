@@ -39,7 +39,7 @@
 							<div class="form-group">
 								<div class="col-sm-12">
 									<div class="fg-line">
-										该控件标志流程执行完成，暂无功能，可用于流程执行完成后控制台输出结束语。
+										作为流程的结束标志，赋有流程备注的作用。
 									</div>
 								</div>
 							</div>

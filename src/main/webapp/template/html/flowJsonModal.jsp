@@ -43,7 +43,7 @@
 										<input type="text" id="${modalId }_name" name="jsonProperty[name]" class="form-control"  />
 									</div>
 								</div>
-								<label class="col-sm-2 control-label">控件KEY</label>
+								<label class="col-sm-1 control-label">控件KEY</label>
 								<div class="col-sm-4">
 									<div class="fg-line">
 										<input type="text" id="${modalId }_key" name="jsonProperty[key]" class="form-control"  />
@@ -52,7 +52,7 @@
 							</div>
 							<div class="form-group">
 								<label class="col-sm-2 control-label">脚本描述</label>
-								<div class="col-sm-10">
+								<div class="col-sm-9">
 									<div class="fg-line">
 										<textarea id="${modalId }_jsonDesc" name="jsonProperty[jsonDesc]" rows="2" cols="" class="form-control"></textarea>
 									</div>

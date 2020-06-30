@@ -37,7 +37,7 @@
 					<div class="form-body">
 						<div id="myTabContent" class="tab-content">
 							<div class="tab-pane fade in active" id="${modalId }_dataField">
-								<div class="form-group">
+								<div id="${modalId }_toolbar" class="form-group" style="width:580px;">
 									<label class="col-sm-2 control-label">选择数据源</label>
 									<div class="col-sm-4">
 										<div class="fg-line">
@@ -58,13 +58,12 @@
 									</div>									
 								</div>	
 							        <table id="${modalId }_flowDataTable"
+										   data-toolbar="#${modalId }_toolbar"
+					        	   		   data-toolbar-align="left"
 							               data-toggle="table"
-							               data-height="350"
-							               data-show-refresh="true"
-							               data-show-toggle="true"
+							               data-height="420"
 							               data-show-columns="true"
-							               data-search="true" 
-					               		   data-show-pagination-switch="true"                
+							               data-search="true"                
 								           data-pagination="true"
 								           data-page-size="5"
 								           data-page-list="[5,10,20,30]"
@@ -99,7 +98,6 @@
 											<input type="text" id="${modalId }_name" name="dataProperty[name]" class="form-control" placeholder="请输入控件名称" />											
 										</div>
 									</div>
-									<div class="col-sm-1"></div>
 								</div>							
 								<div class="form-group">
 									<label class="col-sm-2 control-label">控件KEY</label>
@@ -108,7 +106,6 @@
 											<input type="text" id="${modalId }_key" name="dataProperty[key]" class="form-control" placeholder="请输入KEY" />											
 										</div>
 									</div>
-									<div class="col-sm-1"></div>
 								</div>		
 								<div class="form-group">
 									<label class="col-sm-2 control-label">表名</label>
@@ -117,7 +114,6 @@
 											<input type="text" id="${modalId }_tableName" name="dataProperty[tableName]" class="form-control" placeholder="请输入表名称" />											
 										</div>
 									</div>
-									<div class="col-sm-1"></div>
 								</div>													
 								<div class="form-group">
 									<label class="col-sm-2 control-label">类名</label>
@@ -126,7 +122,6 @@
 											<input type="text" id="${modalId }_className" name="dataProperty[className]" class="form-control" placeholder="请输入类名称" />											
 										</div>
 									</div>
-									<div class="col-sm-1"></div>
 								</div>
 								<div class="form-group">
 									<label class="col-sm-2 control-label">包名</label>
@@ -135,7 +130,6 @@
 											<input type="text" id="${modalId }_packageName" name="dataProperty[packageName]" class="form-control" placeholder="请输入包名称" />											
 										</div>
 									</div>
-									<div class="col-sm-1"></div>
 								</div>																
 								<div class="form-group">
 									<label class="col-sm-2 control-label">描述</label>
@@ -144,7 +138,6 @@
 											<textarea id="${modalId }_dataDesc" name="dataProperty[dataDesc]" rows="1" cols="" class="form-control"></textarea>
 										</div>
 									</div>
-									<div class="col-sm-1"></div>					
 								</div>																							
 							</div>
 							<div class="tab-pane fade" id="${modalId }_dataExplain">

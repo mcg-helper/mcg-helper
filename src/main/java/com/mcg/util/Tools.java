@@ -16,6 +16,7 @@
 
 package com.mcg.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -33,12 +34,17 @@ import com.mcg.entity.message.NotifyBody;
  *
  */
 public class Tools {
+	
+	public static String genFlowInstanceId(String httpSessionId, String flowId) {
+		return httpSessionId + "##" + flowId;
+	}
 
 	/*
 	 * 分割字符串"."，截取最后一段（如导入类型:java.utils.Date）截取最后的Date
 	 */
 	public static String splitLast(String data) {
-		if(!notEmpty(data)) {
+		
+		if(StringUtils.isEmpty(data)) {
 			return null;
 		}
 		String[] split = data.split("\\.");
@@ -57,10 +63,6 @@ public class Tools {
 	 */
 	public static String convertClassName(String name) {
 		return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, name);
-	}
-	
-	public static boolean notEmpty(String s) {
-		return s != null && !"".equals(s) && !"null".equals(s);
 	}
 
 	public static boolean isEmpty(String s) {
@@ -85,5 +87,13 @@ public class Tools {
         }
         
         return flag;
+	}
+	
+	public static String genWsshConnUniqueId(String httpSessionId, String webSocketSessionId) {
+		return String.format("%s#%s", httpSessionId, webSocketSessionId);
+	}
+	
+	public static String genMcgWsConnUniqueId(String mcgWebScoketCode, String httpSessionId) {
+		return String.format("%s#%s", mcgWebScoketCode, httpSessionId);
 	}
 }

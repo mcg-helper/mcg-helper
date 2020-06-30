@@ -16,8 +16,6 @@
 
 package com.mcg.entity.flow.json;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 import javax.validation.Valid;
@@ -32,7 +30,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.mcg.entity.flow.FlowBase;
 import com.mcg.entity.generate.ExecuteStruct;
 import com.mcg.entity.generate.RunResult;
-import com.mcg.plugin.assist.ExceptionProcess;
 import com.mcg.plugin.execute.ProcessContext;
 import com.mcg.plugin.execute.strategy.FlowJsonStrategy;
 
@@ -52,32 +49,17 @@ public class FlowJson extends FlowBase {
 	private JsonProperty jsonProperty;
 	
 	@Override
-	public void prepare(ArrayList<String> sequence, ExecuteStruct executeStruct) {
+	public void prepare(ArrayList<String> sequence, ExecuteStruct executeStruct) throws Exception {
         ProcessContext processContext = new ProcessContext();
         processContext.setProcessStrategy(new FlowJsonStrategy());
-        try {
-            processContext.prepare(sequence, this, executeStruct);
-        } catch (Exception e) {
-        	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        	e.printStackTrace(new PrintStream(baos));  
-        	String exception = baos.toString();  
-        	ExceptionProcess.execute(this, exception);
-        }
+        processContext.prepare(sequence, this, executeStruct);
 	}
 
 	@Override
-	public RunResult execute(ExecuteStruct executeStruct) {
+	public RunResult execute(ExecuteStruct executeStruct) throws Exception {
         ProcessContext processContext = new ProcessContext();
         processContext.setProcessStrategy(new FlowJsonStrategy());
-        RunResult runResult = null;
-        try {
-            runResult = processContext.run(this, executeStruct);
-        } catch (Exception e) {
-        	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        	e.printStackTrace(new PrintStream(baos));  
-        	String exception = baos.toString();  
-        	ExceptionProcess.execute(this, exception);
-        }
+        RunResult runResult = processContext.run(this, executeStruct);
         return runResult;
 	}
 

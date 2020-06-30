@@ -22,11 +22,15 @@ import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * RSA签名验签类
  */
 public class RSASignature {
 
+	private static Logger logger = LoggerFactory.getLogger(RSASignature.class);
     /**
      * 签名算法
      */
@@ -56,7 +60,7 @@ public class RSASignature {
 
             return Base64.encode(signed);
         } catch (Exception e) {
-            e.printStackTrace();
+        	logger.error("RSA签名出错，异常信息：{}", e.getMessage());
         }
 
         return null;
@@ -73,7 +77,7 @@ public class RSASignature {
             byte[] signed = signature.sign();
             return Base64.encode(signed);
         } catch (Exception e) {
-            e.printStackTrace();
+        	logger.error("RSA签名出错，异常信息：{}", e.getMessage());
         }
         return null;
     }
@@ -102,7 +106,7 @@ public class RSASignature {
             return bverify;
 
         } catch (Exception e) {
-            e.printStackTrace();
+        	logger.error("RSA验签名检查，异常信息：{}", e.getMessage());
         }
 
         return false;
@@ -123,7 +127,7 @@ public class RSASignature {
             return bverify;
 
         } catch (Exception e) {
-            e.printStackTrace();
+        	logger.error("RSA验签名检查，异常信息：{}", e.getMessage());
         }
 
         return false;

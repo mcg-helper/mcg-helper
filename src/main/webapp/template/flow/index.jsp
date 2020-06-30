@@ -19,7 +19,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
 	String path = request.getContextPath();
-	String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+	String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path;
 %>
 <!DOCTYPE html>
 <html>
@@ -31,17 +31,12 @@
 		<link rel="shortcut icon" type="image/png" href="../../img/favicon.png">
         <title>mcg-helper研发助手</title>
 		
-		<link rel="stylesheet" href="<%=basePath %>library/css/core.css?_v=${version}">
-		<link rel="stylesheet" href="<%=basePath %>library/css/drage.css?_v=${version}">
-		<script type="text/javascript" src="<%=basePath %>library/js/flow/jquery.jsPlumb-1.7.5-min.js?_v=${version}"></script>
-		<script type="text/javascript" src="<%=basePath %>library/js/flow/wigdet.js?_v=${version}"></script>	
-		<script type="text/javascript" src="<%=basePath %>library/js/flow/mcgfn.js?_v=${version}"></script>			
-		<script type="text/javascript" src="<%=basePath %>library/js/flow/htmlmodel.js?_v=${version}"></script>
+		<script type="text/javascript" src="<%=basePath %>/library/js/flow/mcgfn.js?_v=${version}"></script>			
 	</head>
 
 	<body>
 		<!-- 主面body开始 -->
-		<div id="mcg_body"  class="container-fluid autoHeight">
+		<div id="mcg_body" class="container-fluid autoHeight">
 			<div class="row autoHeight">
 				<!-- 工具区开始 -->
 				<div class="col-md-2 autoHeight">
@@ -52,7 +47,7 @@
 									<h4 class="panel-title">
 										<a data-toggle="collapse" data-parent="#accordion"
 											href="#collapseOne" aria-expanded="true"
-											aria-controls="collapseOne">拖拽控件区</a>
+											aria-controls="collapseOne">拖拽控件</a>
 									</h4>
 								</div>
 								<div id="collapseOne" class="panel-collapse collapse in"
@@ -68,39 +63,58 @@
 										</div>
 										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarModel" class="toolbar_eletype" eletype="model">model</div>
-											</div>
-											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarJson" class="toolbar_eletype" eletype="json">json</div>
-											</div>										
-										</div>
-										<div class="row">
-											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarGmybatis" class="toolbar_eletype" eletype="gmybatis">gmybatis</div>
-											</div>
+											</div>	
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarData" class="toolbar_eletype" eletype="data">data</div>
-											</div>
-										</div>
-										<div class="row">
-											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarSqlQuery" class="toolbar_eletype" eletype="sqlQuery">sql查询</div>
-											</div>
-											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarSqlExecute" class="toolbar_eletype" eletype="sqlExecute">sql执行</div>
-											</div>										
-										</div>										
-										<div class="row">
-											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarScript" class="toolbar_eletype" eletype="script">JS脚本</div>
-											</div>
-											<div class="col-md-4 col-md-offset-1">
-												<div id="toolbarJava" class="toolbar_eletype" eletype="java">JAVA</div>
-											</div>										
+											</div>									
 										</div>
 										<div class="row">
 											<div class="col-md-4 col-md-offset-1">
 												<div id="toolbarText" class="toolbar_eletype" eletype="text">文本</div>
+											</div>	
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarSqlQuery" class="toolbar_eletype" eletype="sqlQuery">sql查询</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarSqlExecute" class="toolbar_eletype" eletype="sqlExecute">sql执行</div>
+											</div>	
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarScript" class="toolbar_eletype" eletype="script">JS脚本</div>
+											</div>
+										</div>										
+										<div class="row">
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarJava" class="toolbar_eletype" eletype="java">JAVA</div>
+											</div>	
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarPython" class="toolbar_eletype" eletype="python">Python</div>
+											</div>								
+										</div>
+										<div class="row">
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarLinux" class="toolbar_eletype" eletype="linux">Linux</div>
+											</div>	
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarWonton" class="toolbar_eletype" eletype="wonton">混沌</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarProcess" class="toolbar_eletype" eletype="process">子流程</div>
+											</div>
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarLoop" class="toolbar_eletype" eletype="loop">循环</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarGit" class="toolbar_eletype" eletype="git">GIT</div>
+											</div>
+											<div class="col-md-4 col-md-offset-1">
+												<div id="toolbarSftp" class="toolbar_eletype" eletype="sftp">SFTP</div>
 											</div>
 										</div>
 										
@@ -116,18 +130,28 @@
 				<div class="col-md-10 autoHeight" style="border-left: 1px solid #e5e5e5;">
 					<!-- 功能按钮操作区开始 -->
 					<div id="mcg_func" class="row">
-					     
 						<div class="btn-group no_width_center">
 								<button id="flowSelect" value="" flowId="" flowName="" flowPid="" class="btn btn-default" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								   我的流程&nbsp;<span class="caret"></span>
 								  </button>
-								<ul class="dropdown-menu">
-									<ul id="flowTree" class="ztree" style="min-width: 240px;"></ul>
+								<ul class="dropdown-menu" id="flowSelectTree">
+									<form class="form-inline">
+										<div class="form-group" style="margin: 0px 10px 0px 10px;">
+											<div class="input-group">
+												<div class="input-group-addon" style="background-color:#FFFFFF">搜索关键字</div>
+												<input type="text" id="flowTreeKey" value="" class="empty form-control" />
+												<span class="input-group-btn">
+													<button class="btn btn-default" type="button" id="removeFlowTreeKeyBtn"><span class="glyphicon glyphicon-remove"></span></button>
+												</span>
+											</div>
+										</div>
+									</form>
+									<ul id="flowTree" class="ztree" style="min-width:240px;OVERFLOW-Y: auto;"></ul>
 								</ul>
 								<button id="flowClearBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-remove-sign"></span>&nbsp;清空</button>
 								<button id="flowDataSourceBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-copyright-mark"></span>&nbsp;数据源</button>
 								<button id="flowSaveBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-floppy-saved"></span>&nbsp;保存</button>
-								<button id="flowGenBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-registration-mark"></span>&nbsp;生成</button>
+								<button id="flowGenBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-registration-mark"></span>&nbsp;执行</button>
 								<button id="flowImpBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-upload"></span>&nbsp;导入</button>
 								<button id="flowExpBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-download"></span>&nbsp;导出</button>
 						</div>
@@ -135,23 +159,35 @@
 					<!-- 功能按钮操作区结束 -->
 					<!-- 绘制流程区开始 -->
 					<div class="row autoHeight">
-		    			<div class="demo flowarea autoHeight" id="flowarea" style="overflow:scroll;"></div>
+		    			<div class="demo flowarea autoHeight" id="flowarea" style="min-width:400px;overflow:scroll;"></div>
 		    		</div>
 		    		<!-- 绘制流程区结束 -->
 		    		<!-- 控制台区开始 -->
-		    		<div class="row">
-						<nav class="navbar-default" >
+ 		    		<div class="row">
+				 		<nav class="navbar-default" id="console_header">
 							<div class="container-fluid">
-								<div class="navbar-header">
+								<div class="navbar-header" >
 									<span class="navbar-brand">控制台</span>
+								</div>
+
+								<div class="collapse navbar-collapse">
+									<form class="navbar-form navbar-right">
+										<div class="btn-group">
+										    <button id="flowStopBtn" type="button" class="btn btn-default remove_border"><span class="glyphicon glyphicon-stop text-muted"></span></button>
+										    <button id="flowLogCleanBtn" type="button" class="btn btn-default remove_border"><span class="glyphicon glyphicon-remove text-muted"></span></button>
+										</div>
+									</form>
+									<!-- 
+									<p class="navbar-text navbar-right">图标<a href="#" class="navbar-link">最大化</a></p>
+									 -->
 								</div>
 							</div>
 						</nav>
 		    		</div>
 		    		<div class="row">
-		    			
- 						<div id="console" style="width:100%;"></div>	    			
+ 						<div id="console" style="width:100%;" ></div>	    			
 		    		</div>
+		    		
 		    		<!-- 控制台区结束 -->
 				</div>
 				<!-- 流程工作区结束 -->
