@@ -196,20 +196,20 @@ public class FlowServiceImpl implements FlowService {
         	McgGlobal mcgGlobal = (McgGlobal)dbService.query(Constants.GLOBAL_KEY, McgGlobal.class);
         	if(mcgGlobal != null) {
         		for(Topology topology : mcgGlobal.getTopologys()) {
-        			if(topology.getId().equals(flowStruct.getMcgId())) {
+        			if(topology.getId().equals(webStruct.getFlowId())) {
         				curTopology = topology;
         				break;
         			}
         		}
         	}
         	
-        	String flowInstanceId = Tools.genFlowInstanceId(session.getId(), flowStruct.getMcgId());
+        	String flowInstanceId = Tools.genFlowInstanceId(session.getId(), webStruct.getFlowId());
         	
         	ConcurrentHashMap<String, RunResult> runResultMap = new ConcurrentHashMap<String, RunResult>();
             FlowRunSort flowRunSort = new FlowRunSort();
             ExecuteStruct executeStruct = new ExecuteStruct();
             executeStruct.setMcgWebScoketCode(webStruct.getMcgWebScoketCode());
-            executeStruct.setFlowId(flowStruct.getMcgId());
+            executeStruct.setFlowId(webStruct.getFlowId());
             executeStruct.setFlowInstanceId(flowInstanceId);
             executeStruct.setDataMap(flowRunSort.init(flowStruct));
             executeStruct.setOrders(flowRunSort.getFlowSort());
@@ -225,7 +225,7 @@ public class FlowServiceImpl implements FlowService {
             MessagePlugin.push(webStruct.getMcgWebScoketCode(), session.getId(), message);
             
             try {
-	            FlowTask flowTask = new FlowTask(webStruct.getMcgWebScoketCode(), session.getId(), flowStruct, executeStruct, subFlag);
+	            FlowTask flowTask = new FlowTask(webStruct.getMcgWebScoketCode(), session.getId(), executeStruct, subFlag);
 	            
 	            FlowInstancesUtils.executeStructMap.put(flowInstanceId, executeStruct);
 	            Future<RunStatus> future = ThreadPoolUtils.FLOW_WORK_EXECUTOR.submit(flowTask);

@@ -18,106 +18,12 @@ package com.mcg.plugin.build;
 
 import java.util.ArrayList;
 
-import com.mcg.entity.flow.data.FlowData;
-import com.mcg.entity.flow.end.FlowEnd;
-import com.mcg.entity.flow.git.FlowGit;
-import com.mcg.entity.flow.java.FlowJava;
-import com.mcg.entity.flow.json.FlowJson;
-import com.mcg.entity.flow.linux.FlowLinux;
-import com.mcg.entity.flow.loop.FlowLoop;
-import com.mcg.entity.flow.process.FlowProcess;
-import com.mcg.entity.flow.python.FlowPython;
-import com.mcg.entity.flow.script.FlowScript;
-import com.mcg.entity.flow.sftp.FlowSftp;
-import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
-import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
-import com.mcg.entity.flow.start.FlowStart;
-import com.mcg.entity.flow.text.FlowText;
-import com.mcg.entity.flow.wonton.FlowWonton;
-
 public class McgDirector {
     private ArrayList<String> sequence = new ArrayList<String>();
     
-    public FlowStart getFlowStartProduct(FlowStart flowStart) {
-        this.sequence.clear();
-        return (FlowStart) new McgConcreteBuilder(flowStart, this.sequence).getMcgProduct();
-    }
-    
-    public FlowJson getFlowJsonProduct(FlowJson flowJson) {
-        this.sequence.clear();
-        
-        return (FlowJson) new McgConcreteBuilder(flowJson, this.sequence).getMcgProduct();
-    }    
-    
-    public FlowSqlQuery getFlowSqlQueryProduct(FlowSqlQuery flowSqlQuery) {
-        this.sequence.clear();
-        
-        return (FlowSqlQuery) new McgConcreteBuilder(flowSqlQuery, this.sequence).getMcgProduct();
-    }
-    
-    public FlowSqlExecute getFlowSqlExecuteProduct(FlowSqlExecute flowSqlExecute) {
-        this.sequence.clear();
-        
-        return (FlowSqlExecute) new McgConcreteBuilder(flowSqlExecute, this.sequence).getMcgProduct();
-    }    
-    
-    public FlowData getFlowDataProduct(FlowData flowData) {
-        this.sequence.clear();
-        return (FlowData) new McgConcreteBuilder(flowData, this.sequence).getMcgProduct();
-    }    
-    
-    public FlowText getFlowTextProduct(FlowText flowText) {
-        this.sequence.clear();
-        return (FlowText) new McgConcreteBuilder(flowText, this.sequence).getMcgProduct();
-    }      
-    
-    public FlowScript getFlowScriptProduct(FlowScript flowScript) {
-    	 this.sequence.clear();
-         return (FlowScript) new McgConcreteBuilder(flowScript, this.sequence).getMcgProduct();    	
-    }
-    
-    public FlowJava getFlowJavaProduct(FlowJava flowJava) {
-        this.sequence.clear();
-        return (FlowJava) new McgConcreteBuilder(flowJava, this.sequence).getMcgProduct();     
-    }
-    
-    public FlowPython getFlowPythonProduct(FlowPython flowPython) {
-        this.sequence.clear();
-        return (FlowPython) new McgConcreteBuilder(flowPython, this.sequence).getMcgProduct();     
-    }  
-    
-    public FlowLinux getFlowLinuxProduct(FlowLinux flowLinux) {
-        this.sequence.clear();
-        return (FlowLinux) new McgConcreteBuilder(flowLinux, this.sequence).getMcgProduct();     
-    }    
-    
-    public FlowWonton getFlowWontonProduct(FlowWonton flowWonton) {
+    public McgProduct getFlowMcgProduct(McgProduct mcgProduct) {
     	this.sequence.clear();
-    	return (FlowWonton) new McgConcreteBuilder(flowWonton, this.sequence).getMcgProduct();     
-    }  
-    
-    public FlowProcess getFlowProcessProduct(FlowProcess flowProcess) {
-    	this.sequence.clear();
-    	return (FlowProcess) new McgConcreteBuilder(flowProcess, this.sequence).getMcgProduct();     
-    }  
-    
-    public FlowLoop getFlowLoopProduct(FlowLoop flowLoop) {
-    	this.sequence.clear();
-    	return (FlowLoop) new McgConcreteBuilder(flowLoop, this.sequence).getMcgProduct();     
-    } 
-    
-    public FlowGit getFlowGitProduct(FlowGit flowGit) {
-    	this.sequence.clear();
-    	return (FlowGit) new McgConcreteBuilder(flowGit, this.sequence).getMcgProduct();
+    	return new McgConcreteBuilder(mcgProduct, this.sequence).getMcgProduct();
     }
     
-    public FlowSftp getFlowSftpProduct(FlowSftp flowSftp) {
-    	this.sequence.clear();
-    	return (FlowSftp) new McgConcreteBuilder(flowSftp, this.sequence).getMcgProduct();
-    }
-      
-    public FlowEnd getFlowEndProduct(FlowEnd flowEnd) {
-        this.sequence.clear();
-        return (FlowEnd) new McgConcreteBuilder(flowEnd, this.sequence).getMcgProduct();
-    }     
 }

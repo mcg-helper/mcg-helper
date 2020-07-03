@@ -76,6 +76,6 @@
 	</welcome-file-list>
 	
 	<session-config>
-		<session-timeout>0</session-timeout>
+		<session-timeout>30</session-timeout>
 	</session-config>
 </web-app>

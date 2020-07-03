@@ -16,6 +16,23 @@
 
 package com.mcg.common.sysenum;
 
+import com.mcg.entity.flow.data.FlowData;
+import com.mcg.entity.flow.end.FlowEnd;
+import com.mcg.entity.flow.git.FlowGit;
+import com.mcg.entity.flow.java.FlowJava;
+import com.mcg.entity.flow.json.FlowJson;
+import com.mcg.entity.flow.linux.FlowLinux;
+import com.mcg.entity.flow.loop.FlowLoop;
+import com.mcg.entity.flow.process.FlowProcess;
+import com.mcg.entity.flow.python.FlowPython;
+import com.mcg.entity.flow.script.FlowScript;
+import com.mcg.entity.flow.sftp.FlowSftp;
+import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
+import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
+import com.mcg.entity.flow.start.FlowStart;
+import com.mcg.entity.flow.text.FlowText;
+import com.mcg.entity.flow.wonton.FlowWonton;
+
 /**
  * 
  * @ClassName:   EletypeEnum   
@@ -26,17 +43,23 @@ package com.mcg.common.sysenum;
  */
 public enum EletypeEnum {
 
-    START("开始控件", "start"), DATA("data控件", "data"), JSON("json控件", "json"), GIT("git控件", "git"), SFTP("sftp控件", "sftp"),
-    TEXT("文本控件", "text"), SCRIPT("js脚本控件", "script"), JAVA("java控件", "java"), PYTHON("python控件", "python"), 
-    LINUX("linux控件", "linux"), WONTON("混沌控件", "wonton"), SQLQUERY("sql查询控件", "sqlQuery"), 
-    SQLEXECUTE("sql执行控件", "sqlExecute"), LOOP("循环", "loop"), PROCESS("子流程", "process"), END("结束控件", "end");
+    START("开始控件", "start", (new FlowStart()).getClass()), DATA("data控件", "data", (new FlowData()).getClass()), 
+    JSON("json控件", "json", (new FlowJson()).getClass()), GIT("git控件", "git", (new FlowGit()).getClass()), 
+    SFTP("sftp控件", "sftp", (new FlowSftp()).getClass()), TEXT("文本控件", "text", (new FlowText()).getClass()), 
+    SCRIPT("js脚本控件", "script", (new FlowScript()).getClass()), JAVA("java控件", "java", (new FlowJava()).getClass()), 
+    PYTHON("python控件", "python", (new FlowPython()).getClass()), LINUX("linux控件", "linux", (new FlowLinux()).getClass()), 
+    WONTON("混沌控件", "wonton", (new FlowWonton()).getClass()), SQLQUERY("sql查询控件", "sqlQuery", (new FlowSqlQuery()).getClass()), 
+    SQLEXECUTE("sql执行控件", "sqlExecute", (new FlowSqlExecute()).getClass()), LOOP("循环", "loop", (new FlowLoop()).getClass()), 
+    PROCESS("子流程", "process", (new FlowProcess()).getClass()), END("结束控件", "end", (new FlowEnd()).getClass());
     
     private String name;
     private String value;
+    private Class<?> classes;
     
-    private EletypeEnum(String name, String value) {
+    private EletypeEnum(String name, String value, Class<?> classes) {
         this.name = name;
         this.value = value;
+        this.classes = classes;
     }    
     
     public static String getValueByName(String name) {
@@ -52,6 +75,15 @@ public enum EletypeEnum {
         for (EletypeEnum c : EletypeEnum.values()) {
             if (c.getValue().equals(value)) {
                 return c.name;
+            }
+        }
+        return null;
+    }
+    
+    public static Class<?> getClassByValue(String value) {
+        for (EletypeEnum c : EletypeEnum.values()) {
+            if (c.getValue().equals(value)) {
+                return c.classes;
             }
         }
         return null;
@@ -72,4 +104,13 @@ public enum EletypeEnum {
     public void setValue(String value) {
         this.value = value;
     }
+
+	public Class<?> getClasses() {
+		return classes;
+	}
+
+	public void setClasses(Class<?> classes) {
+		this.classes = classes;
+	}
+    
 }

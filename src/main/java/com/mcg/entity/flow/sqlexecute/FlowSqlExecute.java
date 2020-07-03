@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.entity.flow.FlowBase;
 import com.mcg.entity.generate.ExecuteStruct;
 import com.mcg.entity.generate.RunResult;
@@ -52,6 +53,10 @@ public class FlowSqlExecute extends FlowBase {
     
     @Override
     public void prepare(ArrayList<String> sequence, ExecuteStruct executeStruct) throws Exception {
+    	this.setFlowId(executeStruct.getFlowId());
+    	this.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
+    	this.setOrderNum(executeStruct.getOrderNum());
+    	this.setEletypeEnum(EletypeEnum.SQLEXECUTE);
         ProcessContext processContext = new ProcessContext();
         processContext.setProcessStrategy(new FlowSqlExecuteStrategy());
         processContext.prepare(sequence, this, executeStruct);

@@ -30,27 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
-import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
-import com.mcg.entity.flow.FlowStruct;
-import com.mcg.entity.flow.data.FlowData;
+import com.mcg.entity.flow.FlowBase;
 import com.mcg.entity.flow.end.FlowEnd;
-import com.mcg.entity.flow.git.FlowGit;
-import com.mcg.entity.flow.java.FlowJava;
-import com.mcg.entity.flow.json.FlowJson;
-import com.mcg.entity.flow.linux.FlowLinux;
 import com.mcg.entity.flow.loop.FlowLoop;
-import com.mcg.entity.flow.process.FlowProcess;
-import com.mcg.entity.flow.python.FlowPython;
-import com.mcg.entity.flow.script.FlowScript;
-import com.mcg.entity.flow.sftp.FlowSftp;
-import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
-import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
 import com.mcg.entity.flow.start.FlowStart;
-import com.mcg.entity.flow.text.FlowText;
-import com.mcg.entity.flow.wonton.FlowWonton;
 import com.mcg.entity.generate.ExecuteStruct;
 import com.mcg.entity.generate.Order;
 import com.mcg.entity.generate.RunResult;
@@ -70,7 +56,6 @@ public class FlowTask implements Callable<RunStatus> {
 	private Logger logger = LoggerFactory.getLogger(FlowTask.class);
 	private String mcgWebScoketCode;
     private String httpSessionId;
-    private FlowStruct flowStruct;
     private ExecuteStruct executeStruct;
     /* 是否是子流程 */
     private Boolean subFlag;
@@ -78,10 +63,9 @@ public class FlowTask implements Callable<RunStatus> {
     	
     }
     
-    public FlowTask(String mcgWebScoketCode, String httpSessionId, FlowStruct flowStruct, ExecuteStruct executeStruct, Boolean subFlag) {
+    public FlowTask(String mcgWebScoketCode, String httpSessionId, ExecuteStruct executeStruct, Boolean subFlag) {
     	this.mcgWebScoketCode = mcgWebScoketCode;
         this.httpSessionId = httpSessionId;
-        this.flowStruct = flowStruct;
         this.executeStruct = executeStruct;
         this.subFlag = subFlag;
     }
@@ -109,178 +93,28 @@ public class FlowTask implements Callable<RunStatus> {
 		                message.getHeader().setMesType(MessageTypeEnum.FLOW);
 		                FlowBody flowBody = new FlowBody();
 		                
-		                String flowInstanceId =  Tools.genFlowInstanceId(httpSessionId, flowStruct.getMcgId());
+		                String flowInstanceId =  Tools.genFlowInstanceId(httpSessionId, executeStruct.getFlowId());
 		                flowBody.setFlowInstanceId(flowInstanceId);
-		                flowBody.setFlowId(flowStruct.getMcgId());
+		                flowBody.setFlowId(executeStruct.getFlowId());
 		                flowBody.setSubFlag(executeStruct.getSubFlag());
 		                McgProduct mcgProduct = executeStruct.getDataMap().get(order.getElementId());
-		                RunResult result = null;
-		                if(mcgProduct instanceof FlowStart) {
-		                    FlowStart flowStart = (FlowStart)mcgProduct.clone();
-		                    flowStart.setOrderNum(orderNum);
-		                    flowStart.setFlowId(flowStruct.getMcgId());
-		                    flowStart.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowStartProduct(flowStart).build(executeStruct);
-		                    flowBody.setLogOutType(LogOutTypeEnum.RESULT.getValue());
-		                    flowBody.setEleType(EletypeEnum.START.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.START.getName());
-		                    flowBody.setEleId(flowStart.getStartId());
-		                    flowBody.setComment("运行值");
-		                    flowBody.setOrderNum(orderNum);
-		                } else if(mcgProduct instanceof FlowJson) {
-		                    FlowJson flowJson =(FlowJson)mcgProduct.clone();
-		                    flowJson.setOrderNum(orderNum);
-		                    flowJson.setFlowId(flowStruct.getMcgId());
-		                    flowJson.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowJsonProduct(flowJson).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.JSON.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.JSON.getName() + "--》" + flowJson.getJsonProperty().getName());
-		                    flowBody.setEleId(flowJson.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowSqlQuery) {
-		                    FlowSqlQuery flowSqlQuery =(FlowSqlQuery)mcgProduct.clone();
-		                    flowSqlQuery.setOrderNum(orderNum);
-		                    flowSqlQuery.setFlowId(flowStruct.getMcgId());
-		                    flowSqlQuery.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowSqlQueryProduct(flowSqlQuery).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.SQLQUERY.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.SQLQUERY.getName() + "--》" + flowSqlQuery.getSqlQueryProperty().getName());
-		                    flowBody.setEleId(flowSqlQuery.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowSqlExecute) {
-		                    FlowSqlExecute flowSqlExecute =(FlowSqlExecute)mcgProduct.clone();
-		                    flowSqlExecute.setOrderNum(orderNum);
-		                    flowSqlExecute.setFlowId(flowStruct.getMcgId());
-		                    flowSqlExecute.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowSqlExecuteProduct(flowSqlExecute).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.SQLEXECUTE.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.SQLEXECUTE.getName() + "--》" + flowSqlExecute.getSqlExecuteProperty().getName());
-		                    flowBody.setEleId(flowSqlExecute.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowData) {
-		                    FlowData flowData = (FlowData)mcgProduct.clone();
-		                    flowData.setOrderNum(orderNum);
-		                    flowData.setFlowId(flowStruct.getMcgId());
-		                    flowData.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowDataProduct(flowData).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.DATA.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.DATA.getName() + "--》" + flowData.getDataProperty().getName());
-		                    flowBody.setEleId(flowData.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowText) {
-		                    FlowText flowText = (FlowText) mcgProduct.clone();
-		                    flowText.setOrderNum(orderNum);
-		                    flowText.setFlowId(flowStruct.getMcgId());
-		                    flowText.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowTextProduct(flowText).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.TEXT.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.TEXT.getName() + "--》" + flowText.getTextProperty().getName());
-		                    flowBody.setEleId(flowText.getTextId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowScript) {
-		                    FlowScript flowScript = (FlowScript)mcgProduct.clone();
-		                    flowScript.setOrderNum(orderNum);
-		                    flowScript.setFlowId(flowStruct.getMcgId());
-		                    flowScript.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowScriptProduct(flowScript).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.SCRIPT.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.SCRIPT.getName() + "--》" + flowScript.getScriptProperty().getScriptName());
-		                    flowBody.setEleId(flowScript.getScriptId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowJava) {
-		                    FlowJava flowJava = (FlowJava)mcgProduct.clone();
-		                    flowJava.setOrderNum(orderNum);
-		                    flowJava.setFlowId(flowStruct.getMcgId());
-		                    flowJava.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowJavaProduct(flowJava).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.JAVA.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.JAVA.getName() + "--》" + flowJava.getJavaProperty().getName());
-		                    flowBody.setEleId(flowJava.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowPython) {
-		                    FlowPython flowPython = (FlowPython)mcgProduct.clone();
-		                    flowPython.setOrderNum(orderNum);
-		                    flowPython.setFlowId(flowStruct.getMcgId());
-		                    flowPython.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowPythonProduct(flowPython).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.PYTHON.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.PYTHON.getName() + "--》" + flowPython.getPythonProperty().getName());
-		                    flowBody.setEleId(flowPython.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowLinux) {
-		                	FlowLinux flowLinux = (FlowLinux)mcgProduct.clone();
-		                	flowLinux.setOrderNum(orderNum);
-		                	flowLinux.setFlowId(flowStruct.getMcgId());
-		                	flowLinux.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowLinuxProduct(flowLinux).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.LINUX.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.LINUX.getName() + "--》" + flowLinux.getLinuxProperty().getName());
-		                    flowBody.setEleId(flowLinux.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowWonton) {
-		                	FlowWonton flowWonton = (FlowWonton)mcgProduct.clone();
-		                	flowWonton.setOrderNum(orderNum);
-		                	flowWonton.setFlowId(flowStruct.getMcgId());
-		                	flowWonton.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowWontonProduct(flowWonton).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.WONTON.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.WONTON.getName() + "--》" + flowWonton.getWontonProperty().getName());
-		                    flowBody.setEleId(flowWonton.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowProcess) {
-		                	FlowProcess flowProcess = (FlowProcess)mcgProduct.clone();
-		                	flowProcess.setOrderNum(orderNum);
-		                	flowProcess.setFlowId(flowStruct.getMcgId());
-		                	flowProcess.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowProcessProduct(flowProcess).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.PROCESS.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.PROCESS.getName() + "--》" + flowProcess.getProcessProperty().getName());
-		                    flowBody.setEleId(flowProcess.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowLoop) {
-		                	FlowLoop flowLoop = (FlowLoop)mcgProduct.clone();
-		                	flowLoop.setOrderNum(orderNum);
-		                	flowLoop.setFlowId(flowStruct.getMcgId());
-		                	flowLoop.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowLoopProduct(flowLoop).build(executeStruct);
-		                    swicth = executeStruct.getRunStatus().getLoopStatusMap().get(flowLoop.getId()).getSwicth();
-		                    flowBody.setEleType(EletypeEnum.LOOP.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.LOOP.getName() + "--》" + flowLoop.getLoopProperty().getName());
-		                    flowBody.setEleId(flowLoop.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowGit) {
-		                	FlowGit flowGit = (FlowGit)mcgProduct.clone();
-		                	flowGit.setOrderNum(orderNum);
-		                	flowGit.setFlowId(flowStruct.getMcgId());
-		                	flowGit.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowGitProduct(flowGit).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.GIT.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.GIT.getName() + "--》" + flowGit.getGitProperty().getName());
-		                    flowBody.setEleId(flowGit.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowSftp) {
-		                	FlowSftp flowSftp = (FlowSftp)mcgProduct.clone();
-		                	flowSftp.setOrderNum(orderNum);
-		                	flowSftp.setFlowId(flowStruct.getMcgId());
-		                	flowSftp.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowSftpProduct(flowSftp).build(executeStruct);
-		                    flowBody.setEleType(EletypeEnum.SFTP.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.SFTP.getName() + "--》" + flowSftp.getSftpProperty().getName());
-		                    flowBody.setEleId(flowSftp.getId());
-		                    flowBody.setComment("运行值");
-		                } else if(mcgProduct instanceof FlowEnd) {
-		                    FlowEnd flowEnd = (FlowEnd)mcgProduct.clone();
-		                    flowEnd.setOrderNum(orderNum);
-		                    flowEnd.setFlowId(flowStruct.getMcgId());
-		                    flowEnd.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
-		                    result = director.getFlowEndProduct(flowEnd).build(executeStruct);
-		                    flowBody.setOrderNum(orderNum);
-		                    flowBody.setEleType(EletypeEnum.END.getValue());
-		                    flowBody.setEleTypeDesc(EletypeEnum.END.getName());
-		                    flowBody.setEleId(flowEnd.getEndId());
-		                    flowBody.setComment("运行值");
-		                }
+		                executeStruct.setOrderNum(orderNum);
 		                
+	                    McgProduct mcgProductClone = (McgProduct)mcgProduct.clone();
+	                    RunResult result = director.getFlowMcgProduct(mcgProductClone).build(executeStruct);
+	                    FlowBase flowBase = (FlowBase)mcgProductClone;
+	                    flowBody.setLogOutType(LogOutTypeEnum.RESULT.getValue());
+	                    flowBody.setEleType(flowBase.getEletypeEnum().getValue());
+	                    flowBody.setEleTypeDesc(flowBase.getEletypeEnum().getName());
+	                    flowBody.setEleId(order.getElementId());
+	                    flowBody.setComment(LogOutTypeEnum.RESULT.getName());
+	                    if(mcgProduct instanceof FlowStart || mcgProduct instanceof FlowEnd) {
+	                    	flowBody.setOrderNum(orderNum);
+	                    }
+	                    if(mcgProduct instanceof FlowLoop) {
+	                    	swicth = executeStruct.getRunStatus().getLoopStatusMap().get(order.getElementId()).getSwicth();	
+	                    }
+	                    	
 		                executeStruct.getRunResultMap().put(order.getElementId(), result);
 		                
 		                if(result == null) {
@@ -294,6 +128,7 @@ public class FlowTask implements Callable<RunStatus> {
 		                }  else {
 		                    flowBody.setContent("控件运行值异常");
 		                }
+		                
 		                
 		                flowBody.setLogOutType(LogOutTypeEnum.RESULT.getValue());
 		                flowBody.setLogType(LogTypeEnum.INFO.getValue());
@@ -375,7 +210,7 @@ public class FlowTask implements Callable<RunStatus> {
 	                MessagePlugin.push(mcgWebScoketCode, httpSessionId, fileMessage);
 	            }
 	            
-	            String flowInstanceId = Tools.genFlowInstanceId(httpSessionId, flowStruct.getMcgId());
+	            String flowInstanceId = Tools.genFlowInstanceId(httpSessionId, executeStruct.getFlowId());
 	            FlowInstancesUtils.executeStructMap.remove(flowInstanceId);
 	        }
 		} catch (InterruptedException e) {
@@ -389,7 +224,7 @@ public class FlowTask implements Callable<RunStatus> {
         	e.printStackTrace(new PrintStream(baos));  
         	String exception = baos.toString();  
         	logger.error("流程执行发生错误，异常信息：", e);
-			ExceptionProcess.execute(mcgWebScoketCode, httpSessionId, flowStruct.getMcgId(), executeStruct.getDataMap().get(executeStruct.getRunStatus().getExecuteId()), exception);
+			ExceptionProcess.execute(mcgWebScoketCode, httpSessionId, executeStruct.getFlowId(), executeStruct.getDataMap().get(executeStruct.getRunStatus().getExecuteId()), exception);
 		}
 		
 		return executeStruct.getRunStatus();
@@ -398,10 +233,6 @@ public class FlowTask implements Callable<RunStatus> {
     public String getHttpSessionId() {
         return httpSessionId;
     }
-
-	public FlowStruct getFlowStruct() {
-		return flowStruct;
-	}
 
     public ExecuteStruct getExecuteStruct() {
         return executeStruct;

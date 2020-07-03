@@ -94,6 +94,7 @@
 									<label class="col-sm-2 control-label">控件名称</label>
 									<div class="col-sm-9">
 										<div class="fg-line">
+											<input type="hidden" id="${modalId }_id" name="id" value="${modalId }" />
 											<input type="hidden" id="${modalId }_dataId" name="id" value="${modalId }" />
 											<input type="text" id="${modalId }_name" name="dataProperty[name]" class="form-control" placeholder="请输入控件名称" />											
 										</div>

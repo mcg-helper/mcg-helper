@@ -51,7 +51,7 @@
 			<div class="col-md-12">
 				<div id="mcg_nav" class="mcg_main_nav_header">
 					<div class="navbar-header pull-right">
-						 <a class="navbar-brand" href="https://github.com/mcg-helper/mcg-helper" target="_blank">mcg-helper</a>
+						 <a class="navbar-brand" href="https://gitee.com/mcg-helper/mcg-helper" target="_blank">mcg-helper</a>
 					</div>
 						<ul class="nav nav-pills" role="tablist" id="mcgTab">
 							<li role="presentation" class="active"><a href="#mcg_home" data-toggle="tab">主页</a></li>

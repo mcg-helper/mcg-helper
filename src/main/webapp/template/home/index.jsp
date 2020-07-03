@@ -63,8 +63,8 @@
 	   		<div class="col-md-4">
 	   			<h3>开源地址</h3>
 	   			<p>
-	   				mcg-helper为github开源项目，需要二次开发和自定义控件的朋友，赶快加星与关注吧，欢迎共同探讨与完善！------
-	   				<a href="https://github.com/mcg-helper/mcg-helper" target="_blank">下载请点击这里</a>
+	   				mcg-helper已在码云上开源，需要二次开发和自定义控件的朋友，赶快加星与关注吧，欢迎共同探讨与完善！------
+	   				<a href="https://gitee.com/mcg-helper/mcg-helper" target="_blank">下载请点击这里</a>
 	   			</p>
 	   		</div>
 	   		

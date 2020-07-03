@@ -90,6 +90,7 @@ public class FlowProcessStrategy implements ProcessStrategy {
         WebStruct webStruct = new WebStruct();
 
         if (!StringUtils.isEmpty(flowProcess.getProcessProperty().getFlowId())) {
+        	webStruct.setMcgWebScoketCode(executeStruct.getMcgWebScoketCode());
         	webStruct.setFlowId(flowProcess.getProcessProperty().getFlowId());
         	logger.debug("开始执行子流程，数据：{}", JSON.toJSONString(flowProcess));
         	RunStatus flowRunStatus = flowService.generate(webStruct, executeStruct.getSession(), true, executeStruct.getTopology().getId(), parentParam);

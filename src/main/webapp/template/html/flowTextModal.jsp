@@ -55,6 +55,7 @@
 							<div class="form-group">
 								<label class="col-sm-2 control-label">文件名称</label>
 								<div class="fg-line col-sm-4">
+									<input type="hidden" id="${modalId }_id" name="id" value="${modalId }" />
 									<input type="hidden" id="${modalId }_textId" name="textId" value="${modalId }" />
 									<input type="text" id="${modalId }_fileName" name="textProperty[fileName]" class="form-control"  />
 								</div>	
