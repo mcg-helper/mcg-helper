@@ -25,6 +25,7 @@ import javax.websocket.Session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.mcg.entity.auth.PermissionCollection;
@@ -48,7 +49,7 @@ public class MessagePlugin {
     	} else {
 	    	try {
 	    	    Session session = ucb.getUser().getWebSocketMap().get(Tools.genMcgWsConnUniqueId(mcgWebScoketCode, httpSessionId));
-	    	    if(session.isOpen()) {
+	    	    if(session != null && session.isOpen()) {
 	    	        session.getBasicRemote().sendText(JSON.toJSONString(message), true);
 	    	    }
 			} catch (IOException e) {
@@ -67,13 +68,19 @@ public class MessagePlugin {
 		try {
 			Map<String, UserCacheBean> mapSU = PermissionCollection.getInstance().getMapSU();
 			for (UserCacheBean ucb : mapSU.values()) { 
-				for(String mcgWebScoketCode : ucb.getUser().getWebSocketMap().keySet()) {
-					push(mcgWebScoketCode , ucb.getSessionID(), message);
+				if(ucb != null) {
+					for(String mcgWebScoketCode : ucb.getUser().getWebSocketMap().keySet()) {
+						if(!StringUtils.isEmpty(mcgWebScoketCode)) {
+							push(mcgWebScoketCode , ucb.getSessionID(), message);
+						} else {
+							logger.error("webscoket推送消息给所有客户端时，mcgWebScoketCode为空，推送时间：{}，消息数据：{}", DateUtils.format(new Date()), JSON.toJSONString(message));
+						}
+					}
 				}
 			}
 			result = true;
 		} catch (Exception e) {
-			logger.error("webscoket推送消息给所有客户端出错，推送时间：{}，消息数据：{}，异常信息：{}", DateUtils.format(new Date()), JSON.toJSONString(message), e.getMessage());
+			logger.error("webscoket推送消息给所有客户端出错，推送时间：{}，消息数据：{}，异常信息：{}", DateUtils.format(new Date()), JSON.toJSONString(message), e);
 		}
 		
 		return result;

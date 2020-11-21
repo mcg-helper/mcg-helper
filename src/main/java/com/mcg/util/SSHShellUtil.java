@@ -50,7 +50,8 @@ public class SSHShellUtil {
 			ui = new SSHGoogleAuthUserInfo(secretKey, password);
 		}
 		session.setUserInfo(ui);
-		session.connect(6000);
+		session.connect(10000);
+		session.setTimeout(10000);
 
 		Channel channel = session.openChannel("shell");
 		PipedInputStream pipedInputStream = new PipedInputStream();

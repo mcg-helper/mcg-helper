@@ -93,6 +93,10 @@ function createHtmlModal(id, param) {
 			url = "/html/flowEndModal";
 			option["title"] = "结束控件";
 			option["width"] = 1100;
+		} else if($("#"+id).attr("eletype") == "demo") {
+			url = "/html/flowDemoModal";
+			option["title"] = "示例控件";
+			option["width"] = 1100;
 		}
 		
 		param["modalId"] = modalId.replace(/_Modal/g, "");
@@ -988,6 +992,38 @@ function setDialogBtns(param) {
 				}
 			}
 		];			
+	} else if(param.eletype == "demo") {
+		buttons = [
+			{
+				class: "btn btn-primary",			
+				text: "保存",
+				click: function() {
+					var _this = this;
+					var data = $("#" + param.modalId　+ "_demoForm").serializeJSON();
+					var result = JSON.parse(data);
+					result["flowId"] = getCurrentFlowId();
+					result["mcgWebScoketCode"] = mcgWebScoketCode;
+					common.ajax({
+						url : "/flow/saveFlowDemo",
+						type : "POST",
+						data : JSON.stringify(result),
+						contentType : "application/json"
+					}, function(data) {
+						if(data.statusCode == 1) {
+							saveElementUpdateCache(param.modalId, result.demoProperty.name);
+							$( _this ).dialog( "destroy" );
+						}
+					});					
+				}
+			},
+			{
+				class: "btn btn-default",			
+				text: "关闭",
+				click: function() {
+					$( this ).dialog( "destroy" );
+				}
+			}			
+		];
 	}
 	
 	return buttons;
@@ -1352,6 +1388,9 @@ function createModalCallBack(param) {
 	} else if(param.eletype == "end") {
 		
 		initFlowEndModal(param.modalId);
+	} else if(param.eletype == "demo") {
+
+	    initDemoModal(param.modalId);
 	}
 }
 

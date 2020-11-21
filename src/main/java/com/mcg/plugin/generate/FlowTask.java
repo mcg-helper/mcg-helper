@@ -17,19 +17,22 @@
 package com.mcg.plugin.generate;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.mcg.common.Constants;
 import com.mcg.common.sysenum.LogOutTypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
@@ -50,6 +53,7 @@ import com.mcg.plugin.build.McgProduct;
 import com.mcg.plugin.websocket.MessagePlugin;
 import com.mcg.util.FlowInstancesUtils;
 import com.mcg.util.Tools;
+import com.mcg.util.ZipCompressor;
 
 public class FlowTask implements Callable<RunStatus> {
 	
@@ -180,8 +184,22 @@ public class FlowTask implements Callable<RunStatus> {
 	                
 	                runStatus.setExecuteId(tempId);
 	                if(runStatus.getAvailableFileMap().size() > 0) {
-	                	Map<String, ConcurrentHashMap<String, String>> availableFileMap = new HashMap<>();
-	                	availableFileMap.put("availableFileMap", runStatus.getAvailableFileMap());
+	                	Map<String, LinkedHashMap<String, String>> availableFileMap = new HashMap<>();
+	                	LinkedHashMap<String, String> genFilesMap = new LinkedHashMap<String, String>();
+	                	
+	                	List<String> filePathList = new LinkedList<String>();
+	                	for(String key : runStatus.getAvailableFileMap().keySet()) {
+	                		filePathList.add(runStatus.getAvailableFileMap().get(key));
+	                	}
+	                	
+	                	String zipPath = Constants.DATA_PATH + "/../file/" + System.currentTimeMillis();
+	                	String zipName = "全部生成文件.zip";
+	                	genFilesMap.put(executeStruct.getFlowId(), zipPath + File.separator + zipName);
+	                	ZipCompressor zipCompressor = new ZipCompressor(zipPath, zipName);
+	                	zipCompressor.compress(filePathList);
+	                	genFilesMap.putAll(runStatus.getAvailableFileMap());
+	                	availableFileMap.put("availableFileMap", genFilesMap);
+	                	
 	                	fileFlowBody.setContent(JSON.toJSONString(availableFileMap));
 	                } else {
 	                	fileFlowBody.setContent("none");

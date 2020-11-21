@@ -17,6 +17,7 @@
 package com.mcg.common.sysenum;
 
 import com.mcg.entity.flow.data.FlowData;
+import com.mcg.entity.flow.demo.FlowDemo;
 import com.mcg.entity.flow.end.FlowEnd;
 import com.mcg.entity.flow.git.FlowGit;
 import com.mcg.entity.flow.java.FlowJava;
@@ -50,7 +51,8 @@ public enum EletypeEnum {
     PYTHON("python控件", "python", (new FlowPython()).getClass()), LINUX("linux控件", "linux", (new FlowLinux()).getClass()), 
     WONTON("混沌控件", "wonton", (new FlowWonton()).getClass()), SQLQUERY("sql查询控件", "sqlQuery", (new FlowSqlQuery()).getClass()), 
     SQLEXECUTE("sql执行控件", "sqlExecute", (new FlowSqlExecute()).getClass()), LOOP("循环", "loop", (new FlowLoop()).getClass()), 
-    PROCESS("子流程", "process", (new FlowProcess()).getClass()), END("结束控件", "end", (new FlowEnd()).getClass());
+    PROCESS("子流程", "process", (new FlowProcess()).getClass()), END("结束控件", "end", (new FlowEnd()).getClass()),
+    DEMO("示例控件", "demo", (new FlowDemo()).getClass());
     
     private String name;
     private String value;

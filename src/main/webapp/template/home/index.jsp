@@ -78,8 +78,35 @@
 	   			</p>
 	   		</div>
 	   		  
+		<div class="row">
+	   		<div class="col-md-4">
+	   			<h3>打赏支持</h3>
+	   			<p>
+	   			对技术走着痴迷，深知国内工具软件的贫瘠，希望觉得有用并且在用的同行，给我一点点支持，维护这一难得的星星之火，同时也希望自己每日的付出没有白费
+	   			</p>
+	   		</div>
+	   	</div>
 		</div>
+			<div class="col-md-4"></div>
+			<div class="col-md-4"></div>
 
+	   		<div class="col-md-4">
+	   			<p>
+	   				<div class="row">
+	   					<div class="col-md-5">
+	   						<img alt="微信" width="100px" height="100px" src="<%=basePath %>/library/images/WeChat.jpg">
+	   						<h4>微信</h4>
+	   					</div>
+	   					<div class="col-md-1"></div>
+	   					<div class="col-md-5">
+	   						<img alt="支付宝" width="100px" height="100px" src="<%=basePath %>/library/images/Alipay.jpg">
+	   						<h4>支付宝</h4>
+	   					</div>
+	   				</div>
+	   			</p>
+	   		</div>
+	   		
+		
    	</div>
  
 	<div class="mcg_footer navbar-fixed-bottom">

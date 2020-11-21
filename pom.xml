@@ -31,6 +31,30 @@
 
 	<dependencies>
 		<dependency>
+		    <groupId>net.coobird</groupId>
+		    <artifactId>thumbnailator</artifactId>
+		    <version>0.4.11</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.icepdf.os</groupId>
+			<artifactId>icepdf-core</artifactId>
+			<version>6.1.2</version>
+		</dependency>
+	
+		<dependency>
+		    <groupId>org.apache.pdfbox</groupId>
+		    <artifactId>pdfbox</artifactId>
+		    <version>2.0.20</version>
+		</dependency>
+	
+		<dependency>
+		    <groupId>org.jsoup</groupId>
+		    <artifactId>jsoup</artifactId>
+		    <version>1.13.1</version>
+		</dependency>
+
+		<dependency>
 		    <groupId>org.eclipse.jgit</groupId>
 		    <artifactId>org.eclipse.jgit</artifactId>
 		    <version>5.7.0.202003110725-r</version>
@@ -40,6 +64,16 @@
 		    <groupId>org.eclipse.jgit</groupId>
 		    <artifactId>org.eclipse.jgit.archive</artifactId>
 		    <version>5.7.0.202003110725-r</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>org.bouncycastle</artifactId>
+					<groupId>bcprov-jdk15on</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>bcprov-ext-jdk15on</artifactId>
+					<groupId>org.bouncycastle</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -382,7 +416,7 @@
 
 	</dependencies>
 	
-	<build>
+ 	<build>
 		<finalName>mcg</finalName>
 		<plugins>
 			<plugin>
@@ -418,5 +452,5 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-	</build>
+	</build> 
 </project>

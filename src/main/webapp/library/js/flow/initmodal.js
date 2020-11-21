@@ -569,3 +569,12 @@ function initFlowEndModal(id) {
 		}
 	});
 }
+
+function initDemoModal(id) {
+	getElementDataById(id, function(data) {
+		if(data != null && data != "" && data != undefined && data.demoProperty != undefined) {
+			
+			common.formUtils.setValues(id + "_demoForm", data);
+		} 
+	});
+}
