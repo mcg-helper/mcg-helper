@@ -1,5 +1,3 @@
-# **项目已转移到** ：https://gitee.com/mcg-helper/mcg-robot ，拥有更丰富的功能！
-
 # mcg-helper研发助手
 ## mcg-helper是什么?
 
@@ -80,4 +78,3 @@ WEB SSH 实现Linux交互
 ![支持宝](https://images.gitee.com/uploads/images/2020/0717/095345_f0f4d25e_1598361.jpeg "Alipay.jpg")
 支付宝
 
-# **项目已转移到** ：https://gitee.com/mcg-helper/mcg-robot ，拥有更丰富的功能！
