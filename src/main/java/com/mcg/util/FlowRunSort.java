@@ -29,22 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.mcg.common.sysenum.EletypeEnum;
+import com.mcg.entity.flow.FlowBase;
 import com.mcg.entity.flow.FlowStruct;
-import com.mcg.entity.flow.data.FlowData;
-import com.mcg.entity.flow.git.FlowGit;
-import com.mcg.entity.flow.java.FlowJava;
-import com.mcg.entity.flow.json.FlowJson;
-import com.mcg.entity.flow.linux.FlowLinux;
-import com.mcg.entity.flow.loop.FlowLoop;
-import com.mcg.entity.flow.process.FlowProcess;
-import com.mcg.entity.flow.python.FlowPython;
-import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.sequence.FlowSequence;
-import com.mcg.entity.flow.sftp.FlowSftp;
-import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
-import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
-import com.mcg.entity.flow.text.FlowText;
-import com.mcg.entity.flow.wonton.FlowWonton;
 import com.mcg.entity.generate.Order;
 import com.mcg.entity.generate.Orders;
 import com.mcg.plugin.build.McgProduct;
@@ -126,114 +115,22 @@ public class FlowRunSort {
 
 		int num = 0;
 		sortMap = new HashMap<String, Integer>();
-		if (flowStruct.getFlowStart() != null) {
-			dataMap.put(flowStruct.getFlowStart().getStartId(), flowStruct.getFlowStart());
-			sortMap.put(flowStruct.getFlowStart().getStartId(), num++);
-		}
-		if (flowStruct.getFlowSqlQuerys() != null && flowStruct.getFlowSqlQuerys().getFlowSqlQuery() != null
-				&& flowStruct.getFlowSqlQuerys().getFlowSqlQuery().size() > 0) {
-			for (FlowSqlQuery sqlQuery : flowStruct.getFlowSqlQuerys().getFlowSqlQuery()) {
-				dataMap.put(sqlQuery.getId(), sqlQuery);
-				sortMap.put(sqlQuery.getId(), num++);
-			}
-		}
-		if (flowStruct.getFlowSqlExecutes() != null && flowStruct.getFlowSqlExecutes().getFlowSqlExecute() != null
-				&& flowStruct.getFlowSqlExecutes().getFlowSqlExecute().size() > 0) {
-			for (FlowSqlExecute flowSqlExecute : flowStruct.getFlowSqlExecutes().getFlowSqlExecute()) {
-				dataMap.put(flowSqlExecute.getId(), flowSqlExecute);
-				sortMap.put(flowSqlExecute.getId(), num++);
-			}
-		}
-		if (flowStruct.getFlowJsons() != null && flowStruct.getFlowJsons().getFlowJson() != null
-				&& flowStruct.getFlowJsons().getFlowJson().size() > 0) {
-			for (FlowJson flowJson : flowStruct.getFlowJsons().getFlowJson()) {
-				dataMap.put(flowJson.getId(), flowJson);
-				sortMap.put(flowJson.getId(), num++);
-			}
-		}
-		if (flowStruct.getFlowDatas() != null && flowStruct.getFlowDatas().getFlowData() != null
-				&& flowStruct.getFlowDatas().getFlowData().size() > 0) {
-			for (FlowData flowData : flowStruct.getFlowDatas().getFlowData()) {
-				dataMap.put(flowData.getId(), flowData);
-				sortMap.put(flowData.getId(), num++);
-			}
-		}
-		if (flowStruct.getFlowScripts() != null && flowStruct.getFlowScripts().getFlowScript() != null
-				&& flowStruct.getFlowScripts().getFlowScript().size() > 0) {
-			for (FlowScript flowScript : flowStruct.getFlowScripts().getFlowScript()) {
-				dataMap.put(flowScript.getScriptId(), flowScript);
-				sortMap.put(flowScript.getScriptId(), num++);
-			}
-		}
-		if (flowStruct.getFlowJavas() != null && flowStruct.getFlowJavas().getFlowJava() != null
-				&& flowStruct.getFlowJavas().getFlowJava().size() > 0) {
-			for (FlowJava flowJava : flowStruct.getFlowJavas().getFlowJava()) {
-				dataMap.put(flowJava.getId(), flowJava);
-				sortMap.put(flowJava.getId(), num++);
-			}
-		}
-		if (flowStruct.getFlowTexts() != null && flowStruct.getFlowTexts().getFlowText() != null
-				&& flowStruct.getFlowTexts().getFlowText().size() > 0) {
-			for (FlowText flowText : flowStruct.getFlowTexts().getFlowText()) {
-				dataMap.put(flowText.getTextId(), flowText);
-				sortMap.put(flowText.getTextId(), num++);
-			}
-		}
-		if (flowStruct.getFlowPythons() != null && flowStruct.getFlowPythons().getFlowPython() != null
-				&& flowStruct.getFlowPythons().getFlowPython().size() > 0) {
-			for (FlowPython flowPython : flowStruct.getFlowPythons().getFlowPython()) {
-				dataMap.put(flowPython.getId(), flowPython);
-				sortMap.put(flowPython.getId(), num++);
-			}
-		}
-		if (flowStruct.getFlowLinuxs() != null && flowStruct.getFlowLinuxs().getFlowLinux() != null
-				&& flowStruct.getFlowLinuxs().getFlowLinux().size() > 0) {
-			for (FlowLinux flowLinux : flowStruct.getFlowLinuxs().getFlowLinux()) {
-				dataMap.put(flowLinux.getId(), flowLinux);
-				sortMap.put(flowLinux.getId(), num++);
-			}
-		}
-		if (flowStruct.getFlowWontons() != null && flowStruct.getFlowWontons().getFlowWonton() != null
-				&& flowStruct.getFlowWontons().getFlowWonton().size() > 0) {
-			for (FlowWonton flowWonton : flowStruct.getFlowWontons().getFlowWonton()) {
-				dataMap.put(flowWonton.getId(), flowWonton);
-				sortMap.put(flowWonton.getId(), num++);
-			}
-		}
-		if (flowStruct.getFlowProcesses() != null && flowStruct.getFlowProcesses().getFlowProcess() != null
-				&& flowStruct.getFlowProcesses().getFlowProcess().size() > 0) {
-			for (FlowProcess flowProcess : flowStruct.getFlowProcesses().getFlowProcess()) {
-				dataMap.put(flowProcess.getId(), flowProcess);
-				sortMap.put(flowProcess.getId(), num++);
-			}
-		}
-		if (flowStruct.getFlowLoops() != null && flowStruct.getFlowLoops().getFlowLoop() != null
-				&& flowStruct.getFlowLoops().getFlowLoop().size() > 0) {
-			for (FlowLoop flowLoop : flowStruct.getFlowLoops().getFlowLoop()) {
-				dataMap.put(flowLoop.getId(), flowLoop);
-				sortMap.put(flowLoop.getId(), num++);
-			}
-		}
-		
-		if (flowStruct.getFlowGits() != null && flowStruct.getFlowGits().getFlowGit() != null
-				&& flowStruct.getFlowGits().getFlowGit().size() > 0) {
-			for (FlowGit flowGit : flowStruct.getFlowGits().getFlowGit()) {
-				dataMap.put(flowGit.getId(), flowGit);
-				sortMap.put(flowGit.getId(), num++);
-			}
-		}
-		
-		if (flowStruct.getFlowSftps() != null && flowStruct.getFlowSftps().getFlowSftp() != null
-				&& flowStruct.getFlowSftps().getFlowSftp().size() > 0) {
-			for (FlowSftp flowSftp : flowStruct.getFlowSftps().getFlowSftp()) {
-				dataMap.put(flowSftp.getId(), flowSftp);
-				sortMap.put(flowSftp.getId(), num++);
-			}
-		}
+		for(String classes : flowStruct.getFlowElementMap().keySet()) {
+			List<?> mcgProductList = flowStruct.getFlowElementMap().get(classes);
+			if(mcgProductList != null && mcgProductList.size() > 0) {
+				for(Object obj : mcgProductList) {
+					JSONObject mcgProductJsonObject = (JSONObject)obj;
+					for(EletypeEnum eletypeEnum : EletypeEnum.values()) {
+	        			if(eletypeEnum.getValue().equals(mcgProductJsonObject.getString("eletype"))) {
+							FlowBase flowBase = (FlowBase)JSON.toJavaObject((JSONObject)obj, eletypeEnum.getClasses());
+							dataMap.put(flowBase.getId(), (McgProduct)flowBase);
+							sortMap.put(flowBase.getId(), num++);
+							break;
+	        			}
+					}
 
-		if (flowStruct.getFlowEnd() != null) {
-			dataMap.put(flowStruct.getFlowEnd().getEndId(), flowStruct.getFlowEnd());
-			sortMap.put(flowStruct.getFlowEnd().getEndId(), num++);
+				}
+			}
 		}
 
 		nodeMap = new LinkedHashMap<Integer, String>();

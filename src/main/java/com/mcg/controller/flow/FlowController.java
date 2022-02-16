@@ -42,6 +42,7 @@ import com.mcg.common.sysenum.MessageTypeEnum;
 import com.mcg.controller.base.BaseController;
 import com.mcg.entity.common.McgResult;
 import com.mcg.entity.flow.data.FlowData;
+import com.mcg.entity.flow.demo.FlowDemo;
 import com.mcg.entity.flow.end.FlowEnd;
 import com.mcg.entity.flow.git.FlowGit;
 import com.mcg.entity.flow.java.FlowJava;
@@ -421,6 +422,8 @@ public class FlowController extends BaseController {
         return mcgResult;
     }	
     
+    
+    
     @RequestMapping(value="testConnect", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public McgResult testConnect(@RequestBody McgDataSource mcgDataSource) {
@@ -573,4 +576,24 @@ public class FlowController extends BaseController {
         
     	return mcgResult;
     }
+    
+	@RequestMapping(value="saveFlowDemo", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public McgResult saveFlowDemo(@Valid @RequestBody FlowDemo flowDemo, BindingResult result, HttpSession session) {
+        Message message = MessagePlugin.getMessage();
+        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);
+        NotifyBody notifyBody = new NotifyBody();
+        McgResult mcgResult = new McgResult();
+        
+        if(Tools.validator(result, mcgResult, notifyBody)) {
+        	flowDemo.setName(flowDemo.getDemoProperty().getName());
+            CachePlugin.putFlowEntity(flowDemo.getFlowId(), flowDemo.getId(), flowDemo);
+            notifyBody.setContent("示例控件保存成功！");
+            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());
+        }
+
+        message.setBody(notifyBody);
+        MessagePlugin.push(flowDemo.getMcgWebScoketCode(), session.getId(), message);
+		return mcgResult;
+	}
 }

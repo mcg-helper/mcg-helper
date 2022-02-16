@@ -29,6 +29,7 @@
 	<div class="row margin_top">
 		<div class="col-md-12">
 			<form id="${modalId }_endForm" class="form-horizontal" role="form">
+				<input type="hidden" id="${modalId }_id" name="id" value="${modalId }" />
 				<input type="hidden" id="${modalId }_endId" name="endId" value="${modalId }" />
 				<div class="form-body">
 					<div id="myTabContent" class="tab-content">

@@ -43,6 +43,9 @@ public class ExecuteStruct implements Serializable {
     /* 流程id */
     @XmlElement
     private String flowId;
+    /* 流程执行的序号  */
+    @XmlElement
+    private Integer orderNum;
     /* 流程实例id */
     @XmlElement
     private String flowInstanceId;
@@ -81,6 +84,12 @@ public class ExecuteStruct implements Serializable {
 	}
 	public void setFlowId(String flowId) {
 		this.flowId = flowId;
+	}
+	public Integer getOrderNum() {
+		return orderNum;
+	}
+	public void setOrderNum(Integer orderNum) {
+		this.orderNum = orderNum;
 	}
 	public String getFlowInstanceId() {
 		return flowInstanceId;

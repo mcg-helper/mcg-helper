@@ -27,8 +27,10 @@ public class WSSHSessionConfigurator extends Configurator {
 	@Override
 	public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
 		HttpSession httpSession = (HttpSession)request.getHttpSession();
-		config.getUserProperties().put(HttpSession.class.getName(),httpSession);
-		super.modifyHandshake(config, request, response);
+		if(httpSession != null) {
+			config.getUserProperties().put(HttpSession.class.getName(),httpSession);
+			super.modifyHandshake(config, request, response);
+		}
 	}
 
 }

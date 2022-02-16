@@ -126,7 +126,9 @@ public class TopoSort {
 	    this.loopFlowSequenceList = loopFlowSequenceList;
 	    this.allFlowSequenceList = allFlowSequenceList;
         for(FlowSequence flowSequence : loopFlowSequenceList) {
-            topoSort.addEdge(sortMap.get(flowSequence.getSourceId()), sortMap.get(flowSequence.getTargetId()));
+        	if(sortMap.get(flowSequence.getSourceId()) != null && sortMap.get(flowSequence.getTargetId()) != null) {
+        		topoSort.addEdge(sortMap.get(flowSequence.getSourceId()), sortMap.get(flowSequence.getTargetId()));
+        	}
         }
         return getFlowSort();
 	}

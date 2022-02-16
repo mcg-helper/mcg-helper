@@ -40,6 +40,7 @@
 								<label class="col-sm-2 control-label">控件名称</label>
 								<div class="col-sm-4">
 									<div class="fg-line">
+										<input type="hidden" id="${modalId }_id" name="id" value="${modalId }" />
 										<input type="hidden" name="id" value="${modalId }" />
 										<input type="text" name="gitProperty[name]" class="form-control"  />
 									</div>

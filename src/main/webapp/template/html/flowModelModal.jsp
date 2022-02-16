@@ -71,11 +71,12 @@
 								<label class="col-sm-2 control-label">控件名称</label>
 								<div class="col-sm-9">
 									<div class="fg-line">
+										<input type="hidden" id="${modalId }_id" name="id" value="${modalId }" />
 										<input type="hidden" id="${modalId }_modelId" name="modelId" value="${modalId }" />
-														<input type="text" id="${modalId }_modelName" name="modelProperty[modelName]" class="form-control" placeholder="请输入控件名称" />											
-													</div>
-												</div>
-												<div class="col-sm-1"></div>
+										<input type="text" id="${modalId }_modelName" name="modelProperty[modelName]" class="form-control" placeholder="请输入控件名称" />											
+									</div>
+								</div>
+											<div class="col-sm-1"></div>
 											</div>							
 											<div class="form-group">
 												<label class="col-sm-2 control-label">控件KEY</label>

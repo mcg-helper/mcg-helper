@@ -19,8 +19,14 @@ package com.mcg.entity.auth;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.websocket.Session;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PermissionCollection {
 	private static PermissionCollection instance = new PermissionCollection();
+	private static Logger logger = LoggerFactory.getLogger(PermissionCollection.class);
 
 	public static PermissionCollection getInstance() {
 		return instance;
@@ -36,7 +42,26 @@ public class PermissionCollection {
 	}
 
 	public void removeSessionUserCache(String sessionID) {
-		mapSU.remove(sessionID);
+		try {
+			UserCacheBean uc = mapSU.get(sessionID);
+			if(uc != null) {
+				McgUser mcgUser = uc.getUser();
+				if(mcgUser != null) {
+					Map<String, Session> webSocketSessionMap = mcgUser.getWebSocketMap();
+					if(webSocketSessionMap != null && webSocketSessionMap.size() > 0) {
+						for(String webSocketSessionId : webSocketSessionMap.keySet() ) {
+							Session webSocketSession = webSocketSessionMap.get(webSocketSessionId);
+							if(webSocketSession != null && webSocketSession.isOpen()) {
+								webSocketSession.close();
+							}
+						}
+					}
+				}
+			}
+			mapSU.remove(sessionID);
+		}catch (Exception e) {
+			logger.error("用户session关闭出错：", e);
+		}
 	}
 
 	public UserCacheBean getUserCache(String sessionID) {

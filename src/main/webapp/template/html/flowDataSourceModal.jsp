@@ -33,6 +33,7 @@
 		<div class="col-md-12">	
 			<form id="${modalId }_dataSourceForm" class="form-horizontal" role="form">
 				<br/>
+				<input type="hidden" id="${modalId }_id" name="id" value="${modalId }" />
 				<input type="hidden" id="${modalId }_dataSourceId" name="dataSourceId" value="${modalId }" />
 				<div class="form-body">
 					<div id="myTabContent" class="tab-content">

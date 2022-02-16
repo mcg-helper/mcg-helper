@@ -90,12 +90,7 @@ Message.prototype.output = function() {
 					}
 			        var term = new Terminal({
 			            cols: 120,
-			            rows: screenRows,
-			            cursorBlink: true, // 光标闪烁
-			            cursorStyle: "block", // 光标样式  null | 'block' | 'underline' | 'bar'
-			            scrollback: 800, //回滚
-			            tabStopWidth: 8, //制表宽度
-			            screenKeys: true
+			            rows: screenRows
 			        });
 			        term.open(document.getElementById(container));
 			        term.write(param);

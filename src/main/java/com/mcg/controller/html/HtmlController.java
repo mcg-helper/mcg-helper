@@ -254,5 +254,15 @@ public class HtmlController extends BaseController {
 		return mv;
 	}
 	
+	/* 流程节点Demo_Modal */
+	@RequestMapping(value="/flowDemoModal")
+	public ModelAndView getFlowDemoModal() throws Exception{
+		ModelAndView mv = this.getModelAndView();
+		PageData pd = this.getPageData();
+		mv.addObject("modalId", pd.get("modalId"));
+		mv.setViewName("html/flowDemoModal");
+		return mv;
+	}
+	
 
 }

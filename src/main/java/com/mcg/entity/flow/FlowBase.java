@@ -16,6 +16,9 @@
 
 package com.mcg.entity.flow;
 
+import java.util.Date;
+
+import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.plugin.build.McgProduct;
 public abstract class FlowBase extends McgProduct {
     
@@ -25,6 +28,7 @@ public abstract class FlowBase extends McgProduct {
     private String flowId;
     /* 执行的次序号 */
     private Integer orderNum;
+    private String id;
     /* 控件名称 */
     private String name;
     private String label;
@@ -36,6 +40,9 @@ public abstract class FlowBase extends McgProduct {
     private String left;
     private String top;
     private String sign;
+    private EletypeEnum eletypeEnum;
+    private Date startTime;
+    private Date endTime;
     
 	public String getFlowId() {
 		return flowId;
@@ -48,6 +55,12 @@ public abstract class FlowBase extends McgProduct {
 	}
 	public void setOrderNum(Integer orderNum) {
 		this.orderNum = orderNum;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 	public String getLabel() {
         return label;
@@ -114,6 +127,24 @@ public abstract class FlowBase extends McgProduct {
 	}
 	public void setMcgWebScoketCode(String mcgWebScoketCode) {
 		this.mcgWebScoketCode = mcgWebScoketCode;
+	}
+	public EletypeEnum getEletypeEnum() {
+		return eletypeEnum;
+	}
+	public void setEletypeEnum(EletypeEnum eletypeEnum) {
+		this.eletypeEnum = eletypeEnum;
+	}
+	public Date getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+	public Date getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
 	}
     
 }

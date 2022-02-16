@@ -23,22 +23,7 @@ import com.alibaba.fastjson.JSON;
 import com.mcg.common.sysenum.EletypeEnum;
 import com.mcg.common.sysenum.LogTypeEnum;
 import com.mcg.common.sysenum.MessageTypeEnum;
-import com.mcg.entity.flow.data.FlowData;
-import com.mcg.entity.flow.end.FlowEnd;
-import com.mcg.entity.flow.git.FlowGit;
-import com.mcg.entity.flow.java.FlowJava;
-import com.mcg.entity.flow.json.FlowJson;
-import com.mcg.entity.flow.linux.FlowLinux;
-import com.mcg.entity.flow.loop.FlowLoop;
-import com.mcg.entity.flow.process.FlowProcess;
-import com.mcg.entity.flow.python.FlowPython;
-import com.mcg.entity.flow.script.FlowScript;
-import com.mcg.entity.flow.sftp.FlowSftp;
-import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
-import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
-import com.mcg.entity.flow.start.FlowStart;
-import com.mcg.entity.flow.text.FlowText;
-import com.mcg.entity.flow.wonton.FlowWonton;
+import com.mcg.entity.flow.FlowBase;
 import com.mcg.entity.generate.ExecuteStruct;
 import com.mcg.entity.message.FlowBody;
 import com.mcg.entity.message.Message;
@@ -56,104 +41,16 @@ public class ExceptionProcess {
         Message message = MessagePlugin.getMessage();
         message.getHeader().setMesType(MessageTypeEnum.FLOW);
         FlowBody flowBody = new FlowBody();		
-		if(mcgProduct instanceof FlowStart) {
-			FlowStart flowStart = (FlowStart)mcgProduct;
-            flowBody.setEleType(EletypeEnum.START.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.START.getName());
-            flowBody.setEleId(flowStart.getStartId());
-            flowBody.setFlowId(flowStart.getFlowId());
-		} else if(mcgProduct instanceof FlowJson) {
-			FlowJson flowJson =(FlowJson)mcgProduct;
-            flowBody.setEleType(EletypeEnum.JSON.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.JSON.getName() + "--》" + flowJson.getJsonProperty().getName());
-            flowBody.setEleId(flowJson.getId());
-            flowBody.setFlowId(flowJson.getFlowId());
-		} else if(mcgProduct instanceof FlowData) {
-			FlowData flowData =(FlowData)mcgProduct;
-            flowBody.setEleType(EletypeEnum.DATA.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.DATA.getName() + "--》" + flowData.getDataProperty().getName());
-            flowBody.setEleId(flowData.getId());
-            flowBody.setFlowId(flowData.getFlowId());
-		} else if(mcgProduct instanceof FlowSqlQuery) {
-			FlowSqlQuery flowSqlQuery = (FlowSqlQuery)mcgProduct;
-            flowBody.setEleType(EletypeEnum.SQLQUERY.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.SQLQUERY.getName());
-            flowBody.setEleId(flowSqlQuery.getId());	
-            flowBody.setFlowId(flowSqlQuery.getFlowId());
-		} else if(mcgProduct instanceof FlowSqlExecute) {
-			FlowSqlExecute flowSqlExecute = (FlowSqlExecute)mcgProduct;
-            flowBody.setEleType(EletypeEnum.SQLEXECUTE.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.SQLEXECUTE.getName());
-            flowBody.setEleId(flowSqlExecute.getId());	
-            flowBody.setFlowId(flowSqlExecute.getFlowId());
-		} else if(mcgProduct instanceof FlowScript) {
-            FlowScript flowScript = (FlowScript)mcgProduct;
-            flowBody.setEleType(EletypeEnum.SCRIPT.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.SCRIPT.getName() + "--》" + flowScript.getScriptProperty().getScriptName());
-            flowBody.setEleId(flowScript.getScriptId());
-            flowBody.setFlowId(flowScript.getFlowId());
-		} else if(mcgProduct instanceof FlowJava) {
-			FlowJava flowJava =(FlowJava)mcgProduct;
-            flowBody.setEleType(EletypeEnum.JAVA.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.JAVA.getName() + "--》" + flowJava.getJavaProperty().getName());
-            flowBody.setEleId(flowJava.getId());
-            flowBody.setFlowId(flowJava.getFlowId());
-		} else if(mcgProduct instanceof FlowText) {
-            FlowText flowText = (FlowText)mcgProduct;
-            flowBody.setEleType(EletypeEnum.TEXT.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.TEXT.getName() + "--》" + flowText.getTextProperty().getName());
-            flowBody.setEleId(flowText.getTextId());	
-            flowBody.setFlowId(flowText.getFlowId());
-		} else if(mcgProduct instanceof FlowPython) {
-			FlowPython flowPython = (FlowPython)mcgProduct;
-            flowBody.setEleType(EletypeEnum.PYTHON.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.PYTHON.getName() + "--》" + flowPython.getPythonProperty().getName());
-            flowBody.setEleId(flowPython.getId());
-            flowBody.setFlowId(flowPython.getFlowId());
-		} else if(mcgProduct instanceof FlowLinux) {
-			FlowLinux flowLinux = (FlowLinux)mcgProduct;
-            flowBody.setEleType(EletypeEnum.LINUX.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.LINUX.getName() + "--》" + flowLinux.getLinuxProperty().getName());
-            flowBody.setEleId(flowLinux.getId());
-            flowBody.setFlowId(flowLinux.getFlowId());
-		} else if(mcgProduct instanceof FlowWonton) {
-			FlowWonton flowWonton = (FlowWonton)mcgProduct;
-            flowBody.setEleType(EletypeEnum.WONTON.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.WONTON.getName() + "--》" + flowWonton.getWontonProperty().getName());
-            flowBody.setEleId(flowWonton.getId());
-            flowBody.setFlowId(flowWonton.getFlowId());
-		} else if(mcgProduct instanceof FlowProcess) {
-			FlowProcess flowProcess = (FlowProcess)mcgProduct;
-            flowBody.setEleType(EletypeEnum.PROCESS.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.PROCESS.getName() + "--》" + flowProcess.getProcessProperty().getName());
-            flowBody.setEleId(flowProcess.getId());
-            flowBody.setFlowId(flowProcess.getFlowId());
-		} else if(mcgProduct instanceof FlowLoop) {
-			FlowLoop flowLoop = (FlowLoop)mcgProduct;
-            flowBody.setEleType(EletypeEnum.LOOP.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.LOOP.getName() + "--》" + flowLoop.getLoopProperty().getName());
-            flowBody.setEleId(flowLoop.getId());
-            flowBody.setFlowId(flowLoop.getFlowId());
-		} else if(mcgProduct instanceof FlowGit) {
-			FlowGit flowGit = (FlowGit)mcgProduct;
-            flowBody.setEleType(EletypeEnum.GIT.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.GIT.getName() + "--》" + flowGit.getGitProperty().getName());
-            flowBody.setEleId(flowGit.getId());
-            flowBody.setFlowId(flowGit.getFlowId());
-		} else if(mcgProduct instanceof FlowSftp) {
-			FlowSftp flowSftp = (FlowSftp)mcgProduct;
-            flowBody.setEleType(EletypeEnum.SFTP.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.SFTP.getName() + "--》" + flowSftp.getSftpProperty().getName());
-            flowBody.setEleId(flowSftp.getId());
-            flowBody.setFlowId(flowSftp.getFlowId());
-		} else if(mcgProduct instanceof FlowEnd) {
-            FlowEnd flowEnd = (FlowEnd)mcgProduct;
-            flowBody.setEleType(EletypeEnum.END.getValue());
-            flowBody.setEleTypeDesc(EletypeEnum.END.getName());
-            flowBody.setEleId(flowEnd.getEndId());		
-            flowBody.setFlowId(flowEnd.getFlowId());
-		}
-		
+        FlowBase flowBase = (FlowBase)mcgProduct;
+        for(EletypeEnum eletypeEnum : EletypeEnum.values()) {
+        	if(eletypeEnum.getValue().equals(flowBase.getEletype())) {
+                flowBody.setEleType(eletypeEnum.getValue());
+                flowBody.setEleTypeDesc(eletypeEnum.getName() + "--》" + flowBase.getName());
+                flowBody.setEleId(flowBase.getId());
+                flowBody.setFlowId(flowBase.getFlowId());
+        	}
+        }
+        
 		ExecuteStruct executeStruct = FlowInstancesUtils.executeStructMap.get(flowInstanceId);
 		flowBody.setSubFlag(executeStruct.getSubFlag());
 		flowBody.setComment("发生异常");

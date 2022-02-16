@@ -30,8 +30,10 @@ public class Constants {
 
     /*   字符编码        */
     public static final Charset CHARSET = Charset.forName("utf-8");
+    /*   httpSession超时时间       */
+    public static final int HTTP_SESSION_TIME_OUT = 60 * 60 * 4; 
     /*   版本号        */
-    public static final String VERSION = "mcg-helper_V1.6.4-Release";
+    public static final String VERSION = "mcg-helper_V1.6.7-Release";
     /*   全局变量key   */
     public static final String GLOBAL_KEY = "mcgGlobal";
     /*   流程文件扩展名        */

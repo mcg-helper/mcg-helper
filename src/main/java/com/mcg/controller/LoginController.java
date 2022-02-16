@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.mcg.common.Constants;
 import com.mcg.controller.base.BaseController;
 import com.mcg.entity.auth.McgUser;
 import com.mcg.entity.auth.PermissionCollection;
@@ -57,6 +58,7 @@ public class LoginController extends BaseController {
  		            mu.setUserKey(reuqest.getParameter("userKey"));
  		            ucb.setUser(mu);
  		            PermissionCollection.getInstance().addSessionUserCache(reuqest.getSession().getId(), ucb);
+ 		            reuqest.getSession().setMaxInactiveInterval(Constants.HTTP_SESSION_TIME_OUT);
  		            mv.setViewName("redirect:/index");
  	        	} else {
  	        		mv.setViewName("redirect:/login.jsp");
