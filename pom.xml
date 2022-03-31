@@ -25,7 +25,7 @@
 	<name>mcg-helper</name>
 
 	<properties>
-		<spring_version>4.3.25.RELEASE</spring_version>
+		<spring_version>5.3.18</spring_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
