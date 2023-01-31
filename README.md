@@ -23,9 +23,7 @@
   
 整体上讲，基于流程图清晰易直观，且控件使用简单，易掌控，学习门槛低。系统“主页”里面有视频教程链接，能够很好的上手和玩转mcg-helper，熟悉以后可以自定义控件，满足自己的自动化需求。
 
-## 学习资源
-QQ交流群：619815829  
-视频教程：  
+## 视频教程：  
 [第一节、视频教程内容介绍](https://edu.csdn.net/course/play/5954)  探讨研发工作中典型的重复繁杂工作，可通过流程自动化实现代替的常见场景。  
 [第二节、mcg-helper初步认识教程](https://edu.csdn.net/course/play/5954/300130) mcg-helper概述、核心设计、基本操作、工作原理、入门示例、使用场景等。  
 [第三节、开始、文本、结束控件讲解](https://edu.csdn.net/course/play/5954/300416)  了解流程控件运行原理，介绍与演示控件的功能与作用。  
@@ -62,19 +60,4 @@ WEB SSH 实现Linux交互
 
 ![控制台2](https://images.gitee.com/uploads/images/2020/0622/001014_bce9c02e_1598361.png "console_2.png")
 
-## 问题反馈
-在使用中遇到问题或有更好的建议，欢迎大家反馈:
-
-* QQ交流群: 619815829
-* 邮箱地址: mcg-helper@qq.com
-
-## 打赏支持
-对技术走着痴迷，深知国内工具软件的贫瘠，希望觉得有用并且在用的同行，给我一点点支持，维护这一难得的星星之火，同时也希望自己每日的付出没有白费
-
-![微信](https://images.gitee.com/uploads/images/2020/0717/095320_781ccbca_1598361.jpeg "WeChat.jpg")
-微信
-
-
-![支持宝](https://images.gitee.com/uploads/images/2020/0717/095345_f0f4d25e_1598361.jpeg "Alipay.jpg")
-支付宝
 
